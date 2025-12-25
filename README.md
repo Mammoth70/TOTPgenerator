@@ -1,4 +1,4 @@
-# TOTPgenerator<br>Генератор TOTP
+# TOTP generator<br>Генератор TOTP
 
 [![Android][1]][2] [![Kotlin][3]][4] [![GitHub license][5]][6] [![GitHub code size in bytes][7]]()
 
