@@ -10,8 +10,8 @@
 [6]: LICENSE
 [7]: https://img.shields.io/github/languages/code-size/Mammoth70/TOTPgenerator.svg?color=teal
 
-Time-Based One-Time Password generator  
-Генератор одноразовых паролей на основе времени  
+Time-Based One-Time Password generator.  
+Генератор одноразовых паролей на основе времени.  
 
 Возможности приложения:
 - можно загрузить ключ генерации вручную или отсканировав QR-код (схема otpauth://);
