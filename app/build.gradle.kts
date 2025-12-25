@@ -8,7 +8,7 @@ plugins {
 
 val versionMajor = 1
 val versionMinor = 1
-val versionPatch = 0
+val versionPatch = 1
 
 android {
     namespace = "ru.mammoth70.totpgenerator"
@@ -56,12 +56,10 @@ android {
 dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
-    //noinspection UseTomlInstead
-    implementation("com.google.android.material:material:1.14.0-alpha08")
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
     //noinspection UseTomlInstead
-    implementation("androidx.activity:activity-ktx:1.12.2")
+    implementation("com.google.android.material:material:1.14.0-alpha08")
     //noinspection UseTomlInstead
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.10.0")
     //noinspection UseTomlInstead
@@ -72,7 +70,8 @@ dependencies {
     implementation("androidx.security:security-crypto:1.1.0")
     //noinspection UseTomlInstead
     implementation("com.google.android.gms:play-services-code-scanner:16.1.0")
-    implementation("com.google.protobuf:protobuf-javalite:3.25.1")
+    //noinspection UseTomlInstead
+    implementation("com.google.protobuf:protobuf-javalite:4.33.2")
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

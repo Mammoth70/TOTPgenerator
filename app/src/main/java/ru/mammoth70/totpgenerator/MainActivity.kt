@@ -1,6 +1,5 @@
 package ru.mammoth70.totpgenerator
 
-import android.annotation.SuppressLint
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Intent
@@ -51,22 +50,19 @@ class MainActivity : AppActivity(),
 
         // Настройка ViewModel.
         ViewModelProvider(this)[TokensViewModel::class.java].liveData.observe(this)
-            { token -> putData(token) }
+            { token ->
+                // Вызывается при получении нового токена из потока.
+                // Меняет список токенов и вызывает перестроение адаптера.
+                val num = token.num
+                // Проверка на то, что массивы секретов и токенов синхронизированы.
+                if ((tokens.size > num) && tokens[num].id == secrets[num].id) {
+                    tokens[num] = token
+                    adapter.notifyDataSetChanged()
+                }
+        }
 
         if (appPinCode.isNotBlank()) {
             onPinEntered()
-        }
-    }
-
-    fun putData(token: Token) {
-        // Функция меняет список токенов и вызывает перестроение адаптера.
-        // Вызывается при получении нового токена из dataFlow.
-        @SuppressLint("SetTextI18n")
-        val num = token.num
-        // Проверка на то, что массивы секретов и токенов синхронизированы.
-        if ((tokens.size > num) && tokens[num].id == secrets[num].id) {
-            tokens[num] = token
-            adapter.notifyDataSetChanged()
         }
     }
 
