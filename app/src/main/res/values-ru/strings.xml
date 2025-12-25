@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Генератор TOTP</string>
+    <string name="description">Генератор одноразовых паролей
+        \nна основе времени</string>
+    <string name="version">Версия:</string>
+    <string name="for_about">Автор: Андрей Яковлев © 2025
+        \nhttps://github.com/mammoth70</string>
+
+    <string name="ok">OK</string>
+    <string name="cancel">Отмена</string>
+    <string name="backspace">Backspace</string>
+    <string name="yes">Да</string>
+    <string name="no">Нет</string>
+    <string name="qr">Считать QR</string>
+    <string name="add">Добавить</string>
+    <string name="delete">Удалить</string>
+    <string name="view">Просмотр</string>
+    <string name="save">Сохранить</string>
+    <string name="menu">Меню</string>
+    <string name="settings">настройки</string>
+    <string name="title_settings">Настройки</string>
+    <string name="about">инфо</string>
+    <string name="title_about">О программе</string>
+    <string name="add_key">Добавить ключ</string>
+    <string name="delete_key">Удалить ключ</string>
+    <string name="key_added">Ключ успешно добавлен</string>
+    <string name="key_deleted">Ключ удалён</string>
+    <string name="key_add_error">Ошибка добавления ключа</string>
+    <string name="key_delete_error">Ошибка удаления ключа</string>
+    <string name="qr_error">Ошибка сканера QR</string>
+    <string name="qr_code_error">QR не разобран</string>
+    <string name="view_key">Карточка ключа</string>
+    <string name="ed_label">Метка</string>
+    <string name="ed_key">Ключ (base32)</string>
+    <string name="hash">Хэш-функция</string>
+    <string name="period">Период сек.</string>
+    <string name="digits">Разрядов</string>
+    <string name="err_empty_label">Нужно ввести название</string>
+    <string name="err_not_unique_label">Название должно быть уникальным</string>
+    <string name="err_empty_key">Нужно ввести ключ</string>
+    <string name="err_empty_period">Нужно ввести период</string>
+    <string name="token_to_clipboard">Токен скопирован в буфер обмена</string>
+    <string name="set_PIN">Назначить PIN</string>
+    <string name="change_PIN">Сменить PIN</string>
+    <string name="delete_PIN">Удалить PIN</string>
+    <string name="enter_PIN">Введите PIN</string>
+    <string name="enter_old_PIN">Введите старый PIN</string>
+    <string name="enter_PIN1">Введите новый PIN</string>
+    <string name="enter_PIN2">Введите PIN ещё раз</string>
+    <string name="error_PIN">Неверный PIN</string>
+    <string name="PIN_changed">PIN успешно сменён</string>
+    <string name="PIN_deleted">PIN удалён</string>
+    <string name="PIN_cancel">Ввод PIN отменён</string>
+    <string name="PIN_bad">Введён неверный действующий PIN</string>
+    <string name="PIN_new_bad">Новый PIN нужно ввести одинаково два раза</string>
+    <string name="PIN_login">Вход по PIN-коду</string>
+    <string name="progress_indicator">Индикатор прогресса</string>
+    <string name="remaining">Осталось</string>
+    <string name="passed">Прошло</string>
+</resources>

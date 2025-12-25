@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Layout для MainActivity. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/frameMainActivity"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".MainActivity"
+    tools:ignore="VisualLintBounds"
+    >
+    <include layout="@layout/frame_app_bar"/>
+    <ListView
+        android:id="@+id/tokensList"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:divider="@null"
+        tools:listitem="@layout/list_item"
+        />
+    <include layout="@layout/frame_fab_main"/>
+    <include layout="@layout/frame_bottom_navigation"/>
+</LinearLayout>
