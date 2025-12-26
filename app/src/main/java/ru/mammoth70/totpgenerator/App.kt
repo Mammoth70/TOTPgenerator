@@ -12,10 +12,6 @@ class App : Application() {
         lateinit var appContext: Context
         val secrets: CopyOnWriteArrayList<OTPauth> = CopyOnWriteArrayList() // Список OTPauth, считывается из БД
         val tokens: ArrayList<Token> = ArrayList() // Список токенов, вычисляемых из OTPauth
-
-        const val SHA1 = "SHA1"
-        const val SHA256 = "SHA256"
-        const val SHA512 = "SHA512"
     }
 
     override fun onCreate() {

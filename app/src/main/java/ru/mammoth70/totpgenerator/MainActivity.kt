@@ -16,10 +16,6 @@ import com.google.mlkit.vision.codescanner.GmsBarcodeScannerOptions
 import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
 import ru.mammoth70.totpgenerator.App.Companion.secrets
 import ru.mammoth70.totpgenerator.App.Companion.tokens
-import ru.mammoth70.totpgenerator.PinBox.Companion.ACTION_ENTER_PIN
-import ru.mammoth70.totpgenerator.PinBox.Companion.INTENT_PIN_ACTION
-import ru.mammoth70.totpgenerator.PinBox.Companion.INTENT_PIN_SCREEN
-import ru.mammoth70.totpgenerator.PinBox.Companion.SCREEN_FULL
 
 class MainActivity : AppActivity(),
     SecretBox.OnAddResultListener, SecretBox.OnDeleteResultListener, PinBox.OnPinResultListener {
@@ -62,7 +58,8 @@ class MainActivity : AppActivity(),
         }
 
         if (appPinCode.isNotBlank()) {
-            onPinEntered()
+            // Ввод и проверка PIN-кода перед входом.
+            enterPin()
         }
     }
 
@@ -131,7 +128,7 @@ class MainActivity : AppActivity(),
         // Функция вызывает Dialog для добавления OTPauth.
         // Dialog возвращает результат через листенер.
         val bundle = Bundle()
-        bundle.putString(SecretBox.INTENT_TOTP_ACTION, SecretBox.ACTION_ADD)
+        bundle.putString(SecretBox.INTENT_TOTP_ACTION, SecretBox.ACTION_TOTP_ADD)
         val secretDialog = SecretBox()
         secretDialog.setArguments(bundle)
         secretDialog.isCancelable = false
@@ -142,7 +139,7 @@ class MainActivity : AppActivity(),
     fun viewSecret(num: Int) {
         // Функция вызывает Dialog для чтения OTPauth.
         val bundle = Bundle()
-        bundle.putString(SecretBox.INTENT_TOTP_ACTION, SecretBox.ACTION_VIEW)
+        bundle.putString(SecretBox.INTENT_TOTP_ACTION, SecretBox.ACTION_TOTP_VIEW)
         bundle.putInt(SecretBox.INTENT_TOTP_NUM, num)
         val secretDialog = SecretBox()
         secretDialog.setArguments(bundle)
@@ -154,7 +151,7 @@ class MainActivity : AppActivity(),
         // Функция вызывает Dialog для удаления OTPauth.
         // Dialog возвращает результат через листенер.
         val bundle = Bundle()
-        bundle.putString(SecretBox.INTENT_TOTP_ACTION, SecretBox.ACTION_DELETE)
+        bundle.putString(SecretBox.INTENT_TOTP_ACTION, SecretBox.ACTION_TOTP_DELETE)
         bundle.putInt(SecretBox.INTENT_TOTP_NUM, num)
         val secretDialog = SecretBox()
         secretDialog.setArguments(bundle)
@@ -253,11 +250,11 @@ class MainActivity : AppActivity(),
         }
     }
 
-    fun onPinEntered() {
+    fun enterPin() {
         // Вызов окна ввода PIN
         val bundle = Bundle()
-        bundle.putString(INTENT_PIN_ACTION, ACTION_ENTER_PIN)
-        bundle.putString(INTENT_PIN_SCREEN, SCREEN_FULL)
+        bundle.putString(PinBox.INTENT_PIN_ACTION, PinBox.ACTION_ENTER_PIN)
+        bundle.putString(PinBox.INTENT_PIN_SCREEN, PinBox.SCREEN_FULL)
         val pinBox = PinBox()
         pinBox.setArguments(bundle)
         pinBox.isCancelable = false
@@ -267,7 +264,7 @@ class MainActivity : AppActivity(),
 
     override fun onPinResult(action: String, result: Boolean, message: String, pin: String) {
         // Обработчик возврата из PinDialog.
-        if ((action == ACTION_ENTER_PIN) && (!result)) {
+        if ((action == PinBox.ACTION_ENTER_PIN) && (!result)) {
             finish()
         }
     }

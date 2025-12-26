@@ -5,9 +5,6 @@ import android.view.View
 import android.widget.Button
 import com.google.android.material.button.MaterialButtonToggleGroup
 import com.google.android.material.snackbar.Snackbar
-import ru.mammoth70.totpgenerator.PinBox.Companion.ACTION_DELETE_PIN
-import ru.mammoth70.totpgenerator.PinBox.Companion.ACTION_UPDATE_PIN
-import ru.mammoth70.totpgenerator.PinBox.Companion.INTENT_PIN_ACTION
 
 class SettingsActivity : AppActivity(), PinBox.OnPinResultListener {
     // Activity показывает и позволяет изменять настройки.
@@ -64,7 +61,7 @@ class SettingsActivity : AppActivity(), PinBox.OnPinResultListener {
     fun onPinChangeClicked(@Suppress("UNUSED_PARAMETER")ignored: View) {
         // Вызов окна смены PIN
         val bundle = Bundle()
-        bundle.putString(INTENT_PIN_ACTION, ACTION_UPDATE_PIN)
+        bundle.putString(PinBox.INTENT_PIN_ACTION, PinBox.ACTION_UPDATE_PIN)
         val pinBox = PinBox()
         pinBox.setArguments(bundle)
         pinBox.isCancelable = false
@@ -75,7 +72,7 @@ class SettingsActivity : AppActivity(), PinBox.OnPinResultListener {
     fun onPinDeleteClicked(@Suppress("UNUSED_PARAMETER")ignored: View) {
         // Вызов окна удаления PIN
         val bundle = Bundle()
-        bundle.putString(INTENT_PIN_ACTION, ACTION_DELETE_PIN)
+        bundle.putString(PinBox.INTENT_PIN_ACTION, PinBox.ACTION_DELETE_PIN)
         val pinBox = PinBox()
         pinBox.setArguments(bundle)
         pinBox.isCancelable = false
@@ -86,7 +83,7 @@ class SettingsActivity : AppActivity(), PinBox.OnPinResultListener {
     override fun onPinResult(action: String, result: Boolean, message: String, pin: String) {
         // Обработчик возврата из PinDialog.
         when (action) {
-            ACTION_DELETE_PIN -> {
+            PinBox.ACTION_DELETE_PIN -> {
                 if (result) {
                     appPinCode = ""
                     setPin(appPinCode)
@@ -98,7 +95,7 @@ class SettingsActivity : AppActivity(), PinBox.OnPinResultListener {
                 }
             }
 
-            ACTION_UPDATE_PIN -> {
+            PinBox.ACTION_UPDATE_PIN -> {
                 if (result) {
                     setPin(appPinCode)
                     btnChangePin.setText(R.string.change_PIN)

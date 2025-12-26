@@ -1,8 +1,6 @@
 @file:Suppress("unused")
 package ru.mammoth70.totpgenerator
 
-// Функции для работы с защищенным хранилищем AndroidKeyStore.
-
 import android.security.keystore.KeyProperties
 import android.security.keystore.KeyGenParameterSpec
 import android.util.Base64
@@ -15,8 +13,10 @@ import javax.crypto.KeyGenerator
 import javax.crypto.SecretKey
 import javax.crypto.spec.GCMParameterSpec
 
+// Функции для работы с защищенным хранилищем AndroidKeyStore.
+
 data class StringPair(
-    // // data класс для хранения пары из зашифрованной строки и инициализационного вектора
+    // data класс для хранения пары из зашифрованной строки и инициализационного вектора
     val encodedText: String = "",
     val iv: String = "",
 )

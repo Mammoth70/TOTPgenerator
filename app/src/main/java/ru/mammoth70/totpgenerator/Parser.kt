@@ -1,13 +1,13 @@
 package ru.mammoth70.totpgenerator
 
-import ru.mammoth70.totpgenerator.App.Companion.SHA1
 import java.util.regex.Pattern
 import java.net.URLDecoder
 import android.util.Base64
 import com.google.protobuf.CodedInputStream
 import org.apache.commons.codec.binary.Base32
 
-// Парсер разбора строки url otpauth://totp и otpauth-migration://offline
+// Парсер разбора строки схем otpauth://totp и otpauth-migration://offline
+
 private const val REGEXP_HEAD1 = "^otpauth://totp/(\\S+?)\\?"
 private const val REGEXP_HEAD2 = "^otpauth-migration://offline\\?data=(\\S+?)$"
 private const val REGEXP_SECRET = "[?&]secret=([2-7A-Z]+?)(&|$)"
@@ -18,35 +18,46 @@ private const val REGEXP_DIGITS = "[?&]digits=([6-8])(&|$)"
 
 private enum class OtpAlgorithm(val id: Int) {
     UNSPECIFIED(0), SHA1(1), SHA256(2), SHA512(3), MD5(4);
-    companion object { fun fromId(id: Int) = entries.find { it.id == id } ?: SHA1 }
+    companion object {
+        fun fromId(id: Int) = entries.find { it.id == id } ?: SHA1
+    }
 }
 
 private enum class DigitCount(val id: Int) {
     UNSPECIFIED(0), SIX(1), EIGHT(2);
-    companion object { fun fromId(id: Int) = entries.find { it.id == id } ?: SIX }
+    companion object {
+        fun fromId(id: Int) = entries.find { it.id == id } ?: SIX
+    }
 }
 
 private enum class OtpType(val id: Int) {
     UNSPECIFIED(0), HOTP(1), TOTP(2);
-    companion object { fun fromId(id: Int) = entries.find { it.id == id } ?: TOTP }
+    companion object {
+        fun fromId(id: Int) = entries.find { it.id == id } ?: TOTP
+    }
 }
 
 fun parseQR(url: String?): List<OTPauth> {
     // Функция разбирает строку url
-    val results = mutableListOf<OTPauth>()
-    if (url.isNullOrBlank()) { return results }
+    val auths = mutableListOf<OTPauth>()
+    if (url.isNullOrBlank()) {
+        return auths
+    }
+
     val pattern1 = Pattern.compile(REGEXP_HEAD1)
     val matcher1 = pattern1.matcher(url)
     val pattern2 = Pattern.compile(REGEXP_HEAD2)
     val matcher2 = pattern2.matcher(url)
     if ((matcher1.find())) {
-        val res = parseOTPauth(url)
-        if (res != null) { results.add(res) }
+        val result = parseOTPauth(url)
+        if (result != null) {
+            auths.add(result)
+        }
     } else if ((matcher2.find())) {
-        val res = parseGoogleMigration(url)
-        res.forEach { results.add(it) }
+        val results = parseGoogleMigration(url)
+        results.forEach { auths.add(it) }
     }
-    return results
+    return auths
 }
 
 fun parseOTPauth(url: String): OTPauth?  {
@@ -54,21 +65,31 @@ fun parseOTPauth(url: String): OTPauth?  {
 
     val pattern1 = Pattern.compile(REGEXP_HEAD1)
     val matcher1 = pattern1.matcher(url)
-    if ((!matcher1.find())) { return null  }
-    if (matcher1.group(1).isNullOrBlank()) return null
+    if ((!matcher1.find())) {
+        return null
+    }
+    if (matcher1.group(1).isNullOrBlank()) {
+        return null
+    }
     var label = matcher1.group(1)!!
 
     val pattern2 = Pattern.compile(REGEXP_SECRET)
     val matcher2 = pattern2.matcher(url)
-    if ((!matcher2.find())) { return null }
-    if (matcher2.group(1).isNullOrBlank()) return null
+    if ((!matcher2.find())) {
+        return null
+    }
+    if (matcher2.group(1).isNullOrBlank()) {
+        return null
+    }
     val secret = matcher2.group(1)!!
 
     val pattern3 = Pattern.compile(REGEXP_ISSUER)
     val matcher3 = pattern3.matcher(url)
     var issuer = ""
     if ((matcher3.find())) {
-        if (!matcher3.group(1).isNullOrBlank()) { issuer = matcher3.group(1)!!}
+        if (!matcher3.group(1).isNullOrBlank()) {
+            issuer = matcher3.group(1)!!
+        }
     }
     if (label.startsWith("$issuer:")) {
         // Google значение issuer хранит в поле label через двоеточие.
@@ -79,21 +100,27 @@ fun parseOTPauth(url: String): OTPauth?  {
     val matcher4 = pattern4.matcher(url)
     var period = 30
     if ((matcher4.find())) {
-        if (!matcher4.group(1).isNullOrBlank()) { period = matcher4.group(1)!!.toInt()}
+        if (!matcher4.group(1).isNullOrBlank()) {
+            period = matcher4.group(1)!!.toInt()
+        }
     }
 
     val pattern5 = Pattern.compile(REGEXP_ALGORITHM)
     val matcher5 = pattern5.matcher(url)
     var hash = SHA1
     if ((matcher5.find())) {
-        if (!matcher5.group(1).isNullOrBlank()) { hash = matcher5.group(1)!!}
+        if (!matcher5.group(1).isNullOrBlank()) {
+            hash = matcher5.group(1)!!
+        }
     }
 
     val pattern6 = Pattern.compile(REGEXP_DIGITS)
     val matcher6 = pattern6.matcher(url)
     var digits = 6
     if ((matcher6.find())) {
-        if (!matcher6.group(1).isNullOrBlank()) { digits = matcher6.group(1)!!.toInt()}
+        if (!matcher6.group(1).isNullOrBlank()) {
+            digits = matcher6.group(1)!!.toInt()
+        }
     }
 
     val auth = OTPauth(
@@ -154,7 +181,9 @@ private fun parseOtpParameters(input: CodedInputStream): OTPauth? {
 
     while (!input.isAtEnd) {
         val tag = input.readTag()
-        if (tag == 0) break // Конец вложенного сообщения
+        if (tag == 0) {
+            break // Конец вложенного сообщения
+        }
 
         when (tag ushr 3) {
             1 -> secret = input.readBytes().toByteArray()
@@ -180,7 +209,7 @@ private fun parseOtpParameters(input: CodedInputStream): OTPauth? {
         DigitCount.UNSPECIFIED -> 6
     }
 
-    return if ((type == OtpType.TOTP) && (hash.isNotBlank())  && (name.isNotBlank())) {
+    return if ((type == OtpType.TOTP) && (hash.isNotBlank()) && (name.isNotBlank())) {
         OTPauth(
             label = name,
             issuer = issuer,

@@ -7,7 +7,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
 
 class AboutBox : DialogFragment() {
-    // Класс создаёт диалоговое окно About.
+    // Диалоговое окно About.
 
     companion object {
         const val ABOUT_MESSAGE = "ABOUT_MESSAGE"

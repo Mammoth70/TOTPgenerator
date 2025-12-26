@@ -5,6 +5,7 @@ import ru.mammoth70.totpgenerator.App.Companion.appContext
 import androidx.core.content.edit
 
 // Переменные и функции для хранения установок в SharedPreferences.
+
 var appPassed = true
 
 private const val NAME_SETTINGS = "settings"

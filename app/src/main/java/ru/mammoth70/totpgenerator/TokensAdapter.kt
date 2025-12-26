@@ -13,6 +13,7 @@ import com.google.android.material.progressindicator.CircularProgressIndicator
 
 internal class TokensAdapter(context: Context, private val layout: Int, private val tokensList: ArrayList<Token>) :
 // Класс ArrayAdapter для показа токенов.
+
     ArrayAdapter<Token>(
         context,
         layout,
@@ -37,10 +38,10 @@ internal class TokensAdapter(context: Context, private val layout: Int, private 
             viewHolder = convertView.tag as ViewHolder
         }
         val token = tokensList[position]
-        if (token.issuer.isBlank()) {
-            viewHolder.nameView.text = token.label
+        viewHolder.nameView.text = if (token.issuer.isBlank()) {
+            token.label
         } else {
-            viewHolder.nameView.text = token.issuer + ":" + token.label
+            token.issuer + ":" + token.label
         }
         viewHolder.totpView.text = token.totp
         if (token.totp.isEmpty()) {
@@ -51,10 +52,10 @@ internal class TokensAdapter(context: Context, private val layout: Int, private 
             viewHolder.progressView.visibility  = View.VISIBLE
         }
         viewHolder.remainView.text = token.remain.toString()
-        if (appPassed) {
-            viewHolder.progressView.progress = token.progress
+        viewHolder.progressView.progress = if (appPassed) {
+            token.progress
         } else {
-            viewHolder.progressView.progress = 100 - token.progress
+            100 - token.progress
         }
 
         viewHolder.btnMenu.tag = position

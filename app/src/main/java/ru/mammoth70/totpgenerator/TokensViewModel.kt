@@ -11,8 +11,6 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.yield
 import java.util.Date
 import java.time.Duration
-import ru.mammoth70.totpgenerator.App.Companion.SHA256
-import ru.mammoth70.totpgenerator.App.Companion.SHA512
 import ru.mammoth70.totpgenerator.App.Companion.secrets
 import java.time.LocalDateTime
 
@@ -35,11 +33,11 @@ class TokensViewModel: ViewModel() {
             if (sec1 != sec) {
                 sec1 = sec
                 _secrets.forEach {
-                    val left = it.period - (sec % it.period)
-                    var progress = (it.period - left) * 100 / it.period
+                    val remain = it.period - (sec % it.period)
+                    var progress = (it.period - remain) * 100 / it.period
                     emit(
                         Token(
-                            it.num, _secrets[it.num].id, it.label, it.issuer, left, progress,
+                            it.num, _secrets[it.num].id, it.label, it.issuer, remain, progress,
                             _totpGenerators[it.num].generateCode(it.secret.toByteArray(), Date())
                         )
                     )

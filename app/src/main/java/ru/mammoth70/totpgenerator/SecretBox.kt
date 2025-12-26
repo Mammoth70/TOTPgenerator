@@ -12,13 +12,18 @@ import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import ru.mammoth70.totpgenerator.App.Companion.secrets
 import androidx.core.view.size
-import ru.mammoth70.totpgenerator.App.Companion.SHA1
-import ru.mammoth70.totpgenerator.App.Companion.SHA256
-import ru.mammoth70.totpgenerator.App.Companion.SHA512
 
 class SecretBox: DialogFragment() {
-    // Класс создаёт диалоговое окно с формой OTPauth.
-    // Умеет добавлять, редактировать, просматривать и удалять OTPauth.
+    // Диалоговое окно с формой OTPauth.
+    // Умеет добавлять, просматривать и удалять OTPauth.
+
+    companion object {
+        const val INTENT_TOTP_ACTION = "totp_action"
+        const val INTENT_TOTP_NUM = "totp_num"
+        const val ACTION_TOTP_VIEW = "totp_view"
+        const val ACTION_TOTP_ADD = "totp_add"
+        const val ACTION_TOTP_DELETE = "totp_delete"
+    }
 
     interface OnAddResultListener {
         fun onAddResult(result: OTPauth)
@@ -33,15 +38,6 @@ class SecretBox: DialogFragment() {
     private lateinit var deleteListener: OnDeleteResultListener
     fun setOnDeleteResultListener(listener: OnDeleteResultListener) {
         this.deleteListener = listener
-    }
-
-
-    companion object {
-        const val INTENT_TOTP_ACTION = "action"
-        const val INTENT_TOTP_NUM = "num"
-        const val ACTION_VIEW = "view"
-        const val ACTION_ADD = "add"
-        const val ACTION_DELETE = "delete"
     }
 
     private val dlg: AlertDialog by lazy { dialog as AlertDialog }
@@ -68,18 +64,18 @@ class SecretBox: DialogFragment() {
         builder.setView(R.layout.frame_dialog_key)
         builder.setCancelable(false)
         when (action) {
-            ACTION_VIEW -> {
+            ACTION_TOTP_VIEW -> {
                 builder.setTitle(getString(R.string.view_key))
                 builder.setNegativeButton(R.string.cancel) { _, _ -> }
             }
 
-            ACTION_ADD -> {
+            ACTION_TOTP_ADD -> {
                 builder.setTitle(getString(R.string.add_key))
                 builder.setNegativeButton(R.string.cancel) { _, _ -> }
                 builder.setPositiveButton(R.string.ok) { _, _ -> }
             }
 
-            ACTION_DELETE -> {
+            ACTION_TOTP_DELETE -> {
                 builder.setTitle(getString(R.string.delete_key))
                 builder.setNegativeButton(R.string.cancel) { _, _ -> }
                 builder.setPositiveButton(R.string.ok) { _, _ -> }
@@ -91,17 +87,17 @@ class SecretBox: DialogFragment() {
     override fun onResume() {
         super.onResume()
 
-        if ((action == ACTION_VIEW) || (action == ACTION_DELETE)) {
+        if ((action == ACTION_TOTP_VIEW) || (action == ACTION_TOTP_DELETE)) {
             fillFields()
         }
 
-        if (action == ACTION_DELETE) {
+        if (action == ACTION_TOTP_DELETE) {
             dlg.getButton(Dialog.BUTTON_POSITIVE)?.setOnClickListener {
                 deleteSecret()
             }
         }
 
-        if (action == ACTION_ADD) {
+        if (action == ACTION_TOTP_ADD) {
             dlg.getButton(Dialog.BUTTON_POSITIVE)?.setOnClickListener {
                 addSecret()
             }
@@ -190,7 +186,7 @@ class SecretBox: DialogFragment() {
             ilPeriod.error = getString(R.string.err_empty_period)
             isChecked = false
         }
-        if ((action == ACTION_ADD) && (edLabel.text.toString() in secrets.map(OTPauth::label))) {
+        if ((action == ACTION_TOTP_ADD) && (edLabel.text.toString() in secrets.map(OTPauth::label))) {
             ilLabel.error = getString(R.string.err_not_unique_label)
             isChecked = false
         }

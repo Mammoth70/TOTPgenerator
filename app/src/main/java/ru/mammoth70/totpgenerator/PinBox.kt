@@ -8,26 +8,32 @@ import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
 
+private const val RETURN_THE_PIN = -1
+private const val CHECK_PIN = 0
+private const val CHECK_PIN_WHILE_FALSE = 1
+private const val ENTER_NEW_PIN = 2
+private const val CHECK_PIN_ENTER_NEW_PIN = 3
+
 class PinBox : DialogFragment() {
-    // Класс создаёт диалоговое окно ввода PIN.
+    // Диалоговое окно ввода и проверки PIN.
 
     interface OnPinResultListener {
         fun onPinResult(action: String, result: Boolean, message: String, pin: String)
     }
-    private lateinit var pinListener: OnPinResultListener
-    fun setOnPinResultListener(listener: OnPinResultListener) {
-        this.pinListener = listener
-    }
-
     companion object {
-        const val INTENT_PIN_ACTION = "action"
+        const val INTENT_PIN_ACTION = "pin_action"
         const val ACTION_ENTER_PIN = "enter_pin"
         const val ACTION_DELETE_PIN = "delete_pin"
         const val ACTION_SET_NEW_PIN = "set_new_pin"
         const val ACTION_UPDATE_PIN = "update_pin"
 
-        const val INTENT_PIN_SCREEN = "screen"
-        const val SCREEN_FULL = "full"
+        const val INTENT_PIN_SCREEN = "pin_screen"
+        const val SCREEN_FULL = "pin_screen_full"
+    }
+
+    private lateinit var pinListener: OnPinResultListener
+    fun setOnPinResultListener(listener: OnPinResultListener) {
+        this.pinListener = listener
     }
 
     private val dlg: AlertDialog by lazy { dialog as AlertDialog }
@@ -57,7 +63,7 @@ class PinBox : DialogFragment() {
 
     private var _pinCode = ""
     private var _pinCode1 = ""
-    private var _variant = 1
+    private var _variant = CHECK_PIN
     private var _step = 0
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -77,24 +83,24 @@ class PinBox : DialogFragment() {
             ACTION_ENTER_PIN, ACTION_DELETE_PIN -> {
                 // Проверить PIN и вернуть результат проверки.
                 builder.setTitle(getString(R.string.enter_PIN))
-                _variant = 0
+                _variant = CHECK_PIN
             }
 
             ACTION_SET_NEW_PIN -> {
                 // Ввод два раза нового PIN.
                 builder.setTitle(getString(R.string.enter_PIN1))
-                _variant = 2
+                _variant = ENTER_NEW_PIN
             }
 
             ACTION_UPDATE_PIN -> {
                 if (appPinCode.isBlank()) {
                     // Ввод два раза нового PIN, если старый - пустой.
                     builder.setTitle(getString(R.string.enter_PIN1))
-                    _variant = 2
+                    _variant = ENTER_NEW_PIN
                 } else {
                     // Проверка старого PIN, ввод два раза нового PIN.
                     builder.setTitle(getString(R.string.enter_old_PIN))
-                    _variant = 3
+                    _variant = CHECK_PIN_ENTER_NEW_PIN
                 }
 
             }
@@ -197,13 +203,13 @@ class PinBox : DialogFragment() {
 
     fun check() {
         when (_variant) {
-            -1 -> {
+            RETURN_THE_PIN -> {
                 // Вариант. Вернуть PIN.
                 pinListener.onPinResult(_action, true, "",  _pinCode )
                 dismiss()
             }
 
-            0 -> {
+            CHECK_PIN -> {
                 // Вариант. Проверить PIN и вернуть результат проверки.
                 if (appPinCode == _pinCode) {
                     pinListener.onPinResult(_action, true, "ok", _pinCode)
@@ -214,7 +220,7 @@ class PinBox : DialogFragment() {
                 dismiss()
             }
 
-            1 -> {
+            CHECK_PIN_WHILE_FALSE -> {
                 // Вариант. Проверять PIN, пока не введётся правильный.
                 if (appPinCode == _pinCode) {
                     pinListener.onPinResult(_action, true, "ok", _pinCode)
@@ -226,8 +232,8 @@ class PinBox : DialogFragment() {
                 }
             }
 
-            2 -> {
-                // Вариант. Ввод два раза нового PIN. Смена PIN.
+            ENTER_NEW_PIN -> {
+                // Вариант. Ввод два раза нового PIN. Возврат нового PIN.
                 when (_step) {
                     0 -> {
                         _pinCode1 = _pinCode
@@ -253,8 +259,8 @@ class PinBox : DialogFragment() {
                 }
             }
 
-            3 -> {
-                // Вариант. Проверка старого PIN, ввод два раза нового PIN. Смена PIN.
+            CHECK_PIN_ENTER_NEW_PIN -> {
+                // Вариант. Проверка старого PIN, ввод два раза нового PIN. Возврат нового PIN.
                 when (_step) {
                     0 -> {
                         if (appPinCode == _pinCode) {

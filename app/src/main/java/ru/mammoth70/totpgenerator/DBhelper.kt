@@ -49,7 +49,7 @@ class DBhelper(context: Context?) : SQLiteOpenHelper(context, "totpDB",
             db.rawQuery("SELECT * FROM otpauth ORDER BY id;", null).use { cursor ->
                 var num = 0
                 while (cursor.moveToNext()) {
-                    val pair = StringPair(
+                    val encryptedPair = StringPair(
                         encodedText = cursor.getString(
                         cursor.getColumnIndexOrThrow("secret")),
                         iv = cursor.getString(
@@ -63,7 +63,7 @@ class DBhelper(context: Context?) : SQLiteOpenHelper(context, "totpDB",
                             cursor.getColumnIndexOrThrow("label")),
                         issuer = cursor.getString(
                             cursor.getColumnIndexOrThrow("issuer")),
-                        secret = decryptString(pair),
+                        secret = decryptString(encryptedPair),
                         period = cursor.getInt(
                             cursor.getColumnIndexOrThrow("step")),
                         hash = cursor.getString(
