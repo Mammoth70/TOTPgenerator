@@ -10,7 +10,7 @@ import org.apache.commons.codec.binary.Base32
 
 private const val REGEXP_HEAD1 = "^otpauth://totp/(\\S+?)\\?"
 private const val REGEXP_HEAD2 = "^otpauth-migration://offline\\?data=(\\S+?)$"
-private const val REGEXP_SECRET = "[?&]secret=([2-7A-Z]+?)(&|$)"
+private const val REGEXP_SECRET = "[?&]secret=([2-7A-Za-z]+?)(&|$)"
 private const val REGEXP_ISSUER = "[?&]issuer=(\\S+?)(&|$)"
 private const val REGEXP_PERIOD = "[?&]period=(\\d+?)(&|$)"
 private const val REGEXP_ALGORITHM = "[?&]algorithm=(SHA1|SHA256|SHA512)(&|$)"
@@ -58,6 +58,7 @@ fun parseQR(url: String?): List<OTPauth> {
 
 fun parseOTPauth(url: String): OTPauth?  {
     // Функция разбирает строку url otpauth://totp и в случае удачи возвращат OTPauth, в противном случае - null.
+    val url = URLDecoder.decode(url, "UTF-8")
 
     val pattern1 = Pattern.compile(REGEXP_HEAD1)
     val matcher1 = pattern1.matcher(url)
@@ -77,7 +78,7 @@ fun parseOTPauth(url: String): OTPauth?  {
     if (matcher2.group(1).isNullOrBlank()) {
         return null
     }
-    val secret = matcher2.group(1)!!
+    val secret = matcher2.group(1)!!.uppercase()
 
     val pattern3 = Pattern.compile(REGEXP_ISSUER)
     val matcher3 = pattern3.matcher(url)
@@ -204,15 +205,11 @@ private fun parseOtpParameters(input: CodedInputStream): OTPauth? {
         DigitCount.UNSPECIFIED -> 6
     }
 
-    return if ((type == OtpType.TOTP) && (hash.isNotBlank()) && (name.isNotBlank())) {
-        OTPauth(
+    return OTPauth(
             label = name,
             issuer = issuer,
             secret = Base32().encodeAsString(secret),
             hash = hash,
             digits = digits
-        )
-    } else {
-        null
-    }
+        ).takeIf { (type == OtpType.TOTP) && (hash.isNotBlank()) && (name.isNotBlank()) }
 }

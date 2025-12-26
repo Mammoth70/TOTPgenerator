@@ -29,7 +29,7 @@ internal class TokensAdapter(context: Context, private val layout: Int, private 
         // Обработка и вывод токена.
         var convertView = convertView
         val viewHolder: ViewHolder
-        if ( convertView == null) {
+        if (convertView == null) {
             val inflater: LayoutInflater = LayoutInflater.from(context)
             convertView = inflater.inflate(this.layout, parent, false)
             viewHolder = ViewHolder(convertView)
