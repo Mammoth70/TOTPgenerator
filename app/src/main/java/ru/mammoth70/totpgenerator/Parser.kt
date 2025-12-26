@@ -49,13 +49,9 @@ fun parseQR(url: String?): List<OTPauth> {
     val pattern2 = Pattern.compile(REGEXP_HEAD2)
     val matcher2 = pattern2.matcher(url)
     if ((matcher1.find())) {
-        val result = parseOTPauth(url)
-        if (result != null) {
-            auths.add(result)
-        }
+        parseOTPauth(url)?.let { auths.add(it) }
     } else if ((matcher2.find())) {
-        val results = parseGoogleMigration(url)
-        results.forEach { auths.add(it) }
+        parseGoogleMigration(url).forEach { auths.add(it) }
     }
     return auths
 }
@@ -153,9 +149,8 @@ fun parseGoogleMigration(url: String): List<OTPauth> {
                 1 -> { // Поле otp_parameters (repeated message)
                     val length = input.readRawVarint32()
                     val oldLimit = input.pushLimit(length)
-                    val res = parseOtpParameters(input) // Парсим вложенный объект
-                    if (res != null) {
-                        results.add(res)
+                    parseOtpParameters(input)?.let { // Парсим вложенный объект
+                        results.add(it)
                     }
                     input.popLimit(oldLimit)
                 }
