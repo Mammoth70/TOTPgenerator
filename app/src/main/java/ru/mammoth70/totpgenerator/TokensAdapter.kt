@@ -12,14 +12,8 @@ import com.google.android.material.card.MaterialCardView
 import com.google.android.material.progressindicator.CircularProgressIndicator
 
 internal class TokensAdapter(context: Context, private val layout: Int, private val tokensList: ArrayList<Token>) :
-// Класс ArrayAdapter для показа токенов.
-
-    ArrayAdapter<Token>(
-        context,
-        layout,
-        tokensList
-    ) {
-
+    ArrayAdapter<Token>(context, layout, tokensList) {
+    // Класс ArrayAdapter для показа токенов.
     private var btnMenuClick: (view: View) -> Unit = { }
     private var itemClick: (view: View) -> Unit = { }
     private var itemViewLongClick: (view: View) -> Boolean = { false }

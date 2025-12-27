@@ -42,7 +42,7 @@ class DBhelper(context: Context?) : SQLiteOpenHelper(context, "totpDB",
     }
 
     fun readAllSecrets() {
-        // Функция считывает все OTPauth в список secrets и предзаполняыет список tokens.
+        // Функция считывает все OTPauth в список secrets и предзаполняет список tokens.
         secrets.clear()
         tokens.clear()
         readableDatabase.use { db ->

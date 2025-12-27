@@ -67,9 +67,7 @@ class MainActivity : AppActivity(),
         // Функция перечитывает списки OTPauth и токенов из БД,
         // и заставляет переинициализироваться TokensViewModel.
         DBhelper.dbHelper.readAllSecrets()
-        if (tokens.isEmpty()) {
-            adapter.notifyDataSetChanged()
-        }
+        adapter.notifyDataSetChanged()
         viewModel.sendCommandUpdate()
     }
 
