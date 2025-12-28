@@ -58,16 +58,16 @@ class PinBox : DialogFragment() {
     private val errorMessage: TextView by lazy {dlg.findViewById<TextView>(R.id.errorMessage)!!}
 
 
-    private val _action: String by lazy { requireArguments().getString(INTENT_PIN_ACTION,"") }
-    private val _screen: String by lazy { requireArguments().getString(INTENT_PIN_SCREEN,"") }
+    private val action: String by lazy { requireArguments().getString(INTENT_PIN_ACTION,"") }
+    private val screen: String by lazy { requireArguments().getString(INTENT_PIN_SCREEN,"") }
 
-    private var _pinCode = ""
-    private var _pinCode1 = ""
-    private var _variant = CHECK_PIN
-    private var _step = 0
+    private var pinCode = ""
+    private var pinCode1 = ""
+    private var variant = CHECK_PIN
+    private var step = 0
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val builder = if (_screen == SCREEN_FULL) {
+        val builder = if (screen == SCREEN_FULL) {
             AlertDialog.Builder(
                 requireActivity(),
                 // Theme_Material_NoActionBar_Fullscreen
@@ -79,28 +79,28 @@ class PinBox : DialogFragment() {
         }
         builder.setView(R.layout.frame_dialog_pin)
         builder.setCancelable(false)
-        when (_action) {
+        when (action) {
             ACTION_ENTER_PIN, ACTION_DELETE_PIN -> {
                 // Проверить PIN и вернуть результат проверки.
                 builder.setTitle(getString(R.string.enter_PIN))
-                _variant = CHECK_PIN
+                variant = CHECK_PIN
             }
 
             ACTION_SET_NEW_PIN -> {
                 // Ввод два раза нового PIN.
                 builder.setTitle(getString(R.string.enter_PIN1))
-                _variant = ENTER_NEW_PIN
+                variant = ENTER_NEW_PIN
             }
 
             ACTION_UPDATE_PIN -> {
                 if (appPinCode.isBlank()) {
                     // Ввод два раза нового PIN, если старый - пустой.
                     builder.setTitle(getString(R.string.enter_PIN1))
-                    _variant = ENTER_NEW_PIN
+                    variant = ENTER_NEW_PIN
                 } else {
                     // Проверка старого PIN, ввод два раза нового PIN.
                     builder.setTitle(getString(R.string.enter_old_PIN))
-                    _variant = CHECK_PIN_ENTER_NEW_PIN
+                    variant = CHECK_PIN_ENTER_NEW_PIN
                 }
 
             }
@@ -145,7 +145,7 @@ class PinBox : DialogFragment() {
             deletePin()
         }
         btnCancel.setOnClickListener {
-            pinListener.onPinResult(_action, false,
+            pinListener.onPinResult(action, false,
                 getString(R.string.PIN_cancel), "")
             dismiss()
         }
@@ -153,20 +153,20 @@ class PinBox : DialogFragment() {
 
     fun addPin(symbol: String) {
         errorMessage.text = ""
-        if (_pinCode.length < 6) {
-            _pinCode += symbol
-            pinsAdd(_pinCode.length)
+        if (pinCode.length < 6) {
+            pinCode += symbol
+            pinsAdd(pinCode.length)
         }
-        if (_pinCode.length == 6) {
+        if (pinCode.length == 6) {
             check()
         }
     }
 
     fun deletePin() {
         errorMessage.text = ""
-        if (_pinCode.isNotEmpty()) {
-            _pinCode = _pinCode.dropLast(1)
-            pinsDel(_pinCode.length)
+        if (pinCode.isNotEmpty()) {
+            pinCode = pinCode.dropLast(1)
+            pinsDel(pinCode.length)
         }
     }
 
@@ -202,19 +202,19 @@ class PinBox : DialogFragment() {
     }
 
     fun check() {
-        when (_variant) {
+        when (variant) {
             RETURN_THE_PIN -> {
                 // Вариант. Вернуть PIN.
-                pinListener.onPinResult(_action, true, "",  _pinCode )
+                pinListener.onPinResult(action, true, "",  pinCode )
                 dismiss()
             }
 
             CHECK_PIN -> {
                 // Вариант. Проверить PIN и вернуть результат проверки.
-                if (appPinCode == _pinCode) {
-                    pinListener.onPinResult(_action, true, "ok", _pinCode)
+                if (appPinCode == pinCode) {
+                    pinListener.onPinResult(action, true, "ok", pinCode)
                 } else {
-                    pinListener.onPinResult(_action, false,
+                    pinListener.onPinResult(action, false,
                         getString(R.string.PIN_bad), "")
                 }
                 dismiss()
@@ -222,35 +222,35 @@ class PinBox : DialogFragment() {
 
             CHECK_PIN_WHILE_FALSE -> {
                 // Вариант. Проверять PIN, пока не введётся правильный.
-                if (appPinCode == _pinCode) {
-                    pinListener.onPinResult(_action, true, "ok", _pinCode)
+                if (appPinCode == pinCode) {
+                    pinListener.onPinResult(action, true, "ok", pinCode)
                     dismiss()
                 } else {
                     errorMessage.setText(R.string.error_PIN)
-                    _pinCode = ""
+                    pinCode = ""
                     pinsClear()
                 }
             }
 
             ENTER_NEW_PIN -> {
                 // Вариант. Ввод два раза нового PIN. Возврат нового PIN.
-                when (_step) {
+                when (step) {
                     0 -> {
-                        _pinCode1 = _pinCode
-                        _step += 1
-                        _pinCode = ""
+                        pinCode1 = pinCode
+                        step += 1
+                        pinCode = ""
                         pinsClear()
                         dlg.setTitle(getString(R.string.enter_PIN2))
                     }
 
                     1 -> {
-                        if (_pinCode1 == _pinCode) {
-                            appPinCode = _pinCode
-                            pinListener.onPinResult(_action, true,
-                                getString(R.string.PIN_changed), _pinCode)
+                        if (pinCode1 == pinCode) {
+                            appPinCode = pinCode
+                            pinListener.onPinResult(action, true,
+                                getString(R.string.PIN_changed), pinCode)
                             dismiss()
                         } else {
-                            pinListener.onPinResult(_action, false,
+                            pinListener.onPinResult(action, false,
                                 getString(R.string.PIN_new_bad), "")
                             dismiss()
                         }
@@ -261,36 +261,36 @@ class PinBox : DialogFragment() {
 
             CHECK_PIN_ENTER_NEW_PIN -> {
                 // Вариант. Проверка старого PIN, ввод два раза нового PIN. Возврат нового PIN.
-                when (_step) {
+                when (step) {
                     0 -> {
-                        if (appPinCode == _pinCode) {
-                            _step += 1
-                            _pinCode = ""
+                        if (appPinCode == pinCode) {
+                            step += 1
+                            pinCode = ""
                             pinsClear()
                             dlg.setTitle(getString(R.string.enter_PIN1))
                         } else {
-                            pinListener.onPinResult(_action, false,
+                            pinListener.onPinResult(action, false,
                                 getString(R.string.PIN_bad), "")
                             dismiss()
                         }
                     }
 
                     1 -> {
-                        _pinCode1 = _pinCode
-                        _step += 1
-                        _pinCode = ""
+                        pinCode1 = pinCode
+                        step += 1
+                        pinCode = ""
                         pinsClear()
                         dlg.setTitle(getString(R.string.enter_PIN2))
                     }
 
                     2 -> {
-                        if (_pinCode1 == _pinCode) {
-                            appPinCode = _pinCode
-                            pinListener.onPinResult(_action, true,
-                                getString(R.string.PIN_changed), _pinCode)
+                        if (pinCode1 == pinCode) {
+                            appPinCode = pinCode
+                            pinListener.onPinResult(action, true,
+                                getString(R.string.PIN_changed), pinCode)
                             dismiss()
                         } else {
-                            pinListener.onPinResult(_action, false,
+                            pinListener.onPinResult(action, false,
                                 getString(R.string.PIN_new_bad), "")
                             dismiss()
                         }

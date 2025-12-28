@@ -10,7 +10,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
-import ru.mammoth70.totpgenerator.App.Companion.secrets
+import ru.mammoth70.totpgenerator.App.Companion.appSecrets
 import androidx.core.view.size
 
 class SecretBox: DialogFragment() {
@@ -26,14 +26,14 @@ class SecretBox: DialogFragment() {
     }
 
     interface OnAddResultListener {
-        fun onAddResult(result: OTPauth)
+        fun onAddResult(auth: OTPauth)
     }
     private lateinit var addListener: OnAddResultListener
     fun setOnAddResultListener(listener: OnAddResultListener) {
         this.addListener = listener
     }
     interface OnDeleteResultListener {
-        fun onDeleteResult(result: Int)
+        fun onDeleteResult(num: Int)
     }
     private lateinit var deleteListener: OnDeleteResultListener
     fun setOnDeleteResultListener(listener: OnDeleteResultListener) {
@@ -57,7 +57,7 @@ class SecretBox: DialogFragment() {
     private val radioDigits8: RadioButton by lazy { dlg.findViewById<RadioButton>(R.id.digits8)!! }
 
     private val action: String by lazy { requireArguments().getString(INTENT_TOTP_ACTION,"") }
-    private val secret: OTPauth by lazy { secrets[requireArguments().getInt(INTENT_TOTP_NUM)] }
+    private val secret: OTPauth by lazy { appSecrets[requireArguments().getInt(INTENT_TOTP_NUM)] }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val builder = AlertDialog.Builder(requireActivity())
@@ -186,7 +186,7 @@ class SecretBox: DialogFragment() {
             ilPeriod.error = getString(R.string.err_empty_period)
             isChecked = false
         }
-        if ((action == ACTION_TOTP_ADD) && (edLabel.text.toString() in secrets.map(OTPauth::label))) {
+        if ((action == ACTION_TOTP_ADD) && (edLabel.text.toString() in appSecrets.map(OTPauth::label))) {
             ilLabel.error = getString(R.string.err_not_unique_label)
             isChecked = false
         }

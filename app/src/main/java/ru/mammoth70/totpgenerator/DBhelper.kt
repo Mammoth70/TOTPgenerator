@@ -6,8 +6,8 @@ import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import ru.mammoth70.totpgenerator.App.Companion.appContext
-import ru.mammoth70.totpgenerator.App.Companion.secrets
-import ru.mammoth70.totpgenerator.App.Companion.tokens
+import ru.mammoth70.totpgenerator.App.Companion.appSecrets
+import ru.mammoth70.totpgenerator.App.Companion.appTokens
 import java.sql.SQLException
 
 class DBhelper(context: Context?) : SQLiteOpenHelper(context, "totpDB",
@@ -43,8 +43,8 @@ class DBhelper(context: Context?) : SQLiteOpenHelper(context, "totpDB",
 
     fun readAllSecrets() {
         // Функция считывает все OTPauth в список secrets и предзаполняет список tokens.
-        secrets.clear()
-        tokens.clear()
+        appSecrets.clear()
+        appTokens.clear()
         readableDatabase.use { db ->
             db.rawQuery("SELECT * FROM otpauth ORDER BY id;", null).use { cursor ->
                 var num = 0
@@ -80,8 +80,8 @@ class DBhelper(context: Context?) : SQLiteOpenHelper(context, "totpDB",
                         issuer = cursor.getString(
                             cursor.getColumnIndexOrThrow("issuer")),
                     )
-                    secrets.add(secret)
-                    tokens.add(token)
+                    appSecrets.add(secret)
+                    appTokens.add(token)
                     num ++
                 }
             }
@@ -91,7 +91,7 @@ class DBhelper(context: Context?) : SQLiteOpenHelper(context, "totpDB",
     fun addSecret(otpauth: OTPauth): Int  {
         // Функция добавляет запись OTPauth в БД.
         // Возвращает 0, если успешно и <> 0, если нет.
-        if (otpauth.label in secrets.map(OTPauth::label)) {
+        if (otpauth.label in appSecrets.map(OTPauth::label)) {
             return ERR_LIST_COUNT
         }
         val pair = encryptString(otpauth.secret)
@@ -108,8 +108,8 @@ class DBhelper(context: Context?) : SQLiteOpenHelper(context, "totpDB",
                 values.put("step", otpauth.period)
                 values.put("hash", otpauth.hash)
                 values.put("digits", otpauth.digits)
-                val res = db.insert("otpauth", null, values)
-                if (res == -1L) {
+                val result = db.insert("otpauth", null, values)
+                if (result == -1L) {
                     return ERR_RES_COUNT
                 }
             } catch (_: SQLException) {
@@ -137,9 +137,9 @@ class DBhelper(context: Context?) : SQLiteOpenHelper(context, "totpDB",
                 values.put("step", otpauth.period)
                 values.put("hash", otpauth.hash)
                 values.put("digits", otpauth.digits)
-                val res = db.update("otpauth", values,
+                val result = db.update("otpauth", values,
                     "id=?", arrayOf(otpauth.toString()))
-                if (res != 1) {
+                if (result != 1) {
                     return ERR_RES_COUNT
                 }
             } catch (_: SQLException) {
@@ -153,14 +153,14 @@ class DBhelper(context: Context?) : SQLiteOpenHelper(context, "totpDB",
         // Функция удаляет запись OTPauth в БД.
         // Поиск записи идёт по полю id.
         // Возвращает 0, если успешно и <> 0, если нет.
-        if (id !in secrets.map(OTPauth::id)) {
+        if (id !in appSecrets.map(OTPauth::id)) {
             return ERR_LIST_COUNT
         }
         writableDatabase.use { db ->
             try {
-                val res = db.delete("otpauth",
+                val result = db.delete("otpauth",
                     "id=?", arrayOf(id.toString()))
-                if (res != 1) {
+                if (result != 1) {
                     return ERR_RES_COUNT
                 }
             } catch (_: SQLException) {

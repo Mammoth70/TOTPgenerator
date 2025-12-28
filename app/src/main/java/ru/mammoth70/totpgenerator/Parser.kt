@@ -135,7 +135,7 @@ fun parseOTPauth(url: String): OTPauth?  {
 fun parseGoogleMigration(url: String): List<OTPauth> {
     // Функция разбирает строку url otpauth-migration://offline,
     // и в случае удачи возвращат список OTPauth, в противном случае - список возвращается пустым.
-    val results = mutableListOf<OTPauth>()
+    val auths = mutableListOf<OTPauth>()
     val pattern2 = Pattern.compile(REGEXP_HEAD2)
     val matcher2 = pattern2.matcher(url)
     if ((matcher2.find()) && (!matcher2.group(1).isNullOrBlank())) {
@@ -151,7 +151,7 @@ fun parseGoogleMigration(url: String): List<OTPauth> {
                     val length = input.readRawVarint32()
                     val oldLimit = input.pushLimit(length)
                     parseOtpParameters(input)?.let { // Парсим вложенный объект
-                        results.add(it)
+                        auths.add(it)
                     }
                     input.popLimit(oldLimit)
                 }
@@ -163,7 +163,7 @@ fun parseGoogleMigration(url: String): List<OTPauth> {
             }
         }
     }
-    return results
+    return auths
 }
 
 private fun parseOtpParameters(input: CodedInputStream): OTPauth? {

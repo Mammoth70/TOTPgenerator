@@ -10,8 +10,8 @@ class App : Application() {
 
     companion object {
         lateinit var appContext: Context
-        val secrets: CopyOnWriteArrayList<OTPauth> = CopyOnWriteArrayList() // Список OTPauth, считывается из БД
-        val tokens: ArrayList<Token> = ArrayList() // Список токенов, вычисляемых из OTPauth
+        val appSecrets: CopyOnWriteArrayList<OTPauth> = CopyOnWriteArrayList() // Список OTPauth, считывается из БД
+        val appTokens: ArrayList<Token> = ArrayList() // Список токенов, вычисляемых из OTPauth
     }
 
     override fun onCreate() {

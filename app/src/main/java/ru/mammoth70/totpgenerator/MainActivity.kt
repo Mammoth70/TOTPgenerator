@@ -14,8 +14,8 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.mlkit.vision.codescanner.GmsBarcodeScannerOptions
 import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
-import ru.mammoth70.totpgenerator.App.Companion.secrets
-import ru.mammoth70.totpgenerator.App.Companion.tokens
+import ru.mammoth70.totpgenerator.App.Companion.appSecrets
+import ru.mammoth70.totpgenerator.App.Companion.appTokens
 
 class MainActivity : AppActivity(),
     SecretBox.OnAddResultListener, SecretBox.OnDeleteResultListener, PinBox.OnPinResultListener {
@@ -26,7 +26,7 @@ class MainActivity : AppActivity(),
     override val idActivity = R.id.frameMainActivity
     private val tokensList: ListView by lazy { findViewById(R.id.tokensList) }
     private val adapter : TokensAdapter by
-    lazy { TokensAdapter(this, R.layout.list_item, tokens) }
+    lazy { TokensAdapter(this, R.layout.list_item, appTokens) }
     private val viewModel: TokensViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -51,8 +51,8 @@ class MainActivity : AppActivity(),
                 // Меняет список токенов и вызывает перестроение адаптера.
                 val num = token.num
                 // Проверка на то, что массивы секретов и токенов синхронизированы.
-                if ((tokens.size > num) && tokens[num].id == secrets[num].id) {
-                    tokens[num] = token
+                if ((appTokens.size > num) && appTokens[num].id == appSecrets[num].id) {
+                    appTokens[num] = token
                     adapter.notifyDataSetChanged()
                 }
         }
@@ -201,7 +201,7 @@ class MainActivity : AppActivity(),
     fun tokenToClipBoard(num: Int) {
         // Функция копирует токен в clipboard.
         val clipboardManager = this.getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
-        val clipData = ClipData.newPlainText("text_label", tokens[num].totp)
+        val clipData = ClipData.newPlainText("text_label", appTokens[num].totp)
         clipboardManager.setPrimaryClip(clipData)
         showSnackbar(R.string.token_to_clipboard)
     }
@@ -228,9 +228,9 @@ class MainActivity : AppActivity(),
         startActivity(intent)
     }
 
-    override fun onAddResult(result: OTPauth) {
+    override fun onAddResult(auth: OTPauth) {
         // Обработчик возврата из SecretDialog Add после нажатия кнопки PositiveButton.
-        if (DBhelper.dbHelper.addSecret(result) == 0) {
+        if (DBhelper.dbHelper.addSecret(auth) == 0) {
             refreshSecrets()
             showSnackbar(R.string.key_added)
         } else {
@@ -238,9 +238,9 @@ class MainActivity : AppActivity(),
         }
     }
 
-    override fun onDeleteResult(result: Int) {
+    override fun onDeleteResult(num: Int) {
         // Обработчик возврата из SecretDialog Delete после нажатия кнопки PositiveButton.
-        if (DBhelper.dbHelper.deleteSecret(result) == 0) {
+        if (DBhelper.dbHelper.deleteSecret(num) == 0) {
             refreshSecrets()
             showSnackbar(R.string.key_deleted)
         } else {

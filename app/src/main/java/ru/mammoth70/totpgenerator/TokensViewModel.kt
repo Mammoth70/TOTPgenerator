@@ -11,34 +11,34 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.yield
 import java.util.Date
 import java.time.Duration
-import ru.mammoth70.totpgenerator.App.Companion.secrets
+import ru.mammoth70.totpgenerator.App.Companion.appSecrets
 import java.time.LocalDateTime
 
 class TokensViewModel: ViewModel() {
     // Класс в бесконечном цикле вычисляет токены и выдаёт их в поток.
     // Можно заставить поток перечитать список OTPauth.
 
-    private var _updated = false
-    private val _secrets = ArrayList<OTPauth>(ArrayList()) // Считывается с глобального списка OTPauth.
-    private val _totpGenerators: ArrayList<TotpGenerator> = ArrayList() // Список totpGenerators для генерации токенов.
+    private var updated = false
+    private val secrets = ArrayList<OTPauth>(ArrayList()) // Считывается с глобального списка OTPauth.
+    private val totpGenerators: ArrayList<TotpGenerator> = ArrayList() // Список totpGenerators для генерации токенов.
 
     private val flow: Flow<Token> = flow {
         var sec1 = LocalDateTime.now().second
         while (true) {
             yield()
-            if (! _updated) {
+            if (! updated) {
                 update()
             }
             val sec = LocalDateTime.now().second
             if (sec1 != sec) {
                 sec1 = sec
-                _secrets.forEach {
+                secrets.forEach {
                     val remain = it.period - (sec % it.period)
                     var progress = (it.period - remain) * 100 / it.period
                     emit(
                         Token(
-                            it.num, _secrets[it.num].id, it.label, it.issuer, remain, progress,
-                            _totpGenerators[it.num].generateCode(it.secret.toByteArray(), Date())
+                            it.num, secrets[it.num].id, it.label, it.issuer, remain, progress,
+                            totpGenerators[it.num].generateCode(it.secret.toByteArray(), Date())
                         )
                     )
                 }
@@ -51,25 +51,25 @@ class TokensViewModel: ViewModel() {
     private fun update() {
         // Функция перечитывает глобальный список OTPauth.
         // После чего пересоздаёт список totpGenerators.
-        _secrets.clear()
-        _totpGenerators.clear()
-        _secrets.addAll(secrets)
-        _secrets.forEach {
+        secrets.clear()
+        totpGenerators.clear()
+        secrets.addAll(appSecrets)
+        secrets.forEach {
             val algorithm = when (it.hash) {
                 SHA256 -> HashAlgorithm.SHA256
                 SHA512 -> HashAlgorithm.SHA512
                 else  -> HashAlgorithm.SHA1
             }
-            _totpGenerators.add(TotpGenerator(
+            totpGenerators.add(TotpGenerator(
                 algorithm = algorithm,
                 codeLength = it.digits,
                 timePeriod = Duration.ofSeconds(it.period.toLong())))
         }
-        _updated = true
+        updated = true
     }
 
     fun sendCommandUpdate() {
-        _updated = false
+        updated = false
     }
 
 }
