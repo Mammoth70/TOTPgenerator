@@ -3,6 +3,8 @@ package ru.mammoth70.totpgenerator
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
+import android.widget.CheckBox
+import android.widget.CompoundButton
 import com.google.android.material.button.MaterialButtonToggleGroup
 import com.google.android.material.snackbar.Snackbar
 
@@ -15,6 +17,7 @@ class SettingsActivity : AppActivity(), PinBox.OnPinResultListener {
     private val btnSave: Button by lazy { findViewById(R.id.btnAction) }
     private val btnChangePin: Button by lazy { findViewById(R.id.btnChangePIN) }
     private val btnDeletePin: Button by lazy { findViewById(R.id.btnDeletePIN) }
+    private val checkEnableBio: CheckBox by lazy { findViewById(R.id.checkEnableBio) }
     private val toggleButton: MaterialButtonToggleGroup by lazy { findViewById(R.id.toggleGroup) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -40,8 +43,22 @@ class SettingsActivity : AppActivity(), PinBox.OnPinResultListener {
                 R.id.btnPassed ->  appPassed = isChecked
                 R.id.btnRemaining ->  appPassed = !isChecked
             }
-            setPassed(appPassed)
+            setPassed()
         }
+
+        checkEnableBio.isChecked = appEnableBiometric
+        if (appPinCode.isNotBlank() && isHaveBiometric) {
+            checkEnableBio.visibility = View.VISIBLE
+        } else {
+            checkEnableBio.visibility = View.GONE
+        }
+
+        checkEnableBio.setOnCheckedChangeListener { _: CompoundButton?,
+                                                    isChecked: Boolean ->
+            appEnableBiometric = isChecked
+            setEnableBiometric()
+        }
+
 
     }
 
@@ -86,9 +103,12 @@ class SettingsActivity : AppActivity(), PinBox.OnPinResultListener {
             PinBox.ACTION_DELETE_PIN -> {
                 if (result) {
                     appPinCode = ""
-                    setPin(appPinCode)
+                    setPin()
                     btnChangePin.setText(R.string.set_PIN)
                     btnDeletePin.visibility = View.GONE
+                    appEnableBiometric = false
+                    setEnableBiometric()
+                    checkEnableBio.visibility = View.GONE
                     showSnackbar(R.string.PIN_deleted)
                 } else {
                     showSnackbar(message)
@@ -97,9 +117,10 @@ class SettingsActivity : AppActivity(), PinBox.OnPinResultListener {
 
             PinBox.ACTION_UPDATE_PIN -> {
                 if (result) {
-                    setPin(appPinCode)
+                    setPin()
                     btnChangePin.setText(R.string.change_PIN)
                     btnDeletePin.visibility = View.VISIBLE
+                    checkEnableBio.visibility = View.VISIBLE
                     showSnackbar(R.string.PIN_deleted)
                 }
                 showSnackbar(message)

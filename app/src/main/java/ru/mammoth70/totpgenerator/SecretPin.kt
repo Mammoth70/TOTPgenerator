@@ -11,11 +11,11 @@ private const val NAME_SETTINGS = "settings"
 private const val NAME_PIN = "pin"
 private const val NAME_IV = "iv"
 
-fun setPin(pin: String) {
+fun setPin() {
     // Зашифровать и записать pin в SharedPreferences
-    val pair = encryptString(pin)
     val settings = appContext.getSharedPreferences(NAME_SETTINGS, MODE_PRIVATE)
-    if (pin.isNotBlank()) {
+    if (appPinCode.isNotBlank()) {
+        val pair = encryptString(appPinCode)
         settings.edit {
             putString(NAME_PIN, pair.encodedText)
             putString(NAME_IV, pair.iv)
@@ -28,12 +28,12 @@ fun setPin(pin: String) {
     }
 }
 
-fun getPin(): String {
+fun getPin() {
     // Считать и расшифровать pin из SharedPreferences
     val settings = appContext.getSharedPreferences(NAME_SETTINGS, MODE_PRIVATE)
     val encryptedPin = settings.getString(NAME_PIN, "") ?: ""
     val iv = settings.getString(NAME_IV, "") ?: ""
-    return if (encryptedPin.isNotBlank() && iv.isNotBlank()) {
+    appPinCode = if (encryptedPin.isNotBlank() && iv.isNotBlank()) {
         decryptString(StringPair(encryptedPin, iv))
     } else {
         ""

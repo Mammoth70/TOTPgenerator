@@ -19,8 +19,10 @@ class App : Application() {
         appContext = applicationContext
         generateSecretKey()
         DBhelper.dbHelper.readAllSecrets()
-        appPinCode = getPin()
-        appPassed = getPassed()
+        getPin()
+        getPassed()
+        checkBiometricInDevice()
+        getEnableBiometric()
     }
 
 }

@@ -9,6 +9,7 @@ import android.view.View
 import android.widget.ListView
 import android.widget.PopupMenu
 import androidx.activity.viewModels
+import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.snackbar.Snackbar
 import com.google.mlkit.vision.barcode.common.Barcode
@@ -21,6 +22,9 @@ class MainActivity : AppActivity(),
     SecretBox.OnAddResultListener, SecretBox.OnDeleteResultListener, PinBox.OnPinResultListener {
     // Главная activity приложения.
     // Выводит список токенов.
+    companion object {
+        lateinit var mainContext : FragmentActivity
+    }
 
     override val idLayout = R.layout.activity_main
     override val idActivity = R.id.frameMainActivity
@@ -31,6 +35,7 @@ class MainActivity : AppActivity(),
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        mainContext = this as FragmentActivity
         topAppBar.setTitle(R.string.app_name)
         topAppBar.setNavigationOnClickListener {
             // Обработчик кнопки "назад".

@@ -2,17 +2,39 @@ package ru.mammoth70.totpgenerator
 
 import android.app.Dialog
 import android.os.Bundle
+import android.view.View
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
+import androidx.biometric.BiometricManager
+import androidx.biometric.BiometricPrompt
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.FragmentActivity
+import ru.mammoth70.totpgenerator.App.Companion.appContext
+import ru.mammoth70.totpgenerator.MainActivity.Companion.mainContext
+
+var isHaveBiometric: Boolean = false
+
+fun checkBiometricInDevice() {
+    val biometricManager = BiometricManager.from(appContext)
+    isHaveBiometric = when (biometricManager.canAuthenticate(
+        BiometricManager.Authenticators.BIOMETRIC_STRONG)) {
+        BiometricManager.BIOMETRIC_SUCCESS -> {
+            true
+        }
+        else -> {
+            false
+        }
+    }
+}
 
 private const val RETURN_THE_PIN = -1
 private const val CHECK_PIN = 0
-private const val CHECK_PIN_WHILE_FALSE = 1
-private const val ENTER_NEW_PIN = 2
-private const val CHECK_PIN_ENTER_NEW_PIN = 3
+private const val CHECK_PIN_AND_BIO = 1
+private const val CHECK_PIN_WHILE_FALSE = 2
+private const val ENTER_NEW_PIN = 3
+private const val CHECK_PIN_ENTER_NEW_PIN = 4
 
 class PinBox : DialogFragment() {
     // Диалоговое окно ввода и проверки PIN.
@@ -49,6 +71,7 @@ class PinBox : DialogFragment() {
     private val btn9: Button by lazy { dlg.findViewById<Button>(R.id.btn9)!!}
     private val btnBack: Button by lazy { dlg.findViewById<Button>(R.id.btnBack)!!}
     private val btnCancel: Button by lazy { dlg.findViewById<Button>(R.id.btnCancel)!!}
+    private val btnBiomeric: Button by lazy { dlg.findViewById<Button>(R.id.btnBiomeric)!!}
     private val pin1: ImageView by lazy { dlg.findViewById<ImageView>(R.id.pin1)!!}
     private val pin2: ImageView by lazy { dlg.findViewById<ImageView>(R.id.pin2)!!}
     private val pin3: ImageView by lazy { dlg.findViewById<ImageView>(R.id.pin3)!!}
@@ -80,7 +103,17 @@ class PinBox : DialogFragment() {
         builder.setView(R.layout.frame_dialog_pin)
         builder.setCancelable(false)
         when (action) {
-            ACTION_ENTER_PIN, ACTION_DELETE_PIN -> {
+            ACTION_ENTER_PIN -> {
+                // Проверить PIN и вернуть результат проверки.
+                builder.setTitle(getString(R.string.enter_PIN))
+                variant = if (appEnableBiometric) {
+                    CHECK_PIN_AND_BIO
+                } else {
+                    CHECK_PIN_WHILE_FALSE
+                }
+            }
+
+            ACTION_DELETE_PIN -> {
                 // Проверить PIN и вернуть результат проверки.
                 builder.setTitle(getString(R.string.enter_PIN))
                 variant = CHECK_PIN
@@ -149,7 +182,14 @@ class PinBox : DialogFragment() {
                 getString(R.string.PIN_cancel), "")
             dismiss()
         }
+        if (variant == CHECK_PIN_AND_BIO) {
+            btnBiomeric.visibility = View.VISIBLE
+            btnBiomeric.setOnClickListener {
+                authenticate(mainContext)
+            }
+        }
     }
+
 
     fun addPin(symbol: String) {
         errorMessage.text = ""
@@ -220,8 +260,8 @@ class PinBox : DialogFragment() {
                 dismiss()
             }
 
-            CHECK_PIN_WHILE_FALSE -> {
-                // Вариант. Проверять PIN, пока не введётся правильный.
+            CHECK_PIN_WHILE_FALSE, CHECK_PIN_AND_BIO -> {
+                // Вариант. Проверять PIN, пока не введётся правильный и вернуть результат проверки..
                 if (appPinCode == pinCode) {
                     pinListener.onPinResult(action, true, "ok", pinCode)
                     dismiss()
@@ -299,6 +339,39 @@ class PinBox : DialogFragment() {
                 }
             }
         }
+    }
+
+    fun authenticate(context: FragmentActivity) {
+        val executor = context.mainExecutor
+        val biometricPrompt = BiometricPrompt(
+            context,
+            executor,
+            object : BiometricPrompt.AuthenticationCallback() {
+
+                override fun onAuthenticationSucceeded(
+                    result: BiometricPrompt.AuthenticationResult
+                ) {
+                    pinListener.onPinResult(action, true, "ok", "")
+                    dismiss()
+                }
+
+                override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
+                    errorMessage.setText(R.string.Bio_error)
+                }
+
+                override fun onAuthenticationFailed() {
+                    errorMessage.setText(R.string.Bio_error)
+                }
+            })
+
+        val promptInfo = BiometricPrompt.PromptInfo.Builder()
+            .setTitle(getString(R.string.Bio))
+            .setDescription(getString(R.string.use_FingerPrint))
+            .setNegativeButtonText(getString(R.string.cancel))
+            .setAllowedAuthenticators(BiometricManager.Authenticators.BIOMETRIC_STRONG)
+            .build()
+
+        biometricPrompt.authenticate(promptInfo)
     }
 
 }

@@ -7,6 +7,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:gravity="center"
+    android:orientation="vertical"
     >
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="280dp"
@@ -287,7 +288,17 @@
             app:layout_constraintVertical_bias="0.95"
             app:iconGravity="textStart"
             app:iconPadding="0dp"
-            tools:ignore="SpeakableTextPresentCheck"
             />
     </androidx.constraintlayout.widget.ConstraintLayout>
+    <Button
+        style="?attr/materialIconButtonStyle"
+        android:id="@+id/btnBiomeric"
+        android:contentDescription="@string/FingerPrint_login"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:icon="@drawable/ic_action_fingerprint"
+        app:iconSize="36dp"
+        android:visibility="gone"
+        tools:visibility="visible"
+        />
 </LinearLayout>

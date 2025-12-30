@@ -44,6 +44,7 @@
     <string name="set_PIN">Set PIN</string>
     <string name="change_PIN">Change PIN</string>
     <string name="delete_PIN">Delete PIN</string>
+    <string name="enableBio">Biometric login</string>
     <string name="enter_PIN">Enter the PIN</string>
     <string name="enter_old_PIN">Enter your old PIN</string>
     <string name="enter_PIN1">Enter new PIN</string>
@@ -52,9 +53,13 @@
     <string name="PIN_changed">PIN has been successfully changed</string>
     <string name="PIN_deleted">PIN has been deleted</string>
     <string name="PIN_cancel">PIN entry has been cancelled</string>
+    <string name="Bio">Biometric authentication</string>
+    <string name="use_FingerPrint">Use your fingerprint for authentication</string>
     <string name="PIN_bad">Incorrect PIN entered</string>
+    <string name="Bio_error">Biometric error</string>
     <string name="PIN_new_bad">The new PIN must be entered twice</string>
-    <string name="PIN_login">Login with PIN code</string>
+    <string name="PIN_BIO_login">Login with PIN or biometrics</string>
+    <string name="FingerPrint_login">Fingerprint login</string>
     <string name="progress_indicator">Progress indicator</string>
     <string name="remaining">Remaining</string>
     <string name="passed">Passed</string>
