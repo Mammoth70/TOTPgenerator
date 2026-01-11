@@ -4,7 +4,7 @@
 
 [1]: https://img.shields.io/badge/Android-10+-blue.svg?logoColor=white&color=green
 [2]: https://android.com/
-[3]: https://img.shields.io/badge/kotlin-2.3-blue.svg?logo=kotlin
+[3]: https://img.shields.io/badge/Kotlin-2.3-blue.svg?logo=Kotlin
 [4]: http://kotlinlang.org
 [5]: https://img.shields.io/github/license/Mammoth70/TOTPgenerator.svg
 [6]: LICENSE
