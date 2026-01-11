@@ -53,8 +53,8 @@
     <string name="PIN_changed">PIN has been successfully changed</string>
     <string name="PIN_deleted">PIN has been deleted</string>
     <string name="PIN_cancel">PIN entry has been cancelled</string>
-    <string name="Bio">Biometric authentication</string>
-    <string name="use_FingerPrint">Use your fingerprint for authentication</string>
+    <string name="Bio_login">Login to TOTP generator</string>
+    <string name="use_FingerPrint">Scan your fingerprint</string>
     <string name="PIN_bad">Incorrect PIN entered</string>
     <string name="Bio_error">Biometric error</string>
     <string name="PIN_new_bad">The new PIN must be entered twice</string>
@@ -63,6 +63,10 @@
     <string name="progress_indicator">Progress indicator</string>
     <string name="remaining">Remaining</string>
     <string name="passed">Passed</string>
+    <string name="selectThemeMode">Select theme mode</string>
+    <string name="themeDay">Day</string>
+    <string name="themeSystem">System</string>
+    <string name="themeNight">Night</string>
 
     <string name="sha1" translatable="false">SHA1</string>
     <string name="sha256" translatable="false">SHA256</string>

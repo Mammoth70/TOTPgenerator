@@ -7,7 +7,7 @@ plugins {
 }
 
 val versionMajor = 1
-val versionMinor = 3
+val versionMinor = 4
 val versionPatch = 0
 
 android {
@@ -71,8 +71,9 @@ dependencies {
     //noinspection UseTomlInstead
     implementation("com.google.android.gms:play-services-code-scanner:16.1.0")
     //noinspection UseTomlInstead
-    implementation("com.google.protobuf:protobuf-javalite:4.33.2")
-    implementation("androidx.biometric:biometric:1.4.0-alpha02")
+    implementation("com.google.protobuf:protobuf-javalite:4.33.3")
+    //noinspection UseTomlInstead
+    implementation("androidx.biometric:biometric:1.4.0-alpha05")
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

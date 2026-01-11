@@ -6,8 +6,8 @@ const val SHA512 = "SHA512"
 
 data class OTPauth(
     // data класс для хранения OTPauth.
-    val num: Int= -1,
-    val id: Int= -1,
+    val num: Int= EMPTY_TOKEN,
+    val id: Int= EMPTY_TOKEN,
     val label: String,
     val issuer: String = "",
     var secret: String,

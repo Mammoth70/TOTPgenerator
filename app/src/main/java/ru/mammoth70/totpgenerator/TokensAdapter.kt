@@ -8,8 +8,11 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.TextView
+import androidx.core.content.ContextCompat.getColor
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.progressindicator.CircularProgressIndicator
+
+// fun convertDpToPixels(context: Context, dp: Float) = (dp * context.resources.displayMetrics.density).toInt()
 
 internal class TokensAdapter(context: Context, private val layout: Int, private val tokensList: ArrayList<Token>) :
     ArrayAdapter<Token>(context, layout, tokensList) {
@@ -32,32 +35,50 @@ internal class TokensAdapter(context: Context, private val layout: Int, private 
             viewHolder = convertView.tag as ViewHolder
         }
         val token = tokensList[position]
-        viewHolder.nameView.text = if (token.issuer.isBlank()) {
-            token.label
+        if (token.id > EMPTY_TOKEN) {
+            viewHolder.nameView.text = if (token.issuer.isBlank()) {
+                token.label
+            } else {
+                token.issuer + ":" + token.label
+            }
+            viewHolder.totpView.text = token.totp
+            if (token.totp.isEmpty()) {
+                viewHolder.remainView.visibility = View.INVISIBLE
+                viewHolder.progressView.visibility = View.INVISIBLE
+            } else {
+                viewHolder.remainView.visibility = View.VISIBLE
+                viewHolder.progressView.visibility = View.VISIBLE
+            }
+            viewHolder.remainView.text = token.remain.toString()
+            viewHolder.progressView.progress = if (appPassed) {
+                token.progress
+            } else {
+                100 - token.progress
+            }
+            viewHolder.btnMenu.visibility = View.VISIBLE
+            viewHolder.btnMenu.tag = position
+            viewHolder.btnMenu.setOnClickListener(btnMenuClick)
+            viewHolder.itemToken.tag = position
+            //viewHolder.itemToken.strokeWidth = convertDpToPixels(context, 1f)
+            viewHolder.itemToken.strokeColor = getColor(context, R.color.md_theme_outline)
+            viewHolder.itemToken.setOnClickListener(itemClick)
+            viewHolder.itemToken.setOnLongClickListener(itemViewLongClick)
+            viewHolder.itemToken.isClickable = true
         } else {
-            token.issuer + ":" + token.label
-        }
-        viewHolder.totpView.text = token.totp
-        if (token.totp.isEmpty()) {
-            viewHolder.remainView.visibility = View.INVISIBLE
+            viewHolder.nameView.text = ""
+            viewHolder.totpView.text = ""
+            viewHolder.btnMenu.visibility = View.INVISIBLE
             viewHolder.progressView.visibility = View.INVISIBLE
-        } else {
-            viewHolder.remainView.visibility = View.VISIBLE
-            viewHolder.progressView.visibility  = View.VISIBLE
+            viewHolder.remainView.visibility = View.INVISIBLE
+            viewHolder.btnMenu.tag = EMPTY_TOKEN
+            viewHolder.btnMenu.setOnClickListener(null)
+            //viewHolder.itemToken.strokeWidth = 0
+            viewHolder.itemToken.strokeColor = getColor(context, R.color.md_theme_surface)
+            viewHolder.itemToken.tag = EMPTY_TOKEN
+            viewHolder.itemToken.setOnClickListener(null)
+            viewHolder.itemToken.setOnLongClickListener(null)
+            viewHolder.itemToken.isClickable = false
         }
-        viewHolder.remainView.text = token.remain.toString()
-        viewHolder.progressView.progress = if (appPassed) {
-            token.progress
-        } else {
-            100 - token.progress
-        }
-
-        viewHolder.btnMenu.tag = position
-        viewHolder.btnMenu.setOnClickListener(btnMenuClick)
-        viewHolder.itemToken.tag = position
-        viewHolder.itemToken.setOnClickListener(itemClick)
-        viewHolder.itemToken.setOnLongClickListener(itemViewLongClick)
-
         return convertView
     }
 

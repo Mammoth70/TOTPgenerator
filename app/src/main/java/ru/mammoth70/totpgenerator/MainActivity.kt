@@ -17,6 +17,7 @@ import com.google.mlkit.vision.codescanner.GmsBarcodeScannerOptions
 import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
 import ru.mammoth70.totpgenerator.App.Companion.appSecrets
 import ru.mammoth70.totpgenerator.App.Companion.appTokens
+import ru.mammoth70.totpgenerator.App.Companion.unLocked
 
 class MainActivity : AppActivity(),
     SecretBox.OnAddResultListener, SecretBox.OnDeleteResultListener, PinBox.OnPinResultListener {
@@ -62,9 +63,11 @@ class MainActivity : AppActivity(),
                 }
         }
 
-        if (appPinCode.isNotBlank()) {
+        if (!unLocked && appPinCode.isNotBlank()) {
             // Ввод и проверка PIN-кода перед входом.
             enterPin()
+        } else {
+            unLocked = true
         }
     }
 
@@ -76,8 +79,8 @@ class MainActivity : AppActivity(),
         viewModel.sendCommandUpdate()
     }
 
-    fun onAddSecretClicked(@Suppress("UNUSED_PARAMETER")ignored: View?) {
-        // Функция обработчик клика FAB "add".
+    fun onAddSecretClicked(@Suppress("UNUSED_PARAMETER") ignored: MenuItem) {
+        // Функция обработчик клика меню "add".
         // Вызывает функцию добавления OTPauth.
         addSecret()
     }
@@ -269,6 +272,8 @@ class MainActivity : AppActivity(),
         // Обработчик возврата из PinDialog.
         if ((action == PinBox.ACTION_ENTER_PIN) && (!result)) {
             finish()
+        } else {
+            unLocked = true
         }
     }
 

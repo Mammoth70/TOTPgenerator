@@ -9,6 +9,7 @@ class App : Application() {
     // Приложение предназначено для хранения OTPauth и вывода TOTP-токенов.
 
     companion object {
+        var unLocked = false
         lateinit var appContext: Context
         val appSecrets: CopyOnWriteArrayList<OTPauth> = CopyOnWriteArrayList() // Список OTPauth, считывается из БД
         val appTokens: ArrayList<Token> = ArrayList() // Список токенов, вычисляемых из OTPauth
@@ -21,6 +22,7 @@ class App : Application() {
         DBhelper.dbHelper.readAllSecrets()
         getPin()
         getPassed()
+        getThemeMode()
         checkBiometricInDevice()
         getEnableBiometric()
     }

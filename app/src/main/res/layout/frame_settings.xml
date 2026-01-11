@@ -27,7 +27,7 @@
                 android:textSize="16sp"
                 />
             <Button
-                style="?attr/materialButtonElevatedStyle"
+                style="?attr/materialButtonOutlinedStyle"
                 android:id="@+id/btnChangePIN"
                 android:text="@string/change_PIN"
                 android:layout_width="wrap_content"
@@ -37,7 +37,7 @@
                 android:layout_marginBottom="16dp"
                 />
             <Button
-                style="?attr/materialButtonElevatedStyle"
+                style="?attr/materialButtonOutlinedStyle"
                 android:id="@+id/btnDeletePIN"
                 android:text="@string/delete_PIN"
                 android:layout_width="wrap_content"
@@ -47,7 +47,6 @@
                 android:layout_marginBottom="16dp"
                 />
             <CheckBox
-                style="?attr/materialButtonElevatedStyle"
                 android:id="@+id/checkEnableBio"
                 android:text="@string/enableBio"
                 android:layout_width="wrap_content"
@@ -79,7 +78,7 @@
                 android:textSize="16sp"
                 />
             <com.google.android.material.button.MaterialButtonToggleGroup
-                android:id="@+id/toggleGroup"
+                android:id="@+id/toggleProgress"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:singleSelection="true"
@@ -89,17 +88,71 @@
                 >
                 <Button
                     style="?attr/materialButtonOutlinedStyle"
-                    android:id="@+id/btnPassed"
+                    android:id="@+id/btnProgressPassed"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/passed"
                     />
                 <Button
                     style="?attr/materialButtonOutlinedStyle"
-                    android:id="@+id/btnRemaining"
+                    android:id="@+id/btnProgressRemaining"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/remaining"
+                    />
+            </com.google.android.material.button.MaterialButtonToggleGroup>
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        >
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            >
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginBottom="16dp"
+                android:text="@string/selectThemeMode"
+                android:textSize="16sp"
+                />
+            <com.google.android.material.button.MaterialButtonToggleGroup
+                android:id="@+id/toggleTheme"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:singleSelection="true"
+                app:selectionRequired="true"
+                android:layout_marginStart="16dp"
+                android:layout_marginBottom="16dp"
+                >
+                <Button
+                    style="?attr/materialButtonOutlinedStyle"
+                    android:id="@+id/btnThemeDay"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/themeDay"
+                    />
+                <Button
+                    style="?attr/materialButtonOutlinedStyle"
+                    android:id="@+id/btnThemeSystem"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/themeSystem"
+                    />
+                <Button
+                    style="?attr/materialButtonOutlinedStyle"
+                    android:id="@+id/btnThemeNight"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/themeNight"
                     />
             </com.google.android.material.button.MaterialButtonToggleGroup>
         </LinearLayout>

@@ -5,6 +5,7 @@ import android.view.View
 import android.widget.Button
 import android.widget.CheckBox
 import android.widget.CompoundButton
+import androidx.appcompat.app.AppCompatDelegate
 import com.google.android.material.button.MaterialButtonToggleGroup
 import com.google.android.material.snackbar.Snackbar
 
@@ -18,7 +19,8 @@ class SettingsActivity : AppActivity(), PinBox.OnPinResultListener {
     private val btnChangePin: Button by lazy { findViewById(R.id.btnChangePIN) }
     private val btnDeletePin: Button by lazy { findViewById(R.id.btnDeletePIN) }
     private val checkEnableBio: CheckBox by lazy { findViewById(R.id.checkEnableBio) }
-    private val toggleButton: MaterialButtonToggleGroup by lazy { findViewById(R.id.toggleGroup) }
+    private val toggleProgress: MaterialButtonToggleGroup by lazy { findViewById(R.id.toggleProgress) }
+    private val toggleTheme: MaterialButtonToggleGroup by lazy { findViewById(R.id.toggleTheme) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,16 +36,32 @@ class SettingsActivity : AppActivity(), PinBox.OnPinResultListener {
         }
 
         if (appPassed) {
-            toggleButton.check(R.id.btnPassed)
+            toggleProgress.check(R.id.btnProgressPassed)
         } else {
-            toggleButton.check(R.id.btnRemaining)
+            toggleProgress.check(R.id.btnProgressRemaining)
         }
-        toggleButton.addOnButtonCheckedListener { _, checkedId, isChecked ->
+        toggleProgress.addOnButtonCheckedListener { _, checkedId, isChecked ->
             when (checkedId) {
-                R.id.btnPassed ->  appPassed = isChecked
-                R.id.btnRemaining ->  appPassed = !isChecked
+                R.id.btnProgressPassed ->  appPassed = isChecked
+                R.id.btnProgressRemaining ->  appPassed = !isChecked
             }
             setPassed()
+        }
+
+        when (appThemeMode) {
+            AppCompatDelegate.MODE_NIGHT_NO -> toggleTheme.check(R.id.btnThemeDay)
+            AppCompatDelegate.MODE_NIGHT_YES -> toggleTheme.check(R.id.btnThemeNight)
+            else -> toggleTheme.check(R.id.btnThemeSystem)
+        }
+        toggleTheme.addOnButtonCheckedListener { _, checkedId, isChecked ->
+            if (isChecked) {
+                when (checkedId) {
+                    R.id.btnThemeDay -> appThemeMode = AppCompatDelegate.MODE_NIGHT_NO
+                    R.id.btnThemeNight -> appThemeMode = AppCompatDelegate.MODE_NIGHT_YES
+                    R.id.btnThemeSystem -> appThemeMode = AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+                }
+                setThemeMode()
+            }
         }
 
         checkEnableBio.isChecked = appEnableBiometric

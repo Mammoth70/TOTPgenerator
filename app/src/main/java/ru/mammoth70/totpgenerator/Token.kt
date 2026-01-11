@@ -1,5 +1,7 @@
 package ru.mammoth70.totpgenerator
 
+const val EMPTY_TOKEN = -1
+
 data class Token(
     // data класс для хранения токенов, времени и процента их жизни.
     val num: Int,

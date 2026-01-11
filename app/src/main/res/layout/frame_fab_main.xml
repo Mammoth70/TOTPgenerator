@@ -1,39 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Фрейм с кнопками FAB. -->
-<androidx.constraintlayout.widget.ConstraintLayout
+<!-- Фрейм с кнопкой FAB. -->
+<com.google.android.material.floatingactionbutton.FloatingActionButton
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
+    android:id="@+id/floatingActionButtonQR"
+    android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    >
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/floatingActionButtonAdd"
-        style="?attr/floatingActionButtonSmallStyle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:clickable="true"
-        android:contentDescription="@string/add"
-        android:onClick="onAddSecretClicked"
-        app:layout_constraintStart_toStartOf="@+id/floatingActionButtonQR"
-        app:layout_constraintEnd_toEndOf="@+id/floatingActionButtonQR"
-        app:layout_constraintBottom_toTopOf="@+id/floatingActionButtonQR"
-        app:srcCompat="@drawable/ic_action_add"
-        tools:ignore="OnClick,ClassNameCheck"
-        />
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/floatingActionButtonQR"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="16dp"
-        android:clickable="true"
-        android:contentDescription="@string/qr"
-        android:onClick="onQRSecretClicked"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:srcCompat="@drawable/ic_action_qr"
-        tools:ignore="OnClick,ClassNameCheck"
-        />
-</androidx.constraintlayout.widget.ConstraintLayout>
+    android:layout_margin="16dp"
+    android:clickable="true"
+    android:contentDescription="@string/qr"
+    android:onClick="onQRSecretClicked"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:srcCompat="@drawable/ic_action_qr"
+    tools:ignore="OnClick,ClassNameCheck,ImageContrastCheck"
+    />

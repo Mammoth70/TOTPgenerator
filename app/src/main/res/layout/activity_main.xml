@@ -2,22 +2,32 @@
 <!-- Layout для MainActivity. -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/frameMainActivity"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context=".MainActivity"
-    tools:ignore="VisualLintBounds"
-    >
-    <include layout="@layout/frame_app_bar"/>
-    <ListView
-        android:id="@+id/tokensList"
+    tools:ignore="VisualLintBounds">
+    <include layout="@layout/frame_app_bar_menu"/>
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:divider="@null"
-        tools:listitem="@layout/list_item"
-        />
-    <include layout="@layout/frame_fab_main"/>
+        >
+        <ListView
+            android:id="@+id/tokensList"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:divider="@null"
+            tools:listitem="@layout/list_item"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            />
+        <include layout="@layout/frame_fab_main"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
     <include layout="@layout/frame_bottom_navigation"/>
 </LinearLayout>

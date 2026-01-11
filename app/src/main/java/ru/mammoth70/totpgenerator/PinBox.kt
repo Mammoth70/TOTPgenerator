@@ -365,7 +365,7 @@ class PinBox : DialogFragment() {
             })
 
         val promptInfo = BiometricPrompt.PromptInfo.Builder()
-            .setTitle(getString(R.string.Bio))
+            .setTitle(getString(R.string.Bio_login))
             .setDescription(getString(R.string.use_FingerPrint))
             .setNegativeButtonText(getString(R.string.cancel))
             .setAllowedAuthenticators(BiometricManager.Authenticators.BIOMETRIC_STRONG)
