@@ -2,7 +2,7 @@
 
 [![Android][1]][2] [![Kotlin][3]][4] [![GitHub license][5]][6] [![GitHub code size in bytes][7]]()
 
-[1]: https://img.shields.io/badge/Android-10+-blue.svg?logoColor=white&color=green
+[1]: https://img.shields.io/badge/Android-10+-blue.svg?logo=Android&color=brightgreen
 [2]: https://android.com/
 [3]: https://img.shields.io/badge/Kotlin-2.3-blue.svg?logo=Kotlin
 [4]: http://kotlinlang.org
