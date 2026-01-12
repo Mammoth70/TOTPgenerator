@@ -35,7 +35,7 @@ internal class TokensAdapter(context: Context, private val layout: Int, private 
             viewHolder = convertView.tag as ViewHolder
         }
         val token = tokensList[position]
-        if (token.id > EMPTY_TOKEN) {
+        if (token.id != FOOTER_TOKEN) {
             viewHolder.nameView.text = if (token.issuer.isBlank()) {
                 token.label
             } else {
@@ -70,11 +70,11 @@ internal class TokensAdapter(context: Context, private val layout: Int, private 
             viewHolder.btnMenu.visibility = View.INVISIBLE
             viewHolder.progressView.visibility = View.INVISIBLE
             viewHolder.remainView.visibility = View.INVISIBLE
-            viewHolder.btnMenu.tag = EMPTY_TOKEN
+            viewHolder.btnMenu.tag = FOOTER_TOKEN
             viewHolder.btnMenu.setOnClickListener(null)
             //viewHolder.itemToken.strokeWidth = 0
             viewHolder.itemToken.strokeColor = getColor(context, R.color.md_theme_surface)
-            viewHolder.itemToken.tag = EMPTY_TOKEN
+            viewHolder.itemToken.tag = FOOTER_TOKEN
             viewHolder.itemToken.setOnClickListener(null)
             viewHolder.itemToken.setOnLongClickListener(null)
             viewHolder.itemToken.isClickable = false

@@ -15,7 +15,7 @@ class SettingsActivity : AppActivity(), PinBox.OnPinResultListener {
     override val idLayout = R.layout.activity_settings
     override val idActivity = R.id.frameSettingsActivity
 
-    private val btnSave: Button by lazy { findViewById(R.id.btnAction) }
+    private val parentLayout: View by lazy { findViewById(android.R.id.content) }
     private val btnChangePin: Button by lazy { findViewById(R.id.btnChangePIN) }
     private val btnDeletePin: Button by lazy { findViewById(R.id.btnDeletePIN) }
     private val checkEnableBio: CheckBox by lazy { findViewById(R.id.checkEnableBio) }
@@ -82,15 +82,12 @@ class SettingsActivity : AppActivity(), PinBox.OnPinResultListener {
 
     fun showSnackbar(message: String) {
         // Функция выводит Snackbar со строкой message.
-        Snackbar.make(btnSave, message, Snackbar.LENGTH_SHORT).show()
+        Snackbar.make(parentLayout, message, Snackbar.LENGTH_SHORT).show()
     }
 
     fun showSnackbar(resId: Int) {
         // Функция выводит Snackbar со строкой, хранимой в ресурсе resId.
         showSnackbar(getString(resId))
-    }
-
-    fun onActionClicked(@Suppress("UNUSED_PARAMETER")ignored: View) {
     }
 
     fun onPinChangeClicked(@Suppress("UNUSED_PARAMETER")ignored: View) {
