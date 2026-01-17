@@ -50,10 +50,14 @@ internal class TokensAdapter(context: Context, private val layout: Int, private 
                 viewHolder.progressView.visibility = View.VISIBLE
             }
             viewHolder.remainView.text = token.remain.toString()
-            viewHolder.progressView.progress = if (appPassed) {
-                token.progress
+            if (appPassed) {
+                viewHolder.progressView.indicatorDirection =
+                    CircularProgressIndicator.INDICATOR_DIRECTION_CLOCKWISE
+                viewHolder.progressView.progress = token.progress
             } else {
-                100 - token.progress
+                viewHolder.progressView.indicatorDirection =
+                    CircularProgressIndicator.INDICATOR_DIRECTION_COUNTERCLOCKWISE
+                viewHolder.progressView.progress = 100 - token.progress
             }
             viewHolder.btnMenu.visibility = View.VISIBLE
             viewHolder.btnMenu.tag = position
