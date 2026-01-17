@@ -1,14 +1,6 @@
-import org.gradle.kotlin.dsl.kotlin
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
 }
-
-val versionMajor = 1
-val versionMinor = 4
-val versionPatch = 2
 
 android {
     namespace = "ru.mammoth70.totpgenerator"
@@ -17,12 +9,14 @@ android {
     }
 
     defaultConfig {
+        val versionMajor = 1
+        val versionMinor = 4
+        val versionPatch = 3
         applicationId = "ru.mammoth70.totpgenerator"
         minSdk = 30
         targetSdk = 36
         versionName = "${versionMajor}.${versionMinor}.${versionPatch}"
         versionCode = versionMajor * 10000 + versionMinor * 100 + versionPatch
-        setProperty("archivesBaseName", "TOTPgenerator-${versionName}")
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -44,13 +38,10 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+}
 
-    kotlin {
-        compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_11)
-            freeCompilerArgs.add("-opt-in=kotlin.RequiresOptIn")
-        }
-    }
+base {
+    archivesName = "TOTPgenerator-${android.defaultConfig.versionName}"
 }
 
 dependencies {
@@ -71,7 +62,7 @@ dependencies {
     //noinspection UseTomlInstead
     implementation("com.google.android.gms:play-services-code-scanner:16.1.0")
     //noinspection UseTomlInstead
-    implementation("com.google.protobuf:protobuf-javalite:4.33.3")
+    implementation("com.google.protobuf:protobuf-javalite:4.33.4")
     //noinspection UseTomlInstead
     implementation("androidx.biometric:biometric:1.4.0-alpha05")
     testImplementation(libs.junit)

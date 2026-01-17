@@ -59,26 +59,26 @@ class PinBox : DialogFragment() {
     }
 
     private val dlg: AlertDialog by lazy { dialog as AlertDialog }
-    private val btn0: Button by lazy { dlg.findViewById<Button>(R.id.btn0)!!}
-    private val btn1: Button by lazy { dlg.findViewById<Button>(R.id.btn1)!!}
-    private val btn2: Button by lazy { dlg.findViewById<Button>(R.id.btn2)!!}
-    private val btn3: Button by lazy { dlg.findViewById<Button>(R.id.btn3)!!}
-    private val btn4: Button by lazy { dlg.findViewById<Button>(R.id.btn4)!!}
-    private val btn5: Button by lazy { dlg.findViewById<Button>(R.id.btn5)!!}
-    private val btn6: Button by lazy { dlg.findViewById<Button>(R.id.btn6)!!}
-    private val btn7: Button by lazy { dlg.findViewById<Button>(R.id.btn7)!!}
-    private val btn8: Button by lazy { dlg.findViewById<Button>(R.id.btn8)!!}
-    private val btn9: Button by lazy { dlg.findViewById<Button>(R.id.btn9)!!}
-    private val btnBack: Button by lazy { dlg.findViewById<Button>(R.id.btnBack)!!}
-    private val btnCancel: Button by lazy { dlg.findViewById<Button>(R.id.btnCancel)!!}
-    private val btnBiomeric: Button by lazy { dlg.findViewById<Button>(R.id.btnBiomeric)!!}
-    private val pin1: ImageView by lazy { dlg.findViewById<ImageView>(R.id.pin1)!!}
-    private val pin2: ImageView by lazy { dlg.findViewById<ImageView>(R.id.pin2)!!}
-    private val pin3: ImageView by lazy { dlg.findViewById<ImageView>(R.id.pin3)!!}
-    private val pin4: ImageView by lazy { dlg.findViewById<ImageView>(R.id.pin4)!!}
-    private val pin5: ImageView by lazy { dlg.findViewById<ImageView>(R.id.pin5)!!}
-    private val pin6: ImageView by lazy { dlg.findViewById<ImageView>(R.id.pin6)!!}
-    private val errorMessage: TextView by lazy {dlg.findViewById<TextView>(R.id.errorMessage)!!}
+    private val btn0: Button by lazy { dlg.findViewById(R.id.btn0)!!}
+    private val btn1: Button by lazy { dlg.findViewById(R.id.btn1)!!}
+    private val btn2: Button by lazy { dlg.findViewById(R.id.btn2)!!}
+    private val btn3: Button by lazy { dlg.findViewById(R.id.btn3)!!}
+    private val btn4: Button by lazy { dlg.findViewById(R.id.btn4)!!}
+    private val btn5: Button by lazy { dlg.findViewById(R.id.btn5)!!}
+    private val btn6: Button by lazy { dlg.findViewById(R.id.btn6)!!}
+    private val btn7: Button by lazy { dlg.findViewById(R.id.btn7)!!}
+    private val btn8: Button by lazy { dlg.findViewById(R.id.btn8)!!}
+    private val btn9: Button by lazy { dlg.findViewById(R.id.btn9)!!}
+    private val btnBack: Button by lazy { dlg.findViewById(R.id.btnBack)!!}
+    private val btnCancel: Button by lazy { dlg.findViewById(R.id.btnCancel)!!}
+    private val btnBiomeric: Button by lazy { dlg.findViewById(R.id.btnBiomeric)!!}
+    private val pin1: ImageView by lazy { dlg.findViewById(R.id.pin1)!!}
+    private val pin2: ImageView by lazy { dlg.findViewById(R.id.pin2)!!}
+    private val pin3: ImageView by lazy { dlg.findViewById(R.id.pin3)!!}
+    private val pin4: ImageView by lazy { dlg.findViewById(R.id.pin4)!!}
+    private val pin5: ImageView by lazy { dlg.findViewById(R.id.pin5)!!}
+    private val pin6: ImageView by lazy { dlg.findViewById(R.id.pin6)!!}
+    private val errorMessage: TextView by lazy {dlg.findViewById(R.id.errorMessage)!!}
 
 
     private val action: String by lazy { requireArguments().getString(INTENT_PIN_ACTION,"") }

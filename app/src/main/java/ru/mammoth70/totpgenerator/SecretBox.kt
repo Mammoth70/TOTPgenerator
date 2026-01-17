@@ -41,20 +41,20 @@ class SecretBox: DialogFragment() {
     }
 
     private val dlg: AlertDialog by lazy { dialog as AlertDialog }
-    private val ilLabel: TextInputLayout by lazy { dlg.findViewById<TextInputLayout>(R.id.ilLabel)!!}
-    private val edLabel: TextInputEditText by lazy { dlg.findViewById<TextInputEditText>(R.id.edLabel)!! }
-    private val ilKey: TextInputLayout by lazy { dlg.findViewById<TextInputLayout>(R.id.ilKey)!! }
-    private val edKey: TextInputEditText by lazy { dlg.findViewById<TextInputEditText>(R.id.edKey)!! }
-    private val ilPeriod: TextInputLayout by lazy { dlg.findViewById<TextInputLayout>(R.id.ilPeriod)!! }
-    private val edPeriod: TextInputEditText by lazy { dlg.findViewById<TextInputEditText>(R.id.edPeriod)!! }
-    private val radioHash: RadioGroup by lazy { dlg.findViewById<RadioGroup>(R.id.radioHash)!! }
-    private val radioSHA1: RadioButton by lazy { dlg.findViewById<RadioButton>(R.id.SHA1)!! }
-    private val radioSHA256: RadioButton by lazy { dlg.findViewById<RadioButton>(R.id.SHA256)!! }
-    private val radioSHA512: RadioButton by lazy { dlg.findViewById<RadioButton>(R.id.SHA512)!! }
-    private val radioDigits: RadioGroup by lazy { dlg.findViewById<RadioGroup>(R.id.radioDigits)!! }
-    private val radioDigits6: RadioButton by lazy { dlg.findViewById<RadioButton>(R.id.digits6)!! }
-    private val radioDigits7: RadioButton by lazy { dlg.findViewById<RadioButton>(R.id.digits7)!! }
-    private val radioDigits8: RadioButton by lazy { dlg.findViewById<RadioButton>(R.id.digits8)!! }
+    private val ilLabel: TextInputLayout by lazy { dlg.findViewById(R.id.ilLabel)!!}
+    private val edLabel: TextInputEditText by lazy { dlg.findViewById(R.id.edLabel)!! }
+    private val ilKey: TextInputLayout by lazy { dlg.findViewById(R.id.ilKey)!! }
+    private val edKey: TextInputEditText by lazy { dlg.findViewById(R.id.edKey)!! }
+    private val ilPeriod: TextInputLayout by lazy { dlg.findViewById(R.id.ilPeriod)!! }
+    private val edPeriod: TextInputEditText by lazy { dlg.findViewById(R.id.edPeriod)!! }
+    private val radioHash: RadioGroup by lazy { dlg.findViewById(R.id.radioHash)!! }
+    private val radioSHA1: RadioButton by lazy { dlg.findViewById(R.id.SHA1)!! }
+    private val radioSHA256: RadioButton by lazy { dlg.findViewById(R.id.SHA256)!! }
+    private val radioSHA512: RadioButton by lazy { dlg.findViewById(R.id.SHA512)!! }
+    private val radioDigits: RadioGroup by lazy { dlg.findViewById(R.id.radioDigits)!! }
+    private val radioDigits6: RadioButton by lazy { dlg.findViewById(R.id.digits6)!! }
+    private val radioDigits7: RadioButton by lazy { dlg.findViewById(R.id.digits7)!! }
+    private val radioDigits8: RadioButton by lazy { dlg.findViewById(R.id.digits8)!! }
 
     private val action: String by lazy { requireArguments().getString(INTENT_TOTP_ACTION,"") }
     private val secret: OTPauth by lazy { appSecrets[requireArguments().getInt(INTENT_TOTP_NUM)] }
