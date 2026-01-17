@@ -8,7 +8,7 @@ plugins {
 
 val versionMajor = 1
 val versionMinor = 4
-val versionPatch = 1
+val versionPatch = 2
 
 android {
     namespace = "ru.mammoth70.totpgenerator"
