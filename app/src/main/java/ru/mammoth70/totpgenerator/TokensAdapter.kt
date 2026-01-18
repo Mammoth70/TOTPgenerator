@@ -34,54 +34,66 @@ internal class TokensAdapter(context: Context, private val layout: Int, private 
         } else {
             viewHolder = convertView.tag as ViewHolder
         }
-        val token = tokensList[position]
-        if (token.id != FOOTER_TOKEN) {
-            viewHolder.nameView.text = if (token.issuer.isBlank()) {
-                token.label
+        viewHolder.apply {
+            val token = tokensList[position]
+            if (token.id != FOOTER_TOKEN) {
+                nameView.text = if (token.issuer.isBlank()) {
+                    token.label
+                } else {
+                    token.issuer + ":" + token.label
+                }
+                totpView.text = token.totp
+                if (token.totp.isEmpty()) {
+                    remainView.visibility = View.INVISIBLE
+                    progressView.visibility = View.INVISIBLE
+                } else {
+                    remainView.visibility = View.VISIBLE
+                    progressView.visibility = View.VISIBLE
+                }
+                remainView.text = token.remain.toString()
+                progressView.apply {
+                    if (appPassed) {
+                        indicatorDirection =
+                            CircularProgressIndicator.INDICATOR_DIRECTION_CLOCKWISE
+                        progress = token.progress
+                    } else {
+                        indicatorDirection =
+                            CircularProgressIndicator.INDICATOR_DIRECTION_COUNTERCLOCKWISE
+                        progress = 100 - token.progress
+                    }
+                }
+                btnMenu.apply {
+                    visibility = View.VISIBLE
+                    tag = position
+                    setOnClickListener(btnMenuClick)
+                }
+                itemToken.apply {
+                    tag = position
+                    // itemToken.strokeWidth = convertDpToPixels(context, 1f)
+                    strokeColor = getColor(context, R.color.md_theme_outline)
+                    setOnClickListener(itemClick)
+                    setOnLongClickListener(itemViewLongClick)
+                    isClickable = true
+                }
             } else {
-                token.issuer + ":" + token.label
+                nameView.text = ""
+                totpView.text = ""
+                progressView.visibility = View.INVISIBLE
+                remainView.visibility = View.INVISIBLE
+                btnMenu.apply {
+                    visibility = View.INVISIBLE
+                    tag = FOOTER_TOKEN
+                    setOnClickListener(null)
+                }
+                itemToken.apply {
+                    // strokeWidth = 0
+                    strokeColor = getColor(context, R.color.md_theme_surface)
+                    tag = FOOTER_TOKEN
+                    setOnClickListener(null)
+                    setOnLongClickListener(null)
+                    isClickable = false
+                }
             }
-            viewHolder.totpView.text = token.totp
-            if (token.totp.isEmpty()) {
-                viewHolder.remainView.visibility = View.INVISIBLE
-                viewHolder.progressView.visibility = View.INVISIBLE
-            } else {
-                viewHolder.remainView.visibility = View.VISIBLE
-                viewHolder.progressView.visibility = View.VISIBLE
-            }
-            viewHolder.remainView.text = token.remain.toString()
-            if (appPassed) {
-                viewHolder.progressView.indicatorDirection =
-                    CircularProgressIndicator.INDICATOR_DIRECTION_CLOCKWISE
-                viewHolder.progressView.progress = token.progress
-            } else {
-                viewHolder.progressView.indicatorDirection =
-                    CircularProgressIndicator.INDICATOR_DIRECTION_COUNTERCLOCKWISE
-                viewHolder.progressView.progress = 100 - token.progress
-            }
-            viewHolder.btnMenu.visibility = View.VISIBLE
-            viewHolder.btnMenu.tag = position
-            viewHolder.btnMenu.setOnClickListener(btnMenuClick)
-            viewHolder.itemToken.tag = position
-            //viewHolder.itemToken.strokeWidth = convertDpToPixels(context, 1f)
-            viewHolder.itemToken.strokeColor = getColor(context, R.color.md_theme_outline)
-            viewHolder.itemToken.setOnClickListener(itemClick)
-            viewHolder.itemToken.setOnLongClickListener(itemViewLongClick)
-            viewHolder.itemToken.isClickable = true
-        } else {
-            viewHolder.nameView.text = ""
-            viewHolder.totpView.text = ""
-            viewHolder.btnMenu.visibility = View.INVISIBLE
-            viewHolder.progressView.visibility = View.INVISIBLE
-            viewHolder.remainView.visibility = View.INVISIBLE
-            viewHolder.btnMenu.tag = FOOTER_TOKEN
-            viewHolder.btnMenu.setOnClickListener(null)
-            //viewHolder.itemToken.strokeWidth = 0
-            viewHolder.itemToken.strokeColor = getColor(context, R.color.md_theme_surface)
-            viewHolder.itemToken.tag = FOOTER_TOKEN
-            viewHolder.itemToken.setOnClickListener(null)
-            viewHolder.itemToken.setOnLongClickListener(null)
-            viewHolder.itemToken.isClickable = false
         }
         return convertView
     }
