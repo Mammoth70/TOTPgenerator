@@ -32,7 +32,6 @@
                 android:text="@string/change_PIN"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:onClick="onPinChangeClicked"
                 android:layout_marginStart="16dp"
                 android:layout_marginBottom="16dp"
                 />
@@ -42,7 +41,6 @@
                 android:text="@string/delete_PIN"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:onClick="onPinDeleteClicked"
                 android:layout_marginStart="16dp"
                 android:layout_marginBottom="16dp"
                 />

@@ -7,6 +7,14 @@ espressoCore = "3.7.0"
 appcompat = "1.7.1"
 activity = "1.12.2"
 constraintlayout = "2.2.1"
+googleMaterial = "1.14.0-alpha08"
+lifecycle = "2.10.0"
+totpKt = "1.0.1"
+commonsCodec = "1.20.0"
+androidxSecurity = "1.1.0"
+playServicesCodeScanner = "16.1.0"
+protobuf = "4.33.4"
+androidxBiometric = "1.4.0-alpha05"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -16,6 +24,16 @@ androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-co
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 androidx-activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
 androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
+google-material = { group = "com.google.android.material", name = "material", version.ref = "googleMaterial" }
+androidx-lifecycle-viewmodel-ktx = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "lifecycle" }
+#androidx-lifecycle-livedata-ktx = { group = "androidx.lifecycle", name = "lifecycle-livedata-ktx", version.ref = "lifecycle" }
+#androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycle" }
+totp-kt = { group = "dev.robinohs", name = "totp-kt", version.ref = "totpKt" }
+apache-commons-codec = { group = "commons-codec", name = "commons-codec", version.ref = "commonsCodec" }
+androidx-security-crypto = { group = "androidx.security", name = "security-crypto", version.ref = "androidxSecurity" }
+gms-play-services-code-scanner = { group = "com.google.android.gms", name = "play-services-code-scanner", version.ref = "playServicesCodeScanner" }
+protobuf-javalite = { group = "com.google.protobuf", name = "protobuf-javalite", version.ref = "protobuf" }
+androidx-biometric = { group = "androidx.biometric", name = "biometric", version.ref = "androidxBiometric" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

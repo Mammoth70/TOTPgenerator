@@ -14,13 +14,11 @@
         android:title="@string/settings"
         android:id="@+id/item_settings"
         android:enabled="true"
-        android:onClick="onSettingsClicked"
         />
     <item
         android:icon="@drawable/ic_action_info"
         android:title="@string/about"
         android:id="@+id/item_about"
-        android:onClick="onAboutClicked"
         android:enabled="true"
         />
 </menu>

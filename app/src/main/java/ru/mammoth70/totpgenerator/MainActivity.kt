@@ -1,16 +1,22 @@
 package ru.mammoth70.totpgenerator
 
 import android.content.ClipData
+import android.content.ClipDescription
 import android.content.ClipboardManager
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
-import android.view.MenuItem
+import android.os.Handler
+import android.os.Looper
+import android.os.PersistableBundle
 import android.view.View
 import android.widget.ListView
 import android.widget.PopupMenu
 import androidx.activity.viewModels
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModelProvider
+import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.mlkit.vision.codescanner.GmsBarcodeScannerOptions
@@ -18,6 +24,7 @@ import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
 import ru.mammoth70.totpgenerator.App.Companion.appSecrets
 import ru.mammoth70.totpgenerator.App.Companion.appTokens
 import ru.mammoth70.totpgenerator.App.Companion.unLocked
+import kotlin.lazy
 
 class MainActivity : AppActivity(),
     SecretBox.OnAddResultListener, SecretBox.OnDeleteResultListener, PinBox.OnPinResultListener {
@@ -29,6 +36,9 @@ class MainActivity : AppActivity(),
 
     override val idLayout = R.layout.activity_main
     override val idActivity = R.id.frameMainActivity
+
+    private val floatingActionButtonQR: FloatingActionButton by lazy { findViewById(R.id.floatingActionButtonQR) }
+    private val navView: BottomNavigationView by lazy { findViewById(R.id.bottom_navigation) }
     private val tokensList: ListView by lazy { findViewById(R.id.tokensList) }
     private val adapter : TokensAdapter by
     lazy { TokensAdapter(this, R.layout.list_item, appTokens) }
@@ -42,7 +52,16 @@ class MainActivity : AppActivity(),
             // Обработчик кнопки "назад".
             finish()
         }
-
+        topAppBar.setOnMenuItemClickListener { menuItem ->
+            when (menuItem.itemId) {
+                // Обработчик меню "+".
+                R.id.item_add_token -> {
+                    addSecret()
+                    true
+                }
+                else -> false
+            }
+        }
         // Настройка адаптера.
         adapter.setOnBtnMenuClick(::showPopupMenu)
         adapter.setOnItemViewClick(::itemClick)
@@ -52,15 +71,15 @@ class MainActivity : AppActivity(),
 
         // Настройка ViewModel.
         ViewModelProvider(this)[TokensViewModel::class.java].liveData.observe(this)
-            { token ->
-                // Вызывается при получении нового токена из потока.
-                // Меняет список токенов и вызывает перестроение адаптера.
-                val num = token.num
-                // Проверка на то, что массивы секретов и токенов синхронизированы.
-                if ((appTokens.size > num) && appTokens[num].id == appSecrets[num].id) {
-                    appTokens[num] = token
-                    adapter.notifyDataSetChanged()
-                }
+        { token ->
+            // Вызывается при получении нового токена из потока.
+            // Меняет список токенов и вызывает перестроение адаптера.
+            val num = token.num
+            // Проверка на то, что массивы секретов и токенов синхронизированы.
+            if ((appTokens.size > num) && appTokens[num].id == appSecrets[num].id) {
+                appTokens[num] = token
+                adapter.notifyDataSetChanged()
+            }
         }
 
         if (!unLocked && appPinCode.isNotBlank()) {
@@ -68,6 +87,35 @@ class MainActivity : AppActivity(),
             enterPin()
         } else {
             unLocked = true
+        }
+
+        floatingActionButtonQR.setOnClickListener { _ ->
+            // Обработчик кнопки "QR".
+            addQRsecret()
+        }
+
+        navView.setOnItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.item_settings -> {
+                    val intent = Intent(this, SettingsActivity::class.java)
+                    startActivity(intent)
+                }
+
+                R.id.item_about -> {
+                    val bundle = Bundle()
+                    bundle.putString(AboutBox.ABOUT_TITLE, getString(R.string.app_name))
+                    val text =
+                        getString(R.string.description) + "\n\n" +
+                                getString(R.string.version) + " " +
+                                BuildConfig.VERSION_NAME
+                    bundle.putString(AboutBox.ABOUT_MESSAGE, text)
+                    val aboutBox = AboutBox()
+                    aboutBox.setArguments(bundle)
+                    aboutBox.show(this.supportFragmentManager, "ABOUT_DIALOG")
+                }
+
+            }
+            false
         }
     }
 
@@ -77,18 +125,6 @@ class MainActivity : AppActivity(),
         DBhelper.dbHelper.readAllSecrets()
         adapter.notifyDataSetChanged()
         viewModel.sendCommandUpdate()
-    }
-
-    fun onAddSecretClicked(@Suppress("UNUSED_PARAMETER") ignored: MenuItem) {
-        // Функция обработчик клика меню "add".
-        // Вызывает функцию добавления OTPauth.
-        addSecret()
-    }
-
-    fun onQRSecretClicked(@Suppress("UNUSED_PARAMETER")ignored: View?) {
-        // Функция обработчик клика FAB "qr".
-        // Вызывает функцию чтения QR с OTPauth.
-        addQRsecret()
     }
 
     fun showSnackbar(message: String) {
@@ -169,71 +205,79 @@ class MainActivity : AppActivity(),
     private fun itemLongClick(view: View) : Boolean {
         // Обработчик двойного клика по токену.
         // Вызывает функцию копирования токена в clipboard.
-        tokenToClipBoard(view.tag.toString().toInt())
-        return true
+        val position = view.tag as? Int ?: return false
+        if (position >= 0 && position < adapter.count) {
+            tokenToClipBoard(position)
+            return true
+        }
+        return false
     }
 
     private fun itemClick(view: View) {
         // Обработчик клика по токену.
         // Вызывает функцию копирования токена в clipboard.
-        tokenToClipBoard(view.tag.toString().toInt())
+        val position = view.tag as? Int ?: return
+        if (position >= 0 && position < adapter.count) {
+            tokenToClipBoard(position)
+        }
     }
 
     private fun showPopupMenu(view: View) {
         // Функция вызывается по клику на кнопку меню.
-        val position: Int? = view.tag as Int?
-        position?.let {
+        val position = view.tag as? Int ?: return
+        if (position >= 0 && position < adapter.count) {
             val popupMenu = PopupMenu(this, view)
             popupMenu.inflate(R.menu.token_menu)
-            popupMenu.setOnMenuItemClickListener(object : PopupMenu.OnMenuItemClickListener {
-                override fun onMenuItemClick(item: MenuItem): Boolean {
-                    when (item.itemId) {
-                        R.id.item_view_token -> {
-                            viewSecret(position)
-                            return true
-                        }
-
-                        R.id.item_delete_token -> {
-                            deleteSecret(position)
-                            return true
-                        }
-
-                        else -> return false
+            popupMenu.setOnMenuItemClickListener { item ->
+                when (item.itemId) {
+                    R.id.item_view_token -> {
+                        viewSecret(position)
+                        true
                     }
+
+                    R.id.item_delete_token -> {
+                        deleteSecret(position)
+                        true
+                    }
+
+                    else -> false
                 }
-            })
+            }
             popupMenu.show()
         }
     }
 
     fun tokenToClipBoard(num: Int) {
         // Функция копирует токен в clipboard.
-        val clipboardManager = this.getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
-        val clipData = ClipData.newPlainText("text_label", appTokens[num].totp)
-        clipboardManager.setPrimaryClip(clipData)
-        showSnackbar(R.string.token_to_clipboard)
-    }
+        val tokenValue = appTokens[num].totp
+        if (tokenValue.isEmpty()) return
 
-    fun onAboutClicked(@Suppress("UNUSED_PARAMETER")ignored: MenuItem?) {
-        // Обработчик кнопки меню "about".
-        val bundle = Bundle()
-        bundle.putString(AboutBox.ABOUT_TITLE, getString(R.string.app_name))
-        val text =
-            getString(R.string.description) + "\n\n" +
-                    getString(R.string.version) + " " +
-                    BuildConfig.VERSION_NAME
-        bundle.putString(AboutBox.ABOUT_MESSAGE, text)
-        val aboutBox = AboutBox()
-        aboutBox.setArguments(bundle)
-        aboutBox.show(this.supportFragmentManager, "ABOUT_DIALOG")
-    }
+        val clipboard = this.getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
+        val clip = ClipData.newPlainText("OTP Code", tokenValue)
 
-    fun onSettingsClicked(@Suppress("UNUSED_PARAMETER")ignored: MenuItem?) {
-        // Обработчик кнопки меню "settings".
-        // Функция - обработчик кнопки меню "настройки".
-        // Вызывает соответствующую Activity.
-        val intent = Intent(this, SettingsActivity::class.java)
-        startActivity(intent)
+        // Скрываем чувствительные данные (Android 13+)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            val extras = PersistableBundle().apply {
+                putBoolean(ClipDescription.EXTRA_IS_SENSITIVE, true)
+            }
+            clip.description.extras = extras
+        }
+
+        clipboard.setPrimaryClip(clip)
+
+        // Уведомление пользователя только для старых версий
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+            showSnackbar(R.string.token_to_clipboard)
+        }
+
+        // Автоматическая очистка через 30 секунд
+        Handler(Looper.getMainLooper()).postDelayed({
+            // Проверяем, что в буфере всё еще тот же код, который мы скопировали
+            if (clipboard.primaryClip?.getItemAt(0)?.text == tokenValue) {
+                clipboard.clearPrimaryClip()
+            }
+        }, 30000)
+
     }
 
     override fun onAddResult(auth: OTPauth) {

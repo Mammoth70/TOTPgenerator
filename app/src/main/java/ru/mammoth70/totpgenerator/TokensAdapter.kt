@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.core.content.ContextCompat.getColor
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.progressindicator.CircularProgressIndicator
@@ -21,83 +22,6 @@ internal class TokensAdapter(context: Context, private val layout: Int, private 
     private var itemClick: (view: View) -> Unit = { }
     private var itemViewLongClick: (view: View) -> Boolean = { false }
 
-    @SuppressLint("SetTextI18n")
-    override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-        // Обработка и вывод токена.
-        var convertView = convertView
-        val viewHolder: ViewHolder
-        if (convertView == null) {
-            val inflater: LayoutInflater = LayoutInflater.from(context)
-            convertView = inflater.inflate(this.layout, parent, false)
-            viewHolder = ViewHolder(convertView)
-            convertView.tag = viewHolder
-        } else {
-            viewHolder = convertView.tag as ViewHolder
-        }
-        viewHolder.apply {
-            val token = tokensList[position]
-            if (token.id != FOOTER_TOKEN) {
-                nameView.text = if (token.issuer.isBlank()) {
-                    token.label
-                } else {
-                    token.issuer + ":" + token.label
-                }
-                totpView.text = token.totp
-                if (token.totp.isEmpty()) {
-                    remainView.visibility = View.INVISIBLE
-                    progressView.visibility = View.INVISIBLE
-                } else {
-                    remainView.visibility = View.VISIBLE
-                    progressView.visibility = View.VISIBLE
-                }
-                remainView.text = token.remain.toString()
-                progressView.apply {
-                    if (appPassed) {
-                        indicatorDirection =
-                            CircularProgressIndicator.INDICATOR_DIRECTION_CLOCKWISE
-                        progress = token.progress
-                    } else {
-                        indicatorDirection =
-                            CircularProgressIndicator.INDICATOR_DIRECTION_COUNTERCLOCKWISE
-                        progress = 100 - token.progress
-                    }
-                }
-                btnMenu.apply {
-                    visibility = View.VISIBLE
-                    tag = position
-                    setOnClickListener(btnMenuClick)
-                }
-                itemToken.apply {
-                    tag = position
-                    // itemToken.strokeWidth = convertDpToPixels(context, 1f)
-                    strokeColor = getColor(context, R.color.md_theme_outline)
-                    setOnClickListener(itemClick)
-                    setOnLongClickListener(itemViewLongClick)
-                    isClickable = true
-                }
-            } else {
-                nameView.text = ""
-                totpView.text = ""
-                progressView.visibility = View.INVISIBLE
-                remainView.visibility = View.INVISIBLE
-                btnMenu.apply {
-                    visibility = View.INVISIBLE
-                    tag = FOOTER_TOKEN
-                    setOnClickListener(null)
-                }
-                itemToken.apply {
-                    // strokeWidth = 0
-                    strokeColor = getColor(context, R.color.md_theme_surface)
-                    tag = FOOTER_TOKEN
-                    setOnClickListener(null)
-                    setOnLongClickListener(null)
-                    isClickable = false
-                }
-            }
-        }
-        return convertView
-    }
-
     private class ViewHolder(view: View) {
         // Представление viewHolder'а для списка токенов.
         val itemToken: MaterialCardView = view.findViewById(R.id.itemToken)
@@ -106,6 +30,83 @@ internal class TokensAdapter(context: Context, private val layout: Int, private 
         val totpView: TextView = view.findViewById(R.id.totp)
         val remainView: TextView = view.findViewById(R.id.remain)
         val progressView: CircularProgressIndicator = view.findViewById(R.id.progress)
+    }
+
+    @SuppressLint("SetTextI18n")
+    override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
+        // Обработка и вывод токена.
+        val holder: ViewHolder
+        val rowView : View
+
+        if (convertView == null) {
+            rowView = LayoutInflater.from(context).inflate(this.layout, parent, false)
+            holder = ViewHolder(rowView)
+            rowView.tag = holder
+        } else {
+            rowView = convertView
+            holder = rowView.tag as ViewHolder
+        }
+
+        val token = tokensList[position]
+
+        if (token.id != FOOTER_TOKEN) {
+            holder.nameView.text = if (token.issuer.isBlank()) token.label else "${token.issuer}:${token.label}"
+            holder.totpView.text = token.totp
+
+            val hasTotp = token.totp.isNotEmpty()
+            holder.remainView.visibility = if (hasTotp) View.VISIBLE else View.INVISIBLE
+            holder.progressView.visibility = if (hasTotp) View.VISIBLE else View.INVISIBLE
+
+            if (hasTotp) {
+                holder.remainView.text = token.remain.toString()
+                holder.progressView.apply {
+                    indicatorDirection = if (appPassed)
+                        CircularProgressIndicator.INDICATOR_DIRECTION_CLOCKWISE
+                    else
+                        CircularProgressIndicator.INDICATOR_DIRECTION_COUNTERCLOCKWISE
+
+                    progress = if (appPassed) token.progress else (100 - token.progress)
+                }
+            }
+
+            holder.btnMenu.apply {
+                tag = position
+                visibility = View.VISIBLE
+                setOnClickListener { btnMenuClick(it) }
+            }
+
+            holder.itemToken.apply {
+                tag = position
+                setOnClickListener { itemClick(it) }
+                setOnLongClickListener { itemViewLongClick(it) }
+                isClickable = true
+                isLongClickable = true
+                setStrokeColor(ContextCompat.getColorStateList(context, R.color.md_theme_outline))
+            }
+
+        } else {
+            // Состояние футера
+            holder.nameView.text = ""
+            holder.totpView.text = ""
+            holder.progressView.visibility = View.INVISIBLE
+            holder.remainView.visibility = View.INVISIBLE
+            holder.btnMenu.apply {
+                tag = FOOTER_TOKEN
+                visibility = View.INVISIBLE
+                setOnClickListener(null)
+            }
+
+            holder.itemToken.apply {
+                tag = FOOTER_TOKEN
+                setOnClickListener(null)
+                setOnLongClickListener(null)
+                isClickable = false
+                isLongClickable = false
+                setStrokeColor(ContextCompat.getColorStateList(context, android.R.color.transparent))
+            }
+        }
+
+        return rowView
     }
 
     fun setOnBtnMenuClick(listener: (View) -> Unit) {

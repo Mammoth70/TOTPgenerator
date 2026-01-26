@@ -11,19 +11,24 @@ android {
     defaultConfig {
         val versionMajor = 1
         val versionMinor = 4
-        val versionPatch = 5
+        val versionPatch = 6
         applicationId = "ru.mammoth70.totpgenerator"
         minSdk = 30
         targetSdk = 36
         versionName = "${versionMajor}.${versionMinor}.${versionPatch}"
         versionCode = versionMajor * 10000 + versionMinor * 100 + versionPatch
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        @Suppress("DEPRECATION")
+        resourceConfigurations.clear()
+        @Suppress("DEPRECATION")
+        resourceConfigurations.addAll(listOf("en", "ru"))
     }
 
     buildTypes {
         release {
-            isMinifyEnabled = false
-            proguardFiles(
+           isMinifyEnabled = true
+           isShrinkResources = true
+           proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
@@ -49,22 +54,15 @@ dependencies {
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
-    //noinspection UseTomlInstead
-    implementation("com.google.android.material:material:1.14.0-alpha08")
-    //noinspection UseTomlInstead
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.10.0")
-    //noinspection UseTomlInstead
-    implementation("dev.robinohs:totp-kt:1.0.1")
-    //noinspection UseTomlInstead
-    implementation("commons-codec:commons-codec:1.20.0")
-    //noinspection UseTomlInstead
-    implementation("androidx.security:security-crypto:1.1.0")
-    //noinspection UseTomlInstead
-    implementation("com.google.android.gms:play-services-code-scanner:16.1.0")
-    //noinspection UseTomlInstead
-    implementation("com.google.protobuf:protobuf-javalite:4.33.4")
-    //noinspection UseTomlInstead
-    implementation("androidx.biometric:biometric:1.4.0-alpha05")
+    implementation(libs.google.material)
+    implementation(libs.androidx.lifecycle.viewmodel.ktx)
+    implementation(libs.totp.kt)
+    implementation(libs.apache.commons.codec)
+    implementation(libs.androidx.security.crypto)
+    implementation(libs.gms.play.services.code.scanner)
+    implementation(libs.protobuf.javalite)
+    implementation(libs.androidx.biometric)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

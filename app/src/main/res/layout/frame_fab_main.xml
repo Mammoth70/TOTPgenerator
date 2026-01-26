@@ -10,9 +10,8 @@
     android:layout_margin="16dp"
     android:clickable="true"
     android:contentDescription="@string/qr"
-    android:onClick="onQRSecretClicked"
     app:layout_constraintBottom_toBottomOf="parent"
     app:layout_constraintEnd_toEndOf="parent"
     app:srcCompat="@drawable/ic_action_qr"
-    tools:ignore="OnClick,ClassNameCheck,ImageContrastCheck"
+    tools:ignore="ClassNameCheck,ImageContrastCheck"
     />

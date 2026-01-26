@@ -77,6 +77,27 @@ class SettingsActivity : AppActivity(), PinBox.OnPinResultListener {
             setEnableBiometric()
         }
 
+        btnChangePin.setOnClickListener { _ ->
+            // Вызов окна смены PIN
+            val bundle = Bundle()
+            bundle.putString(PinBox.INTENT_PIN_ACTION, PinBox.ACTION_UPDATE_PIN)
+            val pinBox = PinBox()
+            pinBox.setArguments(bundle)
+            pinBox.isCancelable = false
+            pinBox.setOnPinResultListener(this)
+            pinBox.show(this.supportFragmentManager, "PIN_DIALOG")
+        }
+
+        btnDeletePin.setOnClickListener { _ ->
+            // Вызов окна удаления PIN
+            val bundle = Bundle()
+            bundle.putString(PinBox.INTENT_PIN_ACTION, PinBox.ACTION_DELETE_PIN)
+            val pinBox = PinBox()
+            pinBox.setArguments(bundle)
+            pinBox.isCancelable = false
+            pinBox.setOnPinResultListener(this)
+            pinBox.show(this.supportFragmentManager, "PIN_DIALOG")
+        }
 
     }
 
@@ -88,28 +109,6 @@ class SettingsActivity : AppActivity(), PinBox.OnPinResultListener {
     fun showSnackbar(resId: Int) {
         // Функция выводит Snackbar со строкой, хранимой в ресурсе resId.
         showSnackbar(getString(resId))
-    }
-
-    fun onPinChangeClicked(@Suppress("UNUSED_PARAMETER")ignored: View) {
-        // Вызов окна смены PIN
-        val bundle = Bundle()
-        bundle.putString(PinBox.INTENT_PIN_ACTION, PinBox.ACTION_UPDATE_PIN)
-        val pinBox = PinBox()
-        pinBox.setArguments(bundle)
-        pinBox.isCancelable = false
-        pinBox.setOnPinResultListener(this)
-        pinBox.show(this.supportFragmentManager, "PIN_DIALOG")
-    }
-
-    fun onPinDeleteClicked(@Suppress("UNUSED_PARAMETER")ignored: View) {
-        // Вызов окна удаления PIN
-        val bundle = Bundle()
-        bundle.putString(PinBox.INTENT_PIN_ACTION, PinBox.ACTION_DELETE_PIN)
-        val pinBox = PinBox()
-        pinBox.setArguments(bundle)
-        pinBox.isCancelable = false
-        pinBox.setOnPinResultListener(this)
-        pinBox.show(this.supportFragmentManager, "PIN_DIALOG")
     }
 
     override fun onPinResult(action: String, result: Boolean, message: String, pin: String) {
