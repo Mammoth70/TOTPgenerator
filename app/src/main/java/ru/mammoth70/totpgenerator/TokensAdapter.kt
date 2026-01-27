@@ -9,11 +9,8 @@ import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.TextView
 import androidx.core.content.ContextCompat
-import androidx.core.content.ContextCompat.getColor
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.progressindicator.CircularProgressIndicator
-
-// fun convertDpToPixels(context: Context, dp: Float) = (dp * context.resources.displayMetrics.density).toInt()
 
 internal class TokensAdapter(context: Context, private val layout: Int, private val tokensList: ArrayList<Token>) :
     ArrayAdapter<Token>(context, layout, tokensList) {

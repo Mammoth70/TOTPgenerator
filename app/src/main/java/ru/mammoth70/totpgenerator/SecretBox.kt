@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.Dialog
 import android.os.Bundle
 import android.view.View
+import android.view.WindowManager
 import android.widget.RadioButton
 import android.widget.RadioGroup
 import androidx.appcompat.app.AlertDialog
@@ -81,7 +82,9 @@ class SecretBox: DialogFragment() {
                 builder.setPositiveButton(R.string.ok) { _, _ -> }
             }
         }
-        return builder.create()
+        val dialog = builder.create()
+        dialog.window?.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
+        return dialog
     }
 
     override fun onResume() {

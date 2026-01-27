@@ -6,8 +6,6 @@ import android.content.ClipboardManager
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.os.PersistableBundle
 import android.view.View
 import android.widget.ListView
@@ -15,16 +13,19 @@ import android.widget.PopupMenu
 import androidx.activity.viewModels
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.mlkit.vision.codescanner.GmsBarcodeScannerOptions
 import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlin.lazy
 import ru.mammoth70.totpgenerator.App.Companion.appSecrets
 import ru.mammoth70.totpgenerator.App.Companion.appTokens
 import ru.mammoth70.totpgenerator.App.Companion.unLocked
-import kotlin.lazy
 
 class MainActivity : AppActivity(),
     SecretBox.OnAddResultListener, SecretBox.OnDeleteResultListener, PinBox.OnPinResultListener {
@@ -36,12 +37,13 @@ class MainActivity : AppActivity(),
 
     override val idLayout = R.layout.activity_main
     override val idActivity = R.id.frameMainActivity
+    override val isSecure = true
 
     private val floatingActionButtonQR: FloatingActionButton by lazy { findViewById(R.id.floatingActionButtonQR) }
     private val navView: BottomNavigationView by lazy { findViewById(R.id.bottom_navigation) }
     private val tokensList: ListView by lazy { findViewById(R.id.tokensList) }
     private val adapter : TokensAdapter by
-    lazy { TokensAdapter(this, R.layout.list_item, appTokens) }
+        lazy { TokensAdapter(this, R.layout.list_item, appTokens) }
     private val viewModel: TokensViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -249,7 +251,7 @@ class MainActivity : AppActivity(),
 
     fun tokenToClipBoard(num: Int) {
         // Функция копирует токен в clipboard.
-        val tokenValue = appTokens[num].totp
+        val tokenValue = appTokens.getOrNull(num)?.totp ?: return
         if (tokenValue.isEmpty()) return
 
         val clipboard = this.getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
@@ -271,12 +273,16 @@ class MainActivity : AppActivity(),
         }
 
         // Автоматическая очистка через 30 секунд
-        Handler(Looper.getMainLooper()).postDelayed({
-            // Проверяем, что в буфере всё еще тот же код, который мы скопировали
-            if (clipboard.primaryClip?.getItemAt(0)?.text == tokenValue) {
-                clipboard.clearPrimaryClip()
+        lifecycleScope.launch {
+            delay(30000)
+            val currentClip = clipboard.primaryClip
+            if (currentClip != null && currentClip.itemCount > 0) {
+                val currentText = currentClip.getItemAt(0).text?.toString()
+                if (currentText == tokenValue) {
+                    clipboard.clearPrimaryClip()
+                }
             }
-        }, 30000)
+        }
 
     }
 

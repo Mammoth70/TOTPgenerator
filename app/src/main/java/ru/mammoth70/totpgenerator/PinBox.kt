@@ -3,6 +3,7 @@ package ru.mammoth70.totpgenerator
 import android.app.Dialog
 import android.os.Bundle
 import android.view.View
+import android.view.WindowManager
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
@@ -139,7 +140,9 @@ class PinBox : DialogFragment() {
             }
 
         }
-        return builder.create()
+        val dialog = builder.create()
+        dialog.window?.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
+        return dialog
     }
 
     override fun onResume() {
