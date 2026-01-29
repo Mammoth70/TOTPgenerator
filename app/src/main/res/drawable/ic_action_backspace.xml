@@ -4,6 +4,7 @@
     android:viewportWidth="960"
     android:viewportHeight="960"
     android:tint="?attr/colorOnPrimary"
+    android:alpha="1.0"
     android:autoMirrored="true">
   <group android:scaleX="1.2"
       android:scaleY="1.2"

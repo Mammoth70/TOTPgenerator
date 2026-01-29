@@ -1,28 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Фрейм оной строчки токенов в ListView. -->
+<!-- Фрейм одной строчки токенов в ListView. -->
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="4dp"
-    >
+    android:padding="4dp">
+
    <com.google.android.material.card.MaterialCardView
         android:id="@+id/itemToken"
         android:clickable="true"
         android:focusable="true"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        >
+        android:layout_height="wrap_content">
+
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingTop="16dp"
             android:paddingBottom="16dp"
             android:paddingStart="16dp"
-            android:paddingEnd="2dp"
-            >
+            android:paddingEnd="2dp">
+
             <TextView
                 android:id="@+id/name"
                 android:layout_width="wrap_content"
@@ -30,8 +30,8 @@
                 android:textSize="14sp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                tools:text="RIPE NCC: username@example.ru"
-                />
+                tools:text="RIPE NCC: username@example.ru" />
+
             <TextView
                 android:id="@+id/totp"
                 android:layout_width="wrap_content"
@@ -41,8 +41,8 @@
                 android:textColor="?attr/colorOnPrimaryContainer"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/name"
-                tools:text="888888"
-                />
+                tools:text="888888" />
+
             <TextView
                 android:id="@+id/remain"
                 android:layout_width="wrap_content"
@@ -54,8 +54,8 @@
                 app:layout_constraintTop_toTopOf="@+id/progress"
                 app:layout_constraintBottom_toBottomOf="@+id/progress"
                 tools:text="08"
-                tools:ignore="VisualLintOverlap"
-                />
+                tools:ignore="VisualLintOverlap" />
+
             <com.google.android.material.progressindicator.CircularProgressIndicator
                 android:id="@+id/progress"
                 android:layout_width="wrap_content"
@@ -66,8 +66,8 @@
                 app:indicatorColor="?attr/colorOnPrimaryContainer"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                />
+                app:layout_constraintBottom_toBottomOf="parent" />
+
             <Button
                 style="?attr/materialIconButtonStyle"
                 android:id="@+id/btnMenu"
@@ -78,8 +78,7 @@
                 app:iconTint="?attr/colorOnSurface"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                />
+                app:layout_constraintBottom_toBottomOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
    </com.google.android.material.card.MaterialCardView>
 </FrameLayout>

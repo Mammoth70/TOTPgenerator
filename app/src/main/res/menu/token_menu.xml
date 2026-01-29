@@ -1,18 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <group
-        android:id="@+id/group1"
-        android:visible="true"
-        >
+
     <item
-        android:orderInCategory="1"
         android:title="@string/view"
-        android:id="@+id/item_view_token"
-        />
+        android:id="@+id/item_view_token" />
+
     <item
-        android:orderInCategory="2"
         android:title="@string/delete"
-        android:id="@+id/item_delete_token"
-        />
-    </group>
+        android:id="@+id/item_delete_token" />
 </menu>

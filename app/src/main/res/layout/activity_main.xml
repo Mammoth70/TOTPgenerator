@@ -9,25 +9,31 @@
     android:orientation="vertical"
     tools:context=".MainActivity"
     tools:ignore="VisualLintBounds">
-    <include layout="@layout/frame_app_bar_menu"/>
+
+    <!-- Top AppBar. -->
+    <include layout="@layout/partial_app_bar_menu"/>
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
-        >
+        android:layout_weight="1">
+
         <ListView
             android:id="@+id/tokensList"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
             android:divider="@null"
-            tools:listitem="@layout/list_item"
+            tools:listitem="@layout/item_list"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            />
-        <include layout="@layout/frame_fab_main"/>
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <!-- FAB. -->
+        <include layout="@layout/partial_fab_qr"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
-    <include layout="@layout/frame_bottom_navigation"/>
+
+    <!-- Top BottomBar. -->
+    <include layout="@layout/partial_bottom_navigation"/>
 </LinearLayout>

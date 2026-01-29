@@ -1,24 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    >
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
     <item
         android:icon="@drawable/ic_action_more"
         android:title="@string/menu"
         android:id="@+id/item_invisible"
         android:enabled="false"
-        android:visible="false"
-        />
+        android:visible="false" />
+
     <item
         android:icon="@drawable/ic_action_settings"
         android:title="@string/settings"
-        android:id="@+id/item_settings"
-        android:enabled="true"
-        />
+        android:id="@+id/item_settings" />
+
     <item
         android:icon="@drawable/ic_action_info"
         android:title="@string/about"
-        android:id="@+id/item_about"
-        android:enabled="true"
-        />
+        android:id="@+id/item_about" />
 </menu>

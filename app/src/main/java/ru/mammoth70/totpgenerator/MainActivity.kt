@@ -43,7 +43,7 @@ class MainActivity : AppActivity(),
     private val navView: BottomNavigationView by lazy { findViewById(R.id.bottom_navigation) }
     private val tokensList: ListView by lazy { findViewById(R.id.tokensList) }
     private val adapter : TokensAdapter by
-        lazy { TokensAdapter(this, R.layout.list_item, appTokens) }
+        lazy { TokensAdapter(this, R.layout.item_list, appTokens) }
     private val viewModel: TokensViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -61,6 +61,13 @@ class MainActivity : AppActivity(),
                     addSecret()
                     true
                 }
+
+                // Обработчик меню "QR".
+                R.id.item_qr -> {
+                    addQRsecret()
+                    true
+                }
+
                 else -> false
             }
         }

@@ -101,7 +101,7 @@ class PinBox : DialogFragment() {
         } else {
             AlertDialog.Builder(requireActivity() )
         }
-        builder.setView(R.layout.frame_dialog_pin)
+        builder.setView(R.layout.dialog_pin)
         builder.setCancelable(false)
         when (action) {
             ACTION_ENTER_PIN -> {

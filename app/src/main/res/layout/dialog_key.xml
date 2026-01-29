@@ -5,156 +5,141 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    >
+    android:layout_height="match_parent">
+
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        tools:ignore="VisualLintBounds"
-        >
+        android:padding="16dp">
+
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/ilLabel"
-            android:hint="@string/ed_label"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
-            app:errorEnabled="true"
-            >
+            android:hint="@string/ed_label"
+            app:errorEnabled="true">
+
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/edLabel"
-                android:ems="64"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:inputType="textCapWords"
                 android:maxLength="64"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                tools:ignore="TextContrastCheck,VisualLintTextFieldSize"
                 tools:text="Label"
-                />
+                tools:ignore="VisualLintTextFieldSize" />
         </com.google.android.material.textfield.TextInputLayout>
+
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/ilKey"
-            android:hint="@string/ed_key"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
+            android:layout_marginTop="8dp"
+            android:hint="@string/ed_key"
             app:errorEnabled="true"
-            app:passwordToggleEnabled="true"
-            >
+            app:passwordToggleEnabled="true">
+
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/edKey"
-                android:ems="64"
-                android:inputType="textCapCharacters|textPassword"
-                android:digits="234567ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-                android:maxLength="64"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                tools:ignore="TextContrastCheck,VisualLintTextFieldSize"
+                android:digits="234567ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+                android:inputType="textCapCharacters|textPassword"
+                android:maxLength="64"
                 tools:text="MLARFFFFKLAQLNZASKFAABGRD2HBKKRT"
-                />
+                tools:ignore="VisualLintTextFieldSize" />
         </com.google.android.material.textfield.TextInputLayout>
+
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/ilPeriod"
-            android:hint="@string/period"
-            android:layout_width="match_parent"
+            android:layout_width="160dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
-            app:errorEnabled="true"
-            >
+            android:layout_marginTop="8dp"
+            android:hint="@string/period"
+            app:errorEnabled="true">
+
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/edPeriod"
-                android:ems="3"
-                android:inputType="number"
-                android:digits="0123456789"
-                android:maxLength="3"
-                android:text="@string/period30"
-                android:layout_width="150dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                tools:ignore="TextContrastCheck,VisualLintTextFieldSize"
-                tools:text="@string/period30"
-                />
+                android:digits="0123456789"
+                android:inputType="number"
+                android:maxLength="3"
+                android:text="@string/period30" />
         </com.google.android.material.textfield.TextInputLayout>
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:layout_marginStart="16dp"
             android:text="@string/hash"
-            android:textSize="16sp"
-            />
+            android:textSize="16sp" />
+
         <RadioGroup
             android:id="@+id/radioHash"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
-            >
+            android:layout_marginTop="8dp"
+            android:orientation="horizontal">
+
             <RadioButton
                 android:id="@+id/SHA1"
-                android:checked="true"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="16dp"
-                android:text="@string/sha1"
-                />
+                android:checked="true"
+                android:text="@string/sha1" />
+
             <RadioButton
                 android:id="@+id/SHA256"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="16dp"
-                android:text="@string/sha256"
-                />
+                android:text="@string/sha256" />
+
             <RadioButton
                 android:id="@+id/SHA512"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/sha512"
-                />
+                android:text="@string/sha512" />
         </RadioGroup>
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:layout_marginStart="16dp"
             android:text="@string/digits"
-            android:textSize="16sp"
-            />
+            android:textSize="16sp" />
+
         <RadioGroup
             android:id="@+id/radioDigits"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
-            >
+            android:layout_marginTop="8dp"
+            android:orientation="horizontal">
+
             <RadioButton
                 android:id="@+id/digits6"
-                android:checked="true"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:checked="true"
                 android:layout_marginEnd="16dp"
-                android:text="@string/digits6"
-                />
+
+                android:text="@string/digits6" />
+
             <RadioButton
                 android:id="@+id/digits7"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="16dp"
-                android:text="@string/digits7"
-                />
+
+                android:text="@string/digits7" />
+
             <RadioButton
                 android:id="@+id/digits8"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/digits8"
-                />
+                android:text="@string/digits8" />
         </RadioGroup>
     </LinearLayout>
 </ScrollView>

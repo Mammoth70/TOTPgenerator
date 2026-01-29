@@ -62,7 +62,7 @@ class SecretBox: DialogFragment() {
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val builder = AlertDialog.Builder(requireActivity())
-        builder.setView(R.layout.frame_dialog_key)
+        builder.setView(R.layout.dialog_key)
         builder.setCancelable(false)
         when (action) {
             ACTION_TOTP_VIEW -> {
