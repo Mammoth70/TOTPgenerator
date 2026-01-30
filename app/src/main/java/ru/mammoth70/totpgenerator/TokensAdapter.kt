@@ -57,12 +57,12 @@ internal class TokensAdapter(context: Context, private val layout: Int, private 
             if (hasTotp) {
                 holder.remainView.text = token.remain.toString()
                 holder.progressView.apply {
-                    indicatorDirection = if (appPassed)
+                    indicatorDirection = if (progressClockWise)
                         CircularProgressIndicator.INDICATOR_DIRECTION_CLOCKWISE
                     else
                         CircularProgressIndicator.INDICATOR_DIRECTION_COUNTERCLOCKWISE
 
-                    progress = if (appPassed) token.progress else (100 - token.progress)
+                    this.progress = if (progressClockWise) token.progress else (100 - token.progress)
                 }
             }
 

@@ -30,22 +30,21 @@ class SettingsActivity : AppActivity(), PinBox.OnPinResultListener {
             finish()
         }
 
-        if (appPinCode.isBlank()) {
+        if (!isHaveHashPin) {
             btnChangePin.setText(R.string.set_PIN)
             btnDeletePin.visibility = View.GONE
         }
 
-        if (appPassed) {
+        if (progressClockWise) {
             toggleProgress.check(R.id.btnProgressPassed)
         } else {
             toggleProgress.check(R.id.btnProgressRemaining)
         }
         toggleProgress.addOnButtonCheckedListener { _, checkedId, isChecked ->
             when (checkedId) {
-                R.id.btnProgressPassed ->  appPassed = isChecked
-                R.id.btnProgressRemaining ->  appPassed = !isChecked
+                R.id.btnProgressPassed ->  setProgressMode(isChecked)
+                R.id.btnProgressRemaining ->  setProgressMode(!isChecked)
             }
-            setPassed()
         }
 
         when (appThemeMode) {
@@ -56,16 +55,15 @@ class SettingsActivity : AppActivity(), PinBox.OnPinResultListener {
         toggleTheme.addOnButtonCheckedListener { _, checkedId, isChecked ->
             if (isChecked) {
                 when (checkedId) {
-                    R.id.btnThemeDay -> appThemeMode = AppCompatDelegate.MODE_NIGHT_NO
-                    R.id.btnThemeNight -> appThemeMode = AppCompatDelegate.MODE_NIGHT_YES
-                    R.id.btnThemeSystem -> appThemeMode = AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+                    R.id.btnThemeDay -> setThemeMode(AppCompatDelegate.MODE_NIGHT_NO)
+                    R.id.btnThemeNight -> setThemeMode(AppCompatDelegate.MODE_NIGHT_YES)
+                    R.id.btnThemeSystem -> setThemeMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
                 }
-                setThemeMode()
             }
         }
 
-        checkEnableBio.isChecked = appEnableBiometric
-        if (appPinCode.isNotBlank() && isHaveBiometric) {
+        checkEnableBio.isChecked = enableBiometric
+        if (isHaveHashPin && isHaveBiometric) {
             checkEnableBio.visibility = View.VISIBLE
         } else {
             checkEnableBio.visibility = View.GONE
@@ -73,8 +71,7 @@ class SettingsActivity : AppActivity(), PinBox.OnPinResultListener {
 
         checkEnableBio.setOnCheckedChangeListener { _: CompoundButton?,
                                                     isChecked: Boolean ->
-            appEnableBiometric = isChecked
-            setEnableBiometric()
+            setBiometricLogin(isChecked)
         }
 
         btnChangePin.setOnClickListener { _ ->
@@ -111,17 +108,13 @@ class SettingsActivity : AppActivity(), PinBox.OnPinResultListener {
         showSnackbar(getString(resId))
     }
 
-    override fun onPinResult(action: String, result: Boolean, message: String, pin: String) {
+    override fun onPinResult(action: String, result: Boolean, message: String) {
         // Обработчик возврата из PinDialog.
         when (action) {
             PinBox.ACTION_DELETE_PIN -> {
                 if (result) {
-                    appPinCode = ""
-                    setPin()
                     btnChangePin.setText(R.string.set_PIN)
                     btnDeletePin.visibility = View.GONE
-                    appEnableBiometric = false
-                    setEnableBiometric()
                     checkEnableBio.visibility = View.GONE
                     showSnackbar(R.string.PIN_deleted)
                 } else {
@@ -131,7 +124,6 @@ class SettingsActivity : AppActivity(), PinBox.OnPinResultListener {
 
             PinBox.ACTION_UPDATE_PIN -> {
                 if (result) {
-                    setPin()
                     btnChangePin.setText(R.string.change_PIN)
                     btnDeletePin.visibility = View.VISIBLE
                     checkEnableBio.visibility = View.VISIBLE

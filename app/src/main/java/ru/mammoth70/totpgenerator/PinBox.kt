@@ -16,6 +16,11 @@ import ru.mammoth70.totpgenerator.App.Companion.appContext
 import ru.mammoth70.totpgenerator.MainActivity.Companion.mainContext
 
 var isHaveBiometric: Boolean = false
+    internal set
+
+private var pinBuffer = CharArray(6)
+private var pinBuffer1 = CharArray(6)
+private var pinIndex = 0
 
 fun checkBiometricInDevice() {
     val biometricManager = BiometricManager.from(appContext)
@@ -30,7 +35,6 @@ fun checkBiometricInDevice() {
     }
 }
 
-private const val RETURN_THE_PIN = -1
 private const val CHECK_PIN = 0
 private const val CHECK_PIN_AND_BIO = 1
 private const val CHECK_PIN_WHILE_FALSE = 2
@@ -41,7 +45,7 @@ class PinBox : DialogFragment() {
     // Диалоговое окно ввода и проверки PIN.
 
     interface OnPinResultListener {
-        fun onPinResult(action: String, result: Boolean, message: String, pin: String)
+        fun onPinResult(action: String, result: Boolean, message: String)
     }
     companion object {
         const val INTENT_PIN_ACTION = "pin_action"
@@ -73,20 +77,18 @@ class PinBox : DialogFragment() {
     private val btnBack: Button by lazy { dlg.findViewById(R.id.btnBack)!!}
     private val btnCancel: Button by lazy { dlg.findViewById(R.id.btnCancel)!!}
     private val btnBiomeric: Button by lazy { dlg.findViewById(R.id.btnBiomeric)!!}
-    private val pin1: ImageView by lazy { dlg.findViewById(R.id.pin1)!!}
-    private val pin2: ImageView by lazy { dlg.findViewById(R.id.pin2)!!}
-    private val pin3: ImageView by lazy { dlg.findViewById(R.id.pin3)!!}
-    private val pin4: ImageView by lazy { dlg.findViewById(R.id.pin4)!!}
-    private val pin5: ImageView by lazy { dlg.findViewById(R.id.pin5)!!}
-    private val pin6: ImageView by lazy { dlg.findViewById(R.id.pin6)!!}
+    private val bullet1: ImageView by lazy { dlg.findViewById(R.id.bullet1)!!}
+    private val bullet2: ImageView by lazy { dlg.findViewById(R.id.bullet2)!!}
+    private val bullet3: ImageView by lazy { dlg.findViewById(R.id.bullet3)!!}
+    private val bullet4: ImageView by lazy { dlg.findViewById(R.id.bullet4)!!}
+    private val bullet5: ImageView by lazy { dlg.findViewById(R.id.bullet5)!!}
+    private val bullet6: ImageView by lazy { dlg.findViewById(R.id.bullet6)!!}
     private val errorMessage: TextView by lazy {dlg.findViewById(R.id.errorMessage)!!}
 
 
     private val action: String by lazy { requireArguments().getString(INTENT_PIN_ACTION,"") }
     private val screen: String by lazy { requireArguments().getString(INTENT_PIN_SCREEN,"") }
 
-    private var pinCode = ""
-    private var pinCode1 = ""
     private var variant = CHECK_PIN
     private var step = 0
 
@@ -107,7 +109,7 @@ class PinBox : DialogFragment() {
             ACTION_ENTER_PIN -> {
                 // Проверить PIN и вернуть результат проверки.
                 builder.setTitle(getString(R.string.enter_PIN))
-                variant = if (appEnableBiometric) {
+                variant = if (enableBiometric) {
                     CHECK_PIN_AND_BIO
                 } else {
                     CHECK_PIN_WHILE_FALSE
@@ -127,8 +129,8 @@ class PinBox : DialogFragment() {
             }
 
             ACTION_UPDATE_PIN -> {
-                if (appPinCode.isBlank()) {
-                    // Ввод два раза нового PIN, если старый - пустой.
+                if (!isHaveHashPin) {
+                    // Ввод два раза нового PIN, если старого нет.
                     builder.setTitle(getString(R.string.enter_PIN1))
                     variant = ENTER_NEW_PIN
                 } else {
@@ -147,42 +149,44 @@ class PinBox : DialogFragment() {
 
     override fun onResume() {
         super.onResume()
+        clearAllPins()
         btn0.setOnClickListener {
-            addPin("0")
+            addCharPin('0')
         }
         btn1.setOnClickListener {
-            addPin("1")
+            addCharPin('1')
         }
         btn2.setOnClickListener {
-            addPin("2")
+            addCharPin('2')
         }
         btn3.setOnClickListener {
-            addPin("3")
+            addCharPin('3')
         }
         btn4.setOnClickListener {
-            addPin("4")
+            addCharPin('4')
         }
         btn5.setOnClickListener {
-            addPin("5")
+            addCharPin('5')
         }
         btn6.setOnClickListener {
-            addPin("6")
+            addCharPin('6')
         }
         btn7.setOnClickListener {
-            addPin("7")
+            addCharPin('7')
         }
         btn8.setOnClickListener {
-            addPin("8")
+            addCharPin('8')
         }
         btn9.setOnClickListener {
-            addPin("9")
+            addCharPin('9')
         }
         btnBack.setOnClickListener {
-            deletePin()
+            deleteCharPin()
         }
         btnCancel.setOnClickListener {
             pinListener.onPinResult(action, false,
-                getString(R.string.PIN_cancel), "")
+                getString(R.string.PIN_cancel))
+            clearAllPins()
             dismiss()
         }
         if (variant == CHECK_PIN_AND_BIO) {
@@ -193,108 +197,118 @@ class PinBox : DialogFragment() {
         }
     }
 
-
-    fun addPin(symbol: String) {
+    fun addCharPin(digit: Char) {
         errorMessage.text = ""
-        if (pinCode.length < 6) {
-            pinCode += symbol
-            pinsAdd(pinCode.length)
-        }
-        if (pinCode.length == 6) {
-            check()
-        }
-    }
-
-    fun deletePin() {
-        errorMessage.text = ""
-        if (pinCode.isNotEmpty()) {
-            pinCode = pinCode.dropLast(1)
-            pinsDel(pinCode.length)
-        }
-    }
-
-    fun pinsAdd(num: Int) {
-        when (num) {
-            1 -> pin1.setImageResource(R.drawable.circle_on)
-            2 -> pin2.setImageResource(R.drawable.circle_on)
-            3 -> pin3.setImageResource(R.drawable.circle_on)
-            4 -> pin4.setImageResource(R.drawable.circle_on)
-            5 -> pin5.setImageResource(R.drawable.circle_on)
-            6 -> pin6.setImageResource(R.drawable.circle_on)
-        }
-    }
-
-    fun pinsDel(num:Int) {
-        when (num) {
-            0 -> pin1.setImageResource(R.drawable.circle_off)
-            1 -> pin2.setImageResource(R.drawable.circle_off)
-            2 -> pin3.setImageResource(R.drawable.circle_off)
-            3 -> pin4.setImageResource(R.drawable.circle_off)
-            4 -> pin5.setImageResource(R.drawable.circle_off)
-            5 -> pin6.setImageResource(R.drawable.circle_off)
-        }
-    }
-
-    fun pinsClear() {
-        pin1.setImageResource(R.drawable.circle_off)
-        pin2.setImageResource(R.drawable.circle_off)
-        pin3.setImageResource(R.drawable.circle_off)
-        pin4.setImageResource(R.drawable.circle_off)
-        pin5.setImageResource(R.drawable.circle_off)
-        pin6.setImageResource(R.drawable.circle_off)
-    }
-
-    fun check() {
-        when (variant) {
-            RETURN_THE_PIN -> {
-                // Вариант. Вернуть PIN.
-                pinListener.onPinResult(action, true, "",  pinCode )
-                dismiss()
+        if (pinIndex < pinBuffer.size) {
+            pinBuffer[pinIndex] = digit
+            pinIndex++
+            bulletsAdd(pinIndex)
+            if (pinIndex == pinBuffer.size) {
+                validatePin()
             }
+        }
+    }
 
+    fun deleteCharPin() {
+        errorMessage.text = ""
+        if (pinIndex > 0) {
+            pinIndex--
+            pinBuffer[pinIndex] = '\u0000'
+            bulletDel(pinIndex)
+        }
+    }
+
+    fun clearAllPins() {
+        pinBuffer.fill('\u0000')
+        pinBuffer1.fill('\u0000')
+        pinIndex=0
+    }
+
+    fun bulletsAdd(num: Int) {
+        when (num) {
+            1 -> bullet1.setImageResource(R.drawable.circle_on)
+            2 -> bullet2.setImageResource(R.drawable.circle_on)
+            3 -> bullet3.setImageResource(R.drawable.circle_on)
+            4 -> bullet4.setImageResource(R.drawable.circle_on)
+            5 -> bullet5.setImageResource(R.drawable.circle_on)
+            6 -> bullet6.setImageResource(R.drawable.circle_on)
+        }
+    }
+
+    fun bulletDel(num:Int) {
+        when (num) {
+            0 -> bullet1.setImageResource(R.drawable.circle_off)
+            1 -> bullet2.setImageResource(R.drawable.circle_off)
+            2 -> bullet3.setImageResource(R.drawable.circle_off)
+            3 -> bullet4.setImageResource(R.drawable.circle_off)
+            4 -> bullet5.setImageResource(R.drawable.circle_off)
+            5 -> bullet6.setImageResource(R.drawable.circle_off)
+        }
+    }
+
+    fun bulletsClear() {
+        bullet1.setImageResource(R.drawable.circle_off)
+        bullet2.setImageResource(R.drawable.circle_off)
+        bullet3.setImageResource(R.drawable.circle_off)
+        bullet4.setImageResource(R.drawable.circle_off)
+        bullet5.setImageResource(R.drawable.circle_off)
+        bullet6.setImageResource(R.drawable.circle_off)
+    }
+
+    fun validatePin() {
+        when (variant) {
             CHECK_PIN -> {
                 // Вариант. Проверить PIN и вернуть результат проверки.
-                if (appPinCode == pinCode) {
-                    pinListener.onPinResult(action, true, "ok", pinCode)
+                if (checkPin()) {
+                    pinListener.onPinResult(action, true, "ok")
+                    if (action == ACTION_DELETE_PIN) {
+                        deleteHashPin()
+                        setBiometricLogin(false)
+                    }
                 } else {
                     pinListener.onPinResult(action, false,
-                        getString(R.string.PIN_bad), "")
+                        getString(R.string.PIN_bad))
                 }
+                clearAllPins()
                 dismiss()
             }
 
             CHECK_PIN_WHILE_FALSE, CHECK_PIN_AND_BIO -> {
                 // Вариант. Проверять PIN, пока не введётся правильный и вернуть результат проверки..
-                if (appPinCode == pinCode) {
-                    pinListener.onPinResult(action, true, "ok", pinCode)
+                if (checkPin()) {
+                    pinListener.onPinResult(action, true, "ok")
+                    clearAllPins()
                     dismiss()
                 } else {
                     errorMessage.setText(R.string.error_PIN)
-                    pinCode = ""
-                    pinsClear()
+                    clearAllPins()
+                    bulletsClear()
                 }
             }
 
             ENTER_NEW_PIN -> {
-                // Вариант. Ввод два раза нового PIN. Возврат нового PIN.
+                // Вариант. Ввод два раза нового PIN.
                 when (step) {
                     0 -> {
-                        pinCode1 = pinCode
                         step += 1
-                        pinCode = ""
-                        pinsClear()
+                        pinBuffer.copyInto(pinBuffer1)
+                        pinBuffer.fill('\u0000')
+                        pinIndex=0
+                        bulletsClear()
                         dlg.setTitle(getString(R.string.enter_PIN2))
                     }
 
                     1 -> {
-                        if (pinCode1 == pinCode) {
-                            appPinCode = pinCode
+                        if (pinBuffer.contentEquals(pinBuffer1)) {
+                            setHashPin(pinBuffer) // Записать новый PIN в секретное хранище
+                            clearAllPins()
                             pinListener.onPinResult(action, true,
-                                getString(R.string.PIN_changed), pinCode)
+                                getString(R.string.PIN_changed))
                             dismiss()
                         } else {
+                            clearAllPins()
                             pinListener.onPinResult(action, false,
-                                getString(R.string.PIN_new_bad), "")
+                                getString(R.string.PIN_new_bad))
                             dismiss()
                         }
 
@@ -303,38 +317,43 @@ class PinBox : DialogFragment() {
             }
 
             CHECK_PIN_ENTER_NEW_PIN -> {
-                // Вариант. Проверка старого PIN, ввод два раза нового PIN. Возврат нового PIN.
+                // Вариант. Проверка старого PIN, ввод два раза нового PIN.
                 when (step) {
                     0 -> {
-                        if (appPinCode == pinCode) {
+                        if (checkPin()) {
                             step += 1
-                            pinCode = ""
-                            pinsClear()
+                            pinBuffer.fill('\u0000')
+                            pinIndex=0
+                            bulletsClear()
                             dlg.setTitle(getString(R.string.enter_PIN1))
                         } else {
+                            clearAllPins()
                             pinListener.onPinResult(action, false,
-                                getString(R.string.PIN_bad), "")
+                                getString(R.string.PIN_bad))
                             dismiss()
                         }
                     }
 
                     1 -> {
-                        pinCode1 = pinCode
                         step += 1
-                        pinCode = ""
-                        pinsClear()
+                        pinBuffer.copyInto(pinBuffer1)
+                        pinBuffer.fill('\u0000')
+                        pinIndex=0
+                        bulletsClear()
                         dlg.setTitle(getString(R.string.enter_PIN2))
                     }
 
                     2 -> {
-                        if (pinCode1 == pinCode) {
-                            appPinCode = pinCode
+                        if (pinBuffer.contentEquals(pinBuffer1)) {
+                            setHashPin(pinBuffer) // Записать новый PIN в секретное хранище
+                            clearAllPins()
                             pinListener.onPinResult(action, true,
-                                getString(R.string.PIN_changed), pinCode)
+                                getString(R.string.PIN_changed))
                             dismiss()
                         } else {
+                            clearAllPins()
                             pinListener.onPinResult(action, false,
-                                getString(R.string.PIN_new_bad), "")
+                                getString(R.string.PIN_new_bad))
                             dismiss()
                         }
 
@@ -354,7 +373,8 @@ class PinBox : DialogFragment() {
                 override fun onAuthenticationSucceeded(
                     result: BiometricPrompt.AuthenticationResult
                 ) {
-                    pinListener.onPinResult(action, true, "ok", "")
+                    clearAllPins()
+                    pinListener.onPinResult(action, true, "ok")
                     dismiss()
                 }
 
@@ -375,6 +395,11 @@ class PinBox : DialogFragment() {
             .build()
 
         biometricPrompt.authenticate(promptInfo)
+    }
+
+    fun checkPin(): Boolean {
+        // Сравнить хеш pinBuffer с хешем из секретного хранилища
+        return verifyPin(pinBuffer)
     }
 
 }

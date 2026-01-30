@@ -7,27 +7,31 @@ import androidx.core.content.edit
 
 // Переменные и функции для хранения установок в SharedPreferences.
 
-var appPassed = true
-var appEnableBiometric = false
 var appThemeMode = AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+    internal set
+var progressClockWise: Boolean = true
+    internal set
+var enableBiometric: Boolean = false
+    internal set
 
 private const val NAME_SETTINGS = "settings"
 private const val NAME_PASSED = "passed"
 private const val NAME_THEME_MODE = "thememode"
 private const val NAME_BIO = "enablebiometric"
 
-fun setPassed() {
+fun setProgressMode(passed: Boolean) {
     // Записать способ показа Progress в SharedPreferences
+    progressClockWise = passed
     val settings = appContext.getSharedPreferences(NAME_SETTINGS, MODE_PRIVATE)
     settings.edit {
-        putBoolean(NAME_PASSED, appPassed)
+        putBoolean(NAME_PASSED, progressClockWise)
     }
 }
 
-fun getPassed() {
+fun getProgressMode() {
     // Считать способ показа Progress из SharedPreferences
     val settings = appContext.getSharedPreferences(NAME_SETTINGS, MODE_PRIVATE)
-    appPassed =  settings.getBoolean(NAME_PASSED, true)
+    progressClockWise =  settings.getBoolean(NAME_PASSED, true)
 }
 
 private fun installThemeMode() {
@@ -38,8 +42,9 @@ private fun installThemeMode() {
     }
 }
 
-fun setThemeMode() {
+fun setThemeMode(mode: Int) {
     // Записать режим темы в SharedPreferences
+    appThemeMode = mode
     val settings = appContext.getSharedPreferences(NAME_SETTINGS, MODE_PRIVATE)
     settings.edit {
         putInt(NAME_THEME_MODE, appThemeMode)
@@ -54,17 +59,17 @@ fun getThemeMode() {
     installThemeMode()
 }
 
-fun setEnableBiometric() {
+fun setBiometricLogin(biomeric: Boolean) {
     // Записать разрешение аутентификации по биометрии в SharedPreferences
+    enableBiometric = biomeric
     val settings = appContext.getSharedPreferences(NAME_SETTINGS, MODE_PRIVATE)
     settings.edit {
-        putBoolean(NAME_BIO, appEnableBiometric && isHaveBiometric)
+        putBoolean(NAME_BIO, enableBiometric && isHaveBiometric)
     }
 }
 
-
-fun getEnableBiometric() {
+fun getBiometricLogin() {
     // Считать разрешение аутентификации по биометрии из SharedPreferences
     val settings = appContext.getSharedPreferences(NAME_SETTINGS, MODE_PRIVATE)
-    appEnableBiometric =  settings.getBoolean(NAME_BIO, false) && isHaveBiometric
+    enableBiometric =  settings.getBoolean(NAME_BIO, false) && isHaveBiometric
 }

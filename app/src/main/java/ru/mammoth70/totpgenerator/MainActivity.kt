@@ -25,7 +25,8 @@ import kotlinx.coroutines.launch
 import kotlin.lazy
 import ru.mammoth70.totpgenerator.App.Companion.appSecrets
 import ru.mammoth70.totpgenerator.App.Companion.appTokens
-import ru.mammoth70.totpgenerator.App.Companion.unLocked
+
+var unLocked = false
 
 class MainActivity : AppActivity(),
     SecretBox.OnAddResultListener, SecretBox.OnDeleteResultListener, PinBox.OnPinResultListener {
@@ -91,7 +92,7 @@ class MainActivity : AppActivity(),
             }
         }
 
-        if (!unLocked && appPinCode.isNotBlank()) {
+        if (!unLocked && isHaveHashPin) {
             // Ввод и проверка PIN-кода перед входом.
             enterPin()
         } else {
@@ -325,7 +326,7 @@ class MainActivity : AppActivity(),
         pinBox.show(this.supportFragmentManager, "PIN_DIALOG")
     }
 
-    override fun onPinResult(action: String, result: Boolean, message: String, pin: String) {
+    override fun onPinResult(action: String, result: Boolean, message: String) {
         // Обработчик возврата из PinDialog.
         if ((action == PinBox.ACTION_ENTER_PIN) && (!result)) {
             finish()
