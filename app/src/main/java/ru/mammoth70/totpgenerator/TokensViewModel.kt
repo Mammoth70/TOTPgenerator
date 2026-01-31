@@ -14,6 +14,7 @@ import java.util.Date
 import java.time.Duration
 import java.util.concurrent.CopyOnWriteArrayList
 
+const val GEN_ERROR = "------"
 val appSecrets: CopyOnWriteArrayList<OTPauth> =
     CopyOnWriteArrayList() // Список OTPauth, считывается из БД
 
@@ -29,25 +30,34 @@ class TokensViewModel : ViewModel() {
         flow {
             // При каждом обновлении триггера считываем актуальный глобальный список секретов.
             val currentSecrets = appSecrets.toList()
+            if (currentSecrets.isEmpty()) {
+                emit(emptyList())
+                return@flow // Завершаем выполнение пустого flow. Он "спит" до нового sendCommandUpdate()
+            }
             val generators = currentSecrets.map { createGenerator(it) }
+            val secretBytes = currentSecrets.map { it.secret.toByteArray() }
 
             // Цикл генерации токенов для этого набора секретов.
             while (true) {
                 val now = System.currentTimeMillis()
                 val sec = (now / 1000).toInt()
-
+                val dateForGenerator = Date(now)
                 // Генерируем список токенов на текущую секунду.
                 val tokenList = currentSecrets.mapIndexed { index, auth ->
                     val remain = auth.period - (sec % auth.period)
                     val progress = (auth.period - remain) * 100 / auth.period
-
+                    val generatedTotp = try {
+                        generators[index].generateCode(secretBytes[index], dateForGenerator)
+                    } catch (_: Exception) {
+                        GEN_ERROR
+                    }
                     Token(
                         id = auth.id,
                         label = auth.label,
                         issuer = auth.issuer,
                         remain = remain,
                         progress = progress,
-                        totp = generators[index].generateCode(auth.secret.toByteArray(), Date(now))
+                        totp = generatedTotp
                     )
                 }
 
