@@ -84,7 +84,6 @@ class DBhelper(context: Context?) : SQLiteOpenHelper(context, "totpDB",
                     appTokens.add(token)
                     num ++
                 }
-                appTokens.add(Token(num = num, id = FOOTER_TOKEN, label = ""))
             }
         }
     }

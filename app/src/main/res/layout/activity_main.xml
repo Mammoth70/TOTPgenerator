@@ -18,13 +18,13 @@
         android:layout_height="0dp"
         android:layout_weight="1">
 
-        <ListView
+        <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/tokensList"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
             android:divider="@null"
-            tools:listitem="@layout/item_list"
+            tools:listitem="@layout/item_token"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"

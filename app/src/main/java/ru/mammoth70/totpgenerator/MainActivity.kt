@@ -8,12 +8,14 @@ import android.os.Build
 import android.os.Bundle
 import android.os.PersistableBundle
 import android.view.View
-import android.widget.ListView
 import android.widget.PopupMenu
 import androidx.activity.viewModels
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.SimpleItemAnimator
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
@@ -42,9 +44,8 @@ class MainActivity : AppActivity(),
 
     private val floatingActionButtonQR: FloatingActionButton by lazy { findViewById(R.id.floatingActionButtonQR) }
     private val navView: BottomNavigationView by lazy { findViewById(R.id.bottom_navigation) }
-    private val tokensList: ListView by lazy { findViewById(R.id.tokensList) }
-    private val adapter : TokensAdapter by
-        lazy { TokensAdapter(this, R.layout.item_list, appTokens) }
+    private val tokensList: RecyclerView by lazy { findViewById(R.id.tokensList) }
+    private val adapter : TokensAdapter by lazy { TokensAdapter() }
     private val viewModel: TokensViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -76,8 +77,10 @@ class MainActivity : AppActivity(),
         adapter.setOnBtnMenuClick(::showPopupMenu)
         adapter.setOnItemViewClick(::itemClick)
         adapter.setOnItemViewLongClick(::itemLongClick)
-        tokensList.setAdapter(adapter)
+        tokensList.adapter = adapter
+        tokensList.layoutManager = LinearLayoutManager(this)
         tokensList.isClickable = true
+        (tokensList.itemAnimator as? SimpleItemAnimator)?.supportsChangeAnimations = false
 
         // Настройка ViewModel.
         ViewModelProvider(this)[TokensViewModel::class.java].liveData.observe(this)
@@ -88,7 +91,7 @@ class MainActivity : AppActivity(),
             // Проверка на то, что массивы секретов и токенов синхронизированы.
             if ((appTokens.size > num) && appTokens[num].id == appSecrets[num].id) {
                 appTokens[num] = token
-                adapter.notifyDataSetChanged()
+                adapter.submitList(appTokens.toList())
             }
         }
 
@@ -133,7 +136,7 @@ class MainActivity : AppActivity(),
         // Функция перечитывает списки OTPauth и токенов из БД,
         // и заставляет переинициализироваться TokensViewModel.
         DBhelper.dbHelper.readAllSecrets()
-        adapter.notifyDataSetChanged()
+        adapter.submitList(appTokens.toList())
         viewModel.sendCommandUpdate()
     }
 
@@ -212,49 +215,39 @@ class MainActivity : AppActivity(),
         secretDialog.show(this.supportFragmentManager, "SECRET_DIALOG")
     }
 
-    private fun itemLongClick(view: View) : Boolean {
+    private fun itemLongClick(position: Int) : Boolean {
         // Обработчик двойного клика по токену.
         // Вызывает функцию копирования токена в clipboard.
-        val position = view.tag as? Int ?: return false
-        if (position >= 0 && position < adapter.count) {
-            tokenToClipBoard(position)
-            return true
-        }
-        return false
+        tokenToClipBoard(position)
+        return true
     }
 
-    private fun itemClick(view: View) {
+    private fun itemClick(position: Int) {
         // Обработчик клика по токену.
         // Вызывает функцию копирования токена в clipboard.
-        val position = view.tag as? Int ?: return
-        if (position >= 0 && position < adapter.count) {
-            tokenToClipBoard(position)
-        }
+        tokenToClipBoard(position)
     }
 
-    private fun showPopupMenu(view: View) {
+    private fun showPopupMenu(view: View, position: Int) {
         // Функция вызывается по клику на кнопку меню.
-        val position = view.tag as? Int ?: return
-        if (position >= 0 && position < adapter.count) {
-            val popupMenu = PopupMenu(this, view)
-            popupMenu.inflate(R.menu.token_menu)
-            popupMenu.setOnMenuItemClickListener { item ->
-                when (item.itemId) {
-                    R.id.item_view_token -> {
-                        viewSecret(position)
-                        true
-                    }
-
-                    R.id.item_delete_token -> {
-                        deleteSecret(position)
-                        true
-                    }
-
-                    else -> false
+        val popupMenu = PopupMenu(this, view)
+        popupMenu.inflate(R.menu.token_menu)
+        popupMenu.setOnMenuItemClickListener { item ->
+            when (item.itemId) {
+                R.id.item_view_token -> {
+                    viewSecret(position)
+                    true
                 }
+
+                R.id.item_delete_token -> {
+                    deleteSecret(position)
+                    true
+                }
+
+                else -> false
             }
-            popupMenu.show()
         }
+        popupMenu.show()
     }
 
     fun tokenToClipBoard(num: Int) {

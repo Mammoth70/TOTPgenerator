@@ -1,123 +1,130 @@
 package ru.mammoth70.totpgenerator
 
-import android.annotation.SuppressLint
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.TextView
-import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.progressindicator.CircularProgressIndicator
 
-internal class TokensAdapter(context: Context, private val layout: Int, private val tokensList: ArrayList<Token>) :
-    ArrayAdapter<Token>(context, layout, tokensList) {
-    // Класс ArrayAdapter для показа токенов.
-    private var btnMenuClick: (view: View) -> Unit = { }
-    private var itemClick: (view: View) -> Unit = { }
-    private var itemViewLongClick: (view: View) -> Boolean = { false }
+private const val TYPE_ITEM = 0
+private const val TYPE_FOOTER = 1
 
-    private class ViewHolder(view: View) {
-        // Представление viewHolder'а для списка токенов.
+internal class TokensAdapter : ListAdapter<Token, RecyclerView.ViewHolder>(TokenDiffComparator()) {
+
+    private var onBtnMenuClick: (view: View, position: Int) -> Unit = {  _, _ ->}
+    private var onItemClick: (position: Int) -> Unit = { }
+    private var onItemLongClick: (position: Int) -> Boolean = { false }
+
+    fun setOnBtnMenuClick(listener: (View, Int) -> Unit) { onBtnMenuClick = listener }
+    fun setOnItemViewClick(listener: (Int) -> Unit) { onItemClick = listener }
+    fun setOnItemViewLongClick(listener: (Int) -> Boolean) { onItemLongClick = listener }
+
+    override fun getItemCount(): Int {
+        val actualCount = super.getItemCount()
+        // Футер нужен только если список не пуст
+        return if (actualCount > 0) actualCount + 1 else 0
+    }
+
+    override fun getItemViewType(position: Int): Int {
+        return if (position == super.getItemCount()) TYPE_FOOTER else TYPE_ITEM
+    }
+
+    class FooterViewHolder(view: View) : RecyclerView.ViewHolder(view)
+
+    inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val itemToken: MaterialCardView = view.findViewById(R.id.itemToken)
         val btnMenu: Button = view.findViewById(R.id.btnMenu)
         val nameView: TextView = view.findViewById(R.id.name)
         val totpView: TextView = view.findViewById(R.id.totp)
         val remainView: TextView = view.findViewById(R.id.remain)
         val progressView: CircularProgressIndicator = view.findViewById(R.id.progress)
+
+        init {
+            btnMenu.setOnClickListener {
+                val pos = bindingAdapterPosition
+                if (pos != RecyclerView.NO_POSITION) onBtnMenuClick(it, pos)
+            }
+            itemToken.setOnClickListener {
+                val pos = bindingAdapterPosition
+                if (pos != RecyclerView.NO_POSITION) onItemClick(pos)
+            }
+            itemToken.setOnLongClickListener {
+                val pos = bindingAdapterPosition
+                if (pos != RecyclerView.NO_POSITION) { onItemLongClick(pos) } else false
+            }
+        }
     }
 
-    @SuppressLint("SetTextI18n")
-    override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-        // Обработка и вывод токена.
-        val holder: ViewHolder
-        val rowView : View
-
-        if (convertView == null) {
-            rowView = LayoutInflater.from(context).inflate(this.layout, parent, false)
-            holder = ViewHolder(rowView)
-            rowView.tag = holder
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+        return if (viewType == TYPE_FOOTER) {
+            val footer = View(parent.context).apply {
+                layoutParams = ViewGroup.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    (100 * resources.displayMetrics.density).toInt()
+                )
+            }
+            FooterViewHolder(footer)
         } else {
-            rowView = convertView
-            holder = rowView.tag as ViewHolder
+            val view = LayoutInflater.from(parent.context).inflate(R.layout.item_token, parent, false)
+            ViewHolder(view)
         }
+    }
 
-        val token = tokensList[position]
-
-        if (token.id != FOOTER_TOKEN) {
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        if (holder is ViewHolder && position < super.getItemCount()) {
+            val token = getItem(position)
             holder.nameView.text = if (token.issuer.isBlank()) token.label else "${token.issuer}:${token.label}"
             holder.totpView.text = token.totp
+            updateProgress(holder, token)
+        }
+    }
 
-            val hasTotp = token.totp.isNotEmpty()
-            holder.remainView.visibility = if (hasTotp) View.VISIBLE else View.INVISIBLE
-            holder.progressView.visibility = if (hasTotp) View.VISIBLE else View.INVISIBLE
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int, payloads: MutableList<Any>) {
+        val payloadsSet = payloads.firstOrNull() as? Set<*>
+        if (holder is ViewHolder && position < super.getItemCount() && payloadsSet != null) {
+            val token = getItem(position)
 
-            if (hasTotp) {
-                holder.remainView.text = token.remain.toString()
-                holder.progressView.apply {
-                    indicatorDirection = if (progressClockWise)
-                        CircularProgressIndicator.INDICATOR_DIRECTION_CLOCKWISE
-                    else
-                        CircularProgressIndicator.INDICATOR_DIRECTION_COUNTERCLOCKWISE
-
-                    this.progress = if (progressClockWise) token.progress else (100 - token.progress)
-                }
+            if (payloadsSet.contains("PAYLOAD_TOTP")) {
+                holder.totpView.text = token.totp
             }
 
-            holder.btnMenu.apply {
-                tag = position
-                visibility = View.VISIBLE
-                setOnClickListener { btnMenuClick(it) }
-            }
-
-            holder.itemToken.apply {
-                tag = position
-                setOnClickListener { itemClick(it) }
-                setOnLongClickListener { itemViewLongClick(it) }
-                isClickable = true
-                isLongClickable = true
-                setStrokeColor(ContextCompat.getColorStateList(context, R.color.md_theme_outline))
+            if (payloadsSet.contains("PAYLOAD_PROGRESS")) {
+                updateProgress(holder, token)
             }
 
         } else {
-            // Состояние футера
-            holder.nameView.text = ""
-            holder.totpView.text = ""
-            holder.progressView.visibility = View.INVISIBLE
-            holder.remainView.visibility = View.INVISIBLE
-            holder.btnMenu.apply {
-                tag = FOOTER_TOKEN
-                visibility = View.INVISIBLE
-                setOnClickListener(null)
-            }
-
-            holder.itemToken.apply {
-                tag = FOOTER_TOKEN
-                setOnClickListener(null)
-                setOnLongClickListener(null)
-                isClickable = false
-                isLongClickable = false
-                setStrokeColor(ContextCompat.getColorStateList(context, android.R.color.transparent))
-            }
+            super.onBindViewHolder(holder, position, payloads)
         }
-
-        return rowView
     }
 
-    fun setOnBtnMenuClick(listener: (View) -> Unit) {
-        // Функция устанавливает click listener для кнопки меню на элементе.
-        btnMenuClick = listener
+    private fun updateProgress(holder: ViewHolder, token: Token) {
+        holder.remainView.text = token.remain.toString()
+        holder.progressView.apply {
+            indicatorDirection = if (progressClockWise)
+                CircularProgressIndicator.INDICATOR_DIRECTION_CLOCKWISE
+            else
+                CircularProgressIndicator.INDICATOR_DIRECTION_COUNTERCLOCKWISE
+
+            this.progress = if (progressClockWise) token.progress else (100 - token.progress)
+        }
     }
 
-    fun setOnItemViewClick(listener: (View) -> Unit) {
-        // Функция устанавливает click listener для всего элемента списка.
-        itemClick = listener
-    }
-    fun setOnItemViewLongClick(listener: (View) -> Boolean) {
-        // Функция устанавливает long click listener для всего элемента списка.
-        itemViewLongClick = listener
-    }
+    class TokenDiffComparator : DiffUtil.ItemCallback<Token>() {
+        override fun areItemsTheSame(oldItem: Token, newItem: Token) = oldItem.id == newItem.id
+        override fun areContentsTheSame(oldItem: Token, newItem: Token) = oldItem == newItem
 
+        override fun getChangePayload(oldItem: Token, newItem: Token): Any? {
+            val diff = mutableSetOf<String>()
+            if (oldItem.totp != newItem.totp) diff.add("PAYLOAD_TOTP")
+            if (oldItem.progress != newItem.progress || oldItem.remain != newItem.remain) {
+                diff.add("PAYLOAD_PROGRESS")
+            }
+            return diff.ifEmpty { null }
+        }
+    }
 }

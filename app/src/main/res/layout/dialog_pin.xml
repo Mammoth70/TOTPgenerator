@@ -14,7 +14,7 @@
         android:layout_height="320dp">
 
         <ImageView
-            android:id="@+id/pin1"
+            android:id="@+id/bullet1"
             android:layout_width="20dp"
             android:layout_height="20dp"
             android:layout_centerInParent="true"
@@ -29,7 +29,7 @@
             tools:ignore="ContentDescription,ImageContrastCheck" />
 
         <ImageView
-            android:id="@+id/pin2"
+            android:id="@+id/bullet2"
             android:layout_width="20dp"
             android:layout_height="20dp"
             android:layout_centerInParent="true"
@@ -44,7 +44,7 @@
             tools:ignore="ContentDescription,ImageContrastCheck" />
 
         <ImageView
-            android:id="@+id/pin3"
+            android:id="@+id/bullet3"
             android:layout_width="20dp"
             android:layout_height="20dp"
             android:layout_centerInParent="true"
@@ -59,7 +59,7 @@
             tools:ignore="ContentDescription,ImageContrastCheck" />
 
         <ImageView
-            android:id="@+id/pin4"
+            android:id="@+id/bullet4"
             android:layout_width="20dp"
             android:layout_height="20dp"
             android:layout_centerInParent="true"
@@ -74,7 +74,7 @@
             tools:ignore="ContentDescription,ImageContrastCheck" />
 
         <ImageView
-            android:id="@+id/pin5"
+            android:id="@+id/bullet5"
             android:layout_width="20dp"
             android:layout_height="20dp"
             android:layout_centerInParent="true"
@@ -89,7 +89,7 @@
             tools:ignore="ContentDescription,ImageContrastCheck" />
 
         <ImageView
-            android:id="@+id/pin6"
+            android:id="@+id/bullet6"
             android:layout_width="20dp"
             android:layout_height="20dp"
             android:layout_centerInParent="true"
@@ -297,7 +297,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:icon="@drawable/ic_action_fingerprint"
-        app:iconSize="36dp"
+        app:iconSize="48dp"
         android:visibility="gone"
         tools:visibility="visible" />
 </LinearLayout>
