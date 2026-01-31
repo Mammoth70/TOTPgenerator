@@ -14,29 +14,38 @@ import com.google.android.material.progressindicator.CircularProgressIndicator
 private const val TYPE_ITEM = 0
 private const val TYPE_FOOTER = 1
 
+private const val PAYLOAD_TOTP = "PAYLOAD_TOTP"
+private const val PAYLOAD_PROGRESS = "PAYLOAD_PROGRESS"
+
 internal class TokensAdapter : ListAdapter<Token, RecyclerView.ViewHolder>(TokenDiffComparator()) {
+    // Класс ListAdapter для показа токенов.
 
-    private var onBtnMenuClick: (view: View, position: Int) -> Unit = {  _, _ ->}
-    private var onItemClick: (position: Int) -> Unit = { }
-    private var onItemLongClick: (position: Int) -> Boolean = { false }
+    private var onBtnMenuClick: (view: View, id: Long) -> Unit = { _, _ ->}
+    private var onItemClick: (totp: String) -> Unit = { }
+    private var onItemLongClick: (totp: String) -> Boolean = { false }
 
-    fun setOnBtnMenuClick(listener: (View, Int) -> Unit) { onBtnMenuClick = listener }
-    fun setOnItemViewClick(listener: (Int) -> Unit) { onItemClick = listener }
-    fun setOnItemViewLongClick(listener: (Int) -> Boolean) { onItemLongClick = listener }
+    fun setOnBtnMenuClick(listener: (View, Long) -> Unit) { onBtnMenuClick = listener }
+    fun setOnItemViewClick(listener: (String) -> Unit) { onItemClick = listener }
+    fun setOnItemViewLongClick(listener: (String) -> Boolean) { onItemLongClick = listener }
 
     override fun getItemCount(): Int {
+        // Функция вызывается LayoutManager'ом и возвращает общее количество элементов в списке + футер.
         val actualCount = super.getItemCount()
         // Футер нужен только если список не пуст
         return if (actualCount > 0) actualCount + 1 else 0
     }
 
     override fun getItemViewType(position: Int): Int {
+        // Функция определяет тип элемента (токен или футер).
         return if (position == super.getItemCount()) TYPE_FOOTER else TYPE_ITEM
     }
 
     class FooterViewHolder(view: View) : RecyclerView.ViewHolder(view)
+    // Представление viewHolder для футера.
 
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        // Представление viewHolder для токена.
+
         val itemToken: MaterialCardView = view.findViewById(R.id.itemToken)
         val btnMenu: Button = view.findViewById(R.id.btnMenu)
         val nameView: TextView = view.findViewById(R.id.name)
@@ -47,20 +56,25 @@ internal class TokensAdapter : ListAdapter<Token, RecyclerView.ViewHolder>(Token
         init {
             btnMenu.setOnClickListener {
                 val pos = bindingAdapterPosition
-                if (pos != RecyclerView.NO_POSITION) onBtnMenuClick(it, pos)
+                if (pos != RecyclerView.NO_POSITION)
+                    onBtnMenuClick(it, getItem(pos).id)
             }
             itemToken.setOnClickListener {
                 val pos = bindingAdapterPosition
-                if (pos != RecyclerView.NO_POSITION) onItemClick(pos)
+                if (pos != RecyclerView.NO_POSITION)
+                    onItemClick(getItem(pos).totp)
             }
             itemToken.setOnLongClickListener {
                 val pos = bindingAdapterPosition
-                if (pos != RecyclerView.NO_POSITION) { onItemLongClick(pos) } else false
-            }
+                if (pos != RecyclerView.NO_POSITION) {
+                    onItemLongClick(getItem(pos).totp)
+                } else false
+           }
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+        // Функция вызывается LayoutManager'ом, чтобы создать viewHolder'ы и передать им макет.
         return if (viewType == TYPE_FOOTER) {
             val footer = View(parent.context).apply {
                 layoutParams = ViewGroup.LayoutParams(
@@ -76,24 +90,27 @@ internal class TokensAdapter : ListAdapter<Token, RecyclerView.ViewHolder>(Token
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        // Функция привязывает к viewHolder'у данные списка токенов.
         if (holder is ViewHolder && position < super.getItemCount()) {
             val token = getItem(position)
             holder.nameView.text = if (token.issuer.isBlank()) token.label else "${token.issuer}:${token.label}"
-            holder.totpView.text = token.totp
+            updateTOTP(holder, token)
             updateProgress(holder, token)
         }
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int, payloads: MutableList<Any>) {
+        // Перегруженная функция привязывает к viewHolder'у только изменённые данные списка токенов.
+
         val payloadsSet = payloads.firstOrNull() as? Set<*>
         if (holder is ViewHolder && position < super.getItemCount() && payloadsSet != null) {
             val token = getItem(position)
 
-            if (payloadsSet.contains("PAYLOAD_TOTP")) {
-                holder.totpView.text = token.totp
+            if (payloadsSet.contains(PAYLOAD_TOTP)) {
+                updateTOTP(holder, token)
             }
 
-            if (payloadsSet.contains("PAYLOAD_PROGRESS")) {
+            if (payloadsSet.contains(PAYLOAD_PROGRESS)) {
                 updateProgress(holder, token)
             }
 
@@ -102,7 +119,13 @@ internal class TokensAdapter : ListAdapter<Token, RecyclerView.ViewHolder>(Token
         }
     }
 
+    private fun updateTOTP(holder: ViewHolder, token: Token) {
+        // Вывод текста с токеном.
+        holder.totpView.text = token.totp
+    }
+
     private fun updateProgress(holder: ViewHolder, token: Token) {
+        // Настройка и вывод колёсика прогресса, вывод оставшихся секунд.
         holder.remainView.text = token.remain.toString()
         holder.progressView.apply {
             indicatorDirection = if (progressClockWise)
@@ -115,14 +138,16 @@ internal class TokensAdapter : ListAdapter<Token, RecyclerView.ViewHolder>(Token
     }
 
     class TokenDiffComparator : DiffUtil.ItemCallback<Token>() {
+        // Callback для рассчёта разницы между двумя элементами.
         override fun areItemsTheSame(oldItem: Token, newItem: Token) = oldItem.id == newItem.id
         override fun areContentsTheSame(oldItem: Token, newItem: Token) = oldItem == newItem
 
         override fun getChangePayload(oldItem: Token, newItem: Token): Any? {
+            // Функция определяет конкретные изменённые поля.
             val diff = mutableSetOf<String>()
-            if (oldItem.totp != newItem.totp) diff.add("PAYLOAD_TOTP")
+            if (oldItem.totp != newItem.totp) diff.add(PAYLOAD_TOTP)
             if (oldItem.progress != newItem.progress || oldItem.remain != newItem.remain) {
-                diff.add("PAYLOAD_PROGRESS")
+                diff.add(PAYLOAD_PROGRESS)
             }
             return diff.ifEmpty { null }
         }

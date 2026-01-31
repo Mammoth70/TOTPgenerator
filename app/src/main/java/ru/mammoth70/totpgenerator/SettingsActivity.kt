@@ -75,7 +75,7 @@ class SettingsActivity : AppActivity(), PinBox.OnPinResultListener {
         }
 
         btnChangePin.setOnClickListener { _ ->
-            // Вызов окна смены PIN
+            // Вызов окна смены PIN-кода.
             val bundle = Bundle()
             bundle.putString(PinBox.INTENT_PIN_ACTION, PinBox.ACTION_UPDATE_PIN)
             val pinBox = PinBox()
@@ -86,7 +86,7 @@ class SettingsActivity : AppActivity(), PinBox.OnPinResultListener {
         }
 
         btnDeletePin.setOnClickListener { _ ->
-            // Вызов окна удаления PIN
+            // Вызов окна удаления PIN-кода.
             val bundle = Bundle()
             bundle.putString(PinBox.INTENT_PIN_ACTION, PinBox.ACTION_DELETE_PIN)
             val pinBox = PinBox()

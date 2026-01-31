@@ -11,7 +11,6 @@ import android.view.View
 import android.widget.PopupMenu
 import androidx.activity.viewModels
 import androidx.fragment.app.FragmentActivity
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -25,8 +24,6 @@ import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.lazy
-import ru.mammoth70.totpgenerator.App.Companion.appSecrets
-import ru.mammoth70.totpgenerator.App.Companion.appTokens
 
 var unLocked = false
 
@@ -56,6 +53,8 @@ class MainActivity : AppActivity(),
             // Обработчик кнопки "назад".
             finish()
         }
+
+        // Настройка верхнего меню.
         topAppBar.setOnMenuItemClickListener { menuItem ->
             when (menuItem.itemId) {
                 // Обработчик меню "+".
@@ -73,6 +72,7 @@ class MainActivity : AppActivity(),
                 else -> false
             }
         }
+
         // Настройка адаптера.
         adapter.setOnBtnMenuClick(::showPopupMenu)
         adapter.setOnItemViewClick(::itemClick)
@@ -82,18 +82,8 @@ class MainActivity : AppActivity(),
         tokensList.isClickable = true
         (tokensList.itemAnimator as? SimpleItemAnimator)?.supportsChangeAnimations = false
 
-        // Настройка ViewModel.
-        ViewModelProvider(this)[TokensViewModel::class.java].liveData.observe(this)
-        { token ->
-            // Вызывается при получении нового токена из потока.
-            // Меняет список токенов и вызывает перестроение адаптера.
-            val num = token.num
-            // Проверка на то, что массивы секретов и токенов синхронизированы.
-            if ((appTokens.size > num) && appTokens[num].id == appSecrets[num].id) {
-                appTokens[num] = token
-                adapter.submitList(appTokens.toList())
-            }
-        }
+        // Подписка на ViewModel.
+        viewModel.tokensLiveData.observe(this) { adapter.submitList(it) }
 
         if (!unLocked && isHaveHashPin) {
             // Ввод и проверка PIN-кода перед входом.
@@ -107,14 +97,17 @@ class MainActivity : AppActivity(),
             addQRsecret()
         }
 
+        // Настройка нижнего меню.
         navView.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.item_settings -> {
+                    // Обработчик кнопки "Настройка".
                     val intent = Intent(this, SettingsActivity::class.java)
                     startActivity(intent)
                 }
 
                 R.id.item_about -> {
+                    // Обработчик кнопки "Инфо".
                     val bundle = Bundle()
                     bundle.putString(AboutBox.ABOUT_TITLE, getString(R.string.app_name))
                     val text =
@@ -130,14 +123,6 @@ class MainActivity : AppActivity(),
             }
             false
         }
-    }
-
-    fun refreshSecrets() {
-        // Функция перечитывает списки OTPauth и токенов из БД,
-        // и заставляет переинициализироваться TokensViewModel.
-        DBhelper.dbHelper.readAllSecrets()
-        adapter.submitList(appTokens.toList())
-        viewModel.sendCommandUpdate()
     }
 
     fun showSnackbar(message: String) {
@@ -170,7 +155,7 @@ class MainActivity : AppActivity(),
                             showSnackbar(R.string.key_add_error)
                         }
                     }
-                    refreshSecrets()
+                    viewModel.sendCommandUpdate()
                 } else {
                     showSnackbar(R.string.qr_code_error)
                 }
@@ -191,23 +176,23 @@ class MainActivity : AppActivity(),
         secretDialog.show(this.supportFragmentManager, "SECRET_DIALOG")
     }
 
-    fun viewSecret(num: Int) {
+    fun viewSecret(id: Long) {
         // Функция вызывает Dialog для чтения OTPauth.
         val bundle = Bundle()
         bundle.putString(SecretBox.INTENT_TOTP_ACTION, SecretBox.ACTION_TOTP_VIEW)
-        bundle.putInt(SecretBox.INTENT_TOTP_NUM, num)
+        bundle.putLong(SecretBox.INTENT_TOTP_ID, id)
         val secretDialog = SecretBox()
         secretDialog.setArguments(bundle)
         secretDialog.isCancelable = false
         secretDialog.show(this.supportFragmentManager, "SECRET_DIALOG")
     }
 
-    fun deleteSecret(num: Int) {
+    fun deleteSecret(id: Long) {
         // Функция вызывает Dialog для удаления OTPauth.
         // Dialog возвращает результат через листенер.
         val bundle = Bundle()
         bundle.putString(SecretBox.INTENT_TOTP_ACTION, SecretBox.ACTION_TOTP_DELETE)
-        bundle.putInt(SecretBox.INTENT_TOTP_NUM, num)
+        bundle.putLong(SecretBox.INTENT_TOTP_ID, id)
         val secretDialog = SecretBox()
         secretDialog.setArguments(bundle)
         secretDialog.isCancelable = false
@@ -215,32 +200,34 @@ class MainActivity : AppActivity(),
         secretDialog.show(this.supportFragmentManager, "SECRET_DIALOG")
     }
 
-    private fun itemLongClick(position: Int) : Boolean {
+    private fun itemLongClick(totp: String) : Boolean {
         // Обработчик двойного клика по токену.
         // Вызывает функцию копирования токена в clipboard.
-        tokenToClipBoard(position)
+        tokenToClipBoard(totp)
         return true
     }
 
-    private fun itemClick(position: Int) {
+    private fun itemClick(totp: String) {
         // Обработчик клика по токену.
         // Вызывает функцию копирования токена в clipboard.
-        tokenToClipBoard(position)
+        tokenToClipBoard(totp)
     }
 
-    private fun showPopupMenu(view: View, position: Int) {
-        // Функция вызывается по клику на кнопку меню.
+    private fun showPopupMenu(view: View, id: Long) {
+        // Обработчик клика на кнопку меню.
         val popupMenu = PopupMenu(this, view)
         popupMenu.inflate(R.menu.token_menu)
         popupMenu.setOnMenuItemClickListener { item ->
             when (item.itemId) {
                 R.id.item_view_token -> {
-                    viewSecret(position)
+                    // Обработчик меню "Просмотр".
+                    viewSecret(id)
                     true
                 }
 
                 R.id.item_delete_token -> {
-                    deleteSecret(position)
+                    // Обработчик меню "Удалить".
+                    deleteSecret(id)
                     true
                 }
 
@@ -250,15 +237,14 @@ class MainActivity : AppActivity(),
         popupMenu.show()
     }
 
-    fun tokenToClipBoard(num: Int) {
+    fun tokenToClipBoard(totp: String) {
         // Функция копирует токен в clipboard.
-        val tokenValue = appTokens.getOrNull(num)?.totp ?: return
-        if (tokenValue.isEmpty()) return
+        if (totp.isEmpty()) return
 
         val clipboard = this.getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
-        val clip = ClipData.newPlainText("OTP Code", tokenValue)
+        val clip = ClipData.newPlainText("OTP Code", totp)
 
-        // Скрываем чувствительные данные (Android 13+)
+        // Скрываем чувствительные данные. (Android 13+)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             val extras = PersistableBundle().apply {
                 putBoolean(ClipDescription.EXTRA_IS_SENSITIVE, true)
@@ -268,18 +254,18 @@ class MainActivity : AppActivity(),
 
         clipboard.setPrimaryClip(clip)
 
-        // Уведомление пользователя только для старых версий
+        // Уведомление пользователя только для старых версий.
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
             showSnackbar(R.string.token_to_clipboard)
         }
 
-        // Автоматическая очистка через 30 секунд
+        // Автоматическая очистка через 30 секунд.
         lifecycleScope.launch {
             delay(30000)
             val currentClip = clipboard.primaryClip
             if (currentClip != null && currentClip.itemCount > 0) {
                 val currentText = currentClip.getItemAt(0).text?.toString()
-                if (currentText == tokenValue) {
+                if (currentText == totp) {
                     clipboard.clearPrimaryClip()
                 }
             }
@@ -290,17 +276,17 @@ class MainActivity : AppActivity(),
     override fun onAddResult(auth: OTPauth) {
         // Обработчик возврата из SecretDialog Add после нажатия кнопки PositiveButton.
         if (DBhelper.dbHelper.addSecret(auth) == 0) {
-            refreshSecrets()
+            viewModel.sendCommandUpdate()
             showSnackbar(R.string.key_added)
         } else {
             showSnackbar(R.string.key_add_error)
         }
     }
 
-    override fun onDeleteResult(num: Int) {
+    override fun onDeleteResult(id: Long) {
         // Обработчик возврата из SecretDialog Delete после нажатия кнопки PositiveButton.
-        if (DBhelper.dbHelper.deleteSecret(num) == 0) {
-            refreshSecrets()
+        if (DBhelper.dbHelper.deleteSecret(id) == 0) {
+            viewModel.sendCommandUpdate()
             showSnackbar(R.string.key_deleted)
         } else {
             showSnackbar(R.string.key_delete_error)
@@ -308,7 +294,7 @@ class MainActivity : AppActivity(),
     }
 
     fun enterPin() {
-        // Вызов окна ввода PIN
+        // Вызов окна ввода PIN.
         val bundle = Bundle()
         bundle.putString(PinBox.INTENT_PIN_ACTION, PinBox.ACTION_ENTER_PIN)
         bundle.putString(PinBox.INTENT_PIN_SCREEN, PinBox.SCREEN_FULL)

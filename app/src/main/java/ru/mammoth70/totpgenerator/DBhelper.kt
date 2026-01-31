@@ -6,8 +6,6 @@ import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import ru.mammoth70.totpgenerator.App.Companion.appContext
-import ru.mammoth70.totpgenerator.App.Companion.appSecrets
-import ru.mammoth70.totpgenerator.App.Companion.appTokens
 import java.sql.SQLException
 
 class DBhelper(context: Context?) : SQLiteOpenHelper(context, "totpDB",
@@ -42,12 +40,10 @@ class DBhelper(context: Context?) : SQLiteOpenHelper(context, "totpDB",
     }
 
     fun readAllSecrets() {
-        // Функция считывает все OTPauth в список secrets и предзаполняет список tokens.
+        // Функция считывает все OTPauth в список secrets.
         appSecrets.clear()
-        appTokens.clear()
         readableDatabase.use { db ->
             db.rawQuery("SELECT * FROM otpauth ORDER BY id;", null).use { cursor ->
-                var num = 0
                 while (cursor.moveToNext()) {
                     val encryptedPair = StringPair(
                         encodedText = cursor.getString(
@@ -56,8 +52,7 @@ class DBhelper(context: Context?) : SQLiteOpenHelper(context, "totpDB",
                         cursor.getColumnIndexOrThrow("iv")),
                         )
                     val secret = OTPauth(
-                        num = num,
-                        id = cursor.getInt(
+                        id = cursor.getLong(
                             cursor.getColumnIndexOrThrow("id")),
                         label = cursor.getString(
                             cursor.getColumnIndexOrThrow("label")),
@@ -71,18 +66,7 @@ class DBhelper(context: Context?) : SQLiteOpenHelper(context, "totpDB",
                         digits = cursor.getInt(
                             cursor.getColumnIndexOrThrow("digits")),
                     )
-                    val token = Token(
-                        num = num,
-                        id = cursor.getInt(
-                            cursor.getColumnIndexOrThrow("id")),
-                        label = cursor.getString(
-                            cursor.getColumnIndexOrThrow("label")),
-                        issuer = cursor.getString(
-                            cursor.getColumnIndexOrThrow("issuer")),
-                    )
                     appSecrets.add(secret)
-                    appTokens.add(token)
-                    num ++
                 }
             }
         }
@@ -149,7 +133,7 @@ class DBhelper(context: Context?) : SQLiteOpenHelper(context, "totpDB",
         return OK
     }
 
-    fun deleteSecret(id: Int): Int {
+    fun deleteSecret(id: Long): Int {
         // Функция удаляет запись OTPauth в БД.
         // Поиск записи идёт по полю id.
         // Возвращает 0, если успешно и <> 0, если нет.

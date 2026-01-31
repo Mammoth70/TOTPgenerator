@@ -11,7 +11,6 @@ import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
-import ru.mammoth70.totpgenerator.App.Companion.appSecrets
 import androidx.core.view.size
 
 class SecretBox: DialogFragment() {
@@ -20,7 +19,7 @@ class SecretBox: DialogFragment() {
 
     companion object {
         const val INTENT_TOTP_ACTION = "totp_action"
-        const val INTENT_TOTP_NUM = "totp_num"
+        const val INTENT_TOTP_ID = "totp_id"
         const val ACTION_TOTP_VIEW = "totp_view"
         const val ACTION_TOTP_ADD = "totp_add"
         const val ACTION_TOTP_DELETE = "totp_delete"
@@ -34,7 +33,7 @@ class SecretBox: DialogFragment() {
         this.addListener = listener
     }
     interface OnDeleteResultListener {
-        fun onDeleteResult(num: Int)
+        fun onDeleteResult(id: Long)
     }
     private lateinit var deleteListener: OnDeleteResultListener
     fun setOnDeleteResultListener(listener: OnDeleteResultListener) {
@@ -58,9 +57,9 @@ class SecretBox: DialogFragment() {
     private val radioDigits8: RadioButton by lazy { dlg.findViewById(R.id.digits8)!! }
 
     private val action: String by lazy { requireArguments().getString(INTENT_TOTP_ACTION,"") }
-    private val secret: OTPauth by lazy { appSecrets[requireArguments().getInt(INTENT_TOTP_NUM)] }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        // Функция создаёт диалоговое окно.
         val builder = AlertDialog.Builder(requireActivity())
         builder.setView(R.layout.dialog_key)
         builder.setCancelable(false)
@@ -91,12 +90,18 @@ class SecretBox: DialogFragment() {
         super.onResume()
 
         if ((action == ACTION_TOTP_VIEW) || (action == ACTION_TOTP_DELETE)) {
-            fillFields()
-        }
+            val secret: OTPauth =
+                appSecrets.find { it.id == requireArguments().getLong(INTENT_TOTP_ID) } ?: run {
+                    dismiss()
+                    return
+                }
 
-        if (action == ACTION_TOTP_DELETE) {
-            dlg.getButton(Dialog.BUTTON_POSITIVE)?.setOnClickListener {
-                deleteSecret()
+            fillFields(secret)
+
+            if (action == ACTION_TOTP_DELETE) {
+                dlg.getButton(Dialog.BUTTON_POSITIVE)?.setOnClickListener {
+                    deleteSecret(secret)
+                }
             }
         }
 
@@ -108,7 +113,9 @@ class SecretBox: DialogFragment() {
     }
 
     @SuppressLint("SetTextI18n")
-    fun fillFields() {
+    fun fillFields(secret: OTPauth) {
+        // Функция заполняет поля диалогового окна.
+
         if (secret.issuer.isBlank()) {
             edLabel.setText(secret.label)
         } else {
@@ -134,12 +141,15 @@ class SecretBox: DialogFragment() {
         }
     }
 
-    fun deleteSecret() {
+    fun deleteSecret(secret: OTPauth) {
+        // Функция вызывает deleteListener и закрывает окно.
         deleteListener.onDeleteResult(secret.id)
         dismiss()
     }
 
     fun addSecret() {
+        // Функция проверяет правильность заполнения полей
+        // и если всё в порядке вызывает addListener и закрывает окно.
         var isChecked = true
         var selectedHash = SHA1
         var selectedDigits = 6
