@@ -15,6 +15,7 @@ private const val TYPE_ITEM = 0
 private const val TYPE_FOOTER = 1
 
 private const val PAYLOAD_TOTP = "PAYLOAD_TOTP"
+private const val PAYLOAD_TOTP_NEXT = "PAYLOAD_TOTP_NEXT"
 private const val PAYLOAD_PROGRESS = "PAYLOAD_PROGRESS"
 
 internal class TokensAdapter : ListAdapter<Token, RecyclerView.ViewHolder>(TokenDiffComparator()) {
@@ -50,6 +51,7 @@ internal class TokensAdapter : ListAdapter<Token, RecyclerView.ViewHolder>(Token
         val btnMenu: Button = view.findViewById(R.id.btnMenu)
         val nameView: TextView = view.findViewById(R.id.name)
         val totpView: TextView = view.findViewById(R.id.totp)
+        val totpNextView: TextView = view.findViewById(R.id.totpNext)
         val remainView: TextView = view.findViewById(R.id.remain)
         val progressView: CircularProgressIndicator = view.findViewById(R.id.progress)
 
@@ -95,6 +97,7 @@ internal class TokensAdapter : ListAdapter<Token, RecyclerView.ViewHolder>(Token
             val token = getItem(position)
             holder.nameView.text = if (token.issuer.isBlank()) token.label else "${token.issuer}:${token.label}"
             updateTOTP(holder, token)
+            updateTOTPnext(holder, token)
             updateProgress(holder, token)
         }
     }
@@ -110,6 +113,10 @@ internal class TokensAdapter : ListAdapter<Token, RecyclerView.ViewHolder>(Token
                 updateTOTP(holder, token)
             }
 
+            if (payloadsSet.contains(PAYLOAD_TOTP_NEXT)) {
+                updateTOTPnext(holder, token)
+            }
+
             if (payloadsSet.contains(PAYLOAD_PROGRESS)) {
                 updateProgress(holder, token)
             }
@@ -122,6 +129,11 @@ internal class TokensAdapter : ListAdapter<Token, RecyclerView.ViewHolder>(Token
     private fun updateTOTP(holder: ViewHolder, token: Token) {
         // Вывод текста с токеном.
         holder.totpView.text = token.totp
+    }
+
+    private fun updateTOTPnext(holder: ViewHolder, token: Token) {
+        // Вывод текста со следующим токеном.
+        holder.totpNextView.text = token.totpNext
     }
 
     private fun updateProgress(holder: ViewHolder, token: Token) {
@@ -146,6 +158,7 @@ internal class TokensAdapter : ListAdapter<Token, RecyclerView.ViewHolder>(Token
             // Функция определяет конкретные изменённые поля.
             val diff = mutableSetOf<String>()
             if (oldItem.totp != newItem.totp) diff.add(PAYLOAD_TOTP)
+            if (oldItem.totpNext != newItem.totpNext) diff.add(PAYLOAD_TOTP_NEXT)
             if (oldItem.progress != newItem.progress || oldItem.remain != newItem.remain) {
                 diff.add(PAYLOAD_PROGRESS)
             }

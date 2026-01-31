@@ -60,6 +60,7 @@
     <string name="PIN_new_bad">The new PIN must be entered twice</string>
     <string name="PIN_BIO_login">Login with PIN or biometrics</string>
     <string name="FingerPrint_login">Fingerprint login</string>
+    <string name="enableNextToken">Show next token</string>
     <string name="progress_indicator">Progress indicator</string>
     <string name="remaining">Remaining</string>
     <string name="passed">Passed</string>

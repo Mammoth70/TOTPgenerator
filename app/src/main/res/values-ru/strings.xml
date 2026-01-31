@@ -60,6 +60,7 @@
     <string name="PIN_new_bad">Новый PIN нужно ввести одинаково два раза</string>
     <string name="PIN_BIO_login">Вход по PIN-коду или биометрии</string>
     <string name="FingerPrint_login">Вход по отпечатку пальца</string>
+    <string name="enableNextToken">Показывать следующий токен</string>
     <string name="progress_indicator">Индикатор прогресса</string>
     <string name="remaining">Осталось</string>
     <string name="passed">Прошло</string>

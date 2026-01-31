@@ -155,7 +155,7 @@ class MainActivity : AppActivity(),
                             showSnackbar(R.string.key_add_error)
                         }
                     }
-                    viewModel.sendCommandUpdate()
+                    TokensRepository.sendCommandUpdate()
                 } else {
                     showSnackbar(R.string.qr_code_error)
                 }
@@ -276,7 +276,7 @@ class MainActivity : AppActivity(),
     override fun onAddResult(auth: OTPauth) {
         // Обработчик возврата из SecretDialog Add после нажатия кнопки PositiveButton.
         if (DBhelper.dbHelper.addSecret(auth) == 0) {
-            viewModel.sendCommandUpdate()
+            TokensRepository.sendCommandUpdate()
             showSnackbar(R.string.key_added)
         } else {
             showSnackbar(R.string.key_add_error)
@@ -286,7 +286,7 @@ class MainActivity : AppActivity(),
     override fun onDeleteResult(id: Long) {
         // Обработчик возврата из SecretDialog Delete после нажатия кнопки PositiveButton.
         if (DBhelper.dbHelper.deleteSecret(id) == 0) {
-            viewModel.sendCommandUpdate()
+            TokensRepository.sendCommandUpdate()
             showSnackbar(R.string.key_deleted)
         } else {
             showSnackbar(R.string.key_delete_error)

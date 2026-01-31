@@ -52,6 +52,26 @@
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
+    <!-- Блок вывода следующего токена -->
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        app:contentPadding="16dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <CheckBox
+                android:id="@+id/checkEnableNextToken"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/enableNextToken" />
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
     <!-- Блок Индикатора -->
     <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"

@@ -19,6 +19,7 @@ class SettingsActivity : AppActivity(), PinBox.OnPinResultListener {
     private val btnChangePin: Button by lazy { findViewById(R.id.btnChangePIN) }
     private val btnDeletePin: Button by lazy { findViewById(R.id.btnDeletePIN) }
     private val checkEnableBio: CheckBox by lazy { findViewById(R.id.checkEnableBio) }
+    private val checkEnableNextToken: CheckBox by lazy { findViewById(R.id.checkEnableNextToken) }
     private val toggleProgress: MaterialButtonToggleGroup by lazy { findViewById(R.id.toggleProgress) }
     private val toggleTheme: MaterialButtonToggleGroup by lazy { findViewById(R.id.toggleTheme) }
 
@@ -72,6 +73,14 @@ class SettingsActivity : AppActivity(), PinBox.OnPinResultListener {
         checkEnableBio.setOnCheckedChangeListener { _: CompoundButton?,
                                                     isChecked: Boolean ->
             setBiometricLogin(isChecked)
+        }
+
+        checkEnableNextToken.isChecked = enableNextToken
+
+        checkEnableNextToken.setOnCheckedChangeListener { _: CompoundButton?,
+                                                    isChecked: Boolean ->
+            setNextToken(isChecked)
+            TokensRepository.sendCommandUpdate()
         }
 
         btnChangePin.setOnClickListener { _ ->

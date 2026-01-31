@@ -14,10 +14,14 @@ var progressClockWise: Boolean = true
 var enableBiometric: Boolean = false
     internal set
 
+var enableNextToken: Boolean = false
+    internal set
+
 private const val NAME_SETTINGS = "settings"
 private const val NAME_PASSED = "passed"
 private const val NAME_THEME_MODE = "thememode"
 private const val NAME_BIO = "enablebiometric"
+private const val NAME_NEXT_TOKEN = "enablenexttoken"
 
 fun setProgressMode(passed: Boolean) {
     // Записать способ показа Progress в SharedPreferences
@@ -32,6 +36,21 @@ fun getProgressMode() {
     // Считать способ показа Progress из SharedPreferences
     val settings = appContext.getSharedPreferences(NAME_SETTINGS, MODE_PRIVATE)
     progressClockWise =  settings.getBoolean(NAME_PASSED, true)
+}
+
+fun setNextToken(passed: Boolean) {
+    // Записать режим показа следующего токена в SharedPreferences
+    enableNextToken = passed
+    val settings = appContext.getSharedPreferences(NAME_SETTINGS, MODE_PRIVATE)
+    settings.edit {
+        putBoolean(NAME_NEXT_TOKEN, enableNextToken)
+    }
+}
+
+fun getNextToken() {
+    // Считать режим показа следующего токена из SharedPreferences
+    val settings = appContext.getSharedPreferences(NAME_SETTINGS, MODE_PRIVATE)
+    enableNextToken =  settings.getBoolean(NAME_NEXT_TOKEN, false)
 }
 
 private fun installThemeMode() {

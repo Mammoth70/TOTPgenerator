@@ -19,6 +19,7 @@ class App : Application() {
         DBhelper.dbHelper.readAllSecrets()
         checkExistsHashPin()
         getProgressMode()
+        getNextToken()
         getThemeMode()
         checkBiometricInDevice()
         getBiometricLogin()

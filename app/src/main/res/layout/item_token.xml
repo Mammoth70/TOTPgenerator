@@ -41,7 +41,18 @@
                 android:textColor="?attr/colorOnPrimaryContainer"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/name"
-                tools:text="888888" />
+                tools:text="88888888" />
+
+            <TextView
+                android:id="@+id/totpNext"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:textSize="12sp"
+                android:textColor="?attr/colorOnPrimaryContainer"
+                app:layout_constraintBottom_toBottomOf="@+id/totp"
+                app:layout_constraintStart_toEndOf="@+id/totp"
+                tools:text="88888888" />
 
             <TextView
                 android:id="@+id/remain"
