@@ -36,6 +36,48 @@ class SettingsActivity : AppActivity(), PinBox.OnPinResultListener {
             btnDeletePin.visibility = View.GONE
         }
 
+        btnChangePin.setOnClickListener { _ ->
+            // Вызов окна смены PIN-кода.
+            val bundle = Bundle()
+            bundle.putString(PinBox.INTENT_PIN_ACTION, PinBox.ACTION_UPDATE_PIN)
+            val pinBox = PinBox()
+            pinBox.setArguments(bundle)
+            pinBox.isCancelable = false
+            pinBox.setOnPinResultListener(this)
+            pinBox.show(this.supportFragmentManager, "PIN_DIALOG")
+        }
+
+        btnDeletePin.setOnClickListener { _ ->
+            // Вызов окна удаления PIN-кода.
+            val bundle = Bundle()
+            bundle.putString(PinBox.INTENT_PIN_ACTION, PinBox.ACTION_DELETE_PIN)
+            val pinBox = PinBox()
+            pinBox.setArguments(bundle)
+            pinBox.isCancelable = false
+            pinBox.setOnPinResultListener(this)
+            pinBox.show(this.supportFragmentManager, "PIN_DIALOG")
+        }
+
+        checkEnableBio.isChecked = enableBiometric
+        if (isHaveHashPin && isHaveBiometric) {
+            checkEnableBio.visibility = View.VISIBLE
+        } else {
+            checkEnableBio.visibility = View.GONE
+        }
+
+        checkEnableBio.setOnCheckedChangeListener { _: CompoundButton?,
+                                                    isChecked: Boolean ->
+            setBiometricLogin(isChecked)
+        }
+
+        checkEnableNextToken.isChecked = enableNextToken
+
+        checkEnableNextToken.setOnCheckedChangeListener { _: CompoundButton?,
+                                                          isChecked: Boolean ->
+            setNextToken(isChecked)
+            //TokensRepository.sendCommandUpdate()
+        }
+
         if (progressClockWise) {
             toggleProgress.check(R.id.btnProgressPassed)
         } else {
@@ -63,56 +105,14 @@ class SettingsActivity : AppActivity(), PinBox.OnPinResultListener {
             }
         }
 
-        checkEnableBio.isChecked = enableBiometric
-        if (isHaveHashPin && isHaveBiometric) {
-            checkEnableBio.visibility = View.VISIBLE
-        } else {
-            checkEnableBio.visibility = View.GONE
-        }
-
-        checkEnableBio.setOnCheckedChangeListener { _: CompoundButton?,
-                                                    isChecked: Boolean ->
-            setBiometricLogin(isChecked)
-        }
-
-        checkEnableNextToken.isChecked = enableNextToken
-
-        checkEnableNextToken.setOnCheckedChangeListener { _: CompoundButton?,
-                                                    isChecked: Boolean ->
-            setNextToken(isChecked)
-            TokensRepository.sendCommandUpdate()
-        }
-
-        btnChangePin.setOnClickListener { _ ->
-            // Вызов окна смены PIN-кода.
-            val bundle = Bundle()
-            bundle.putString(PinBox.INTENT_PIN_ACTION, PinBox.ACTION_UPDATE_PIN)
-            val pinBox = PinBox()
-            pinBox.setArguments(bundle)
-            pinBox.isCancelable = false
-            pinBox.setOnPinResultListener(this)
-            pinBox.show(this.supportFragmentManager, "PIN_DIALOG")
-        }
-
-        btnDeletePin.setOnClickListener { _ ->
-            // Вызов окна удаления PIN-кода.
-            val bundle = Bundle()
-            bundle.putString(PinBox.INTENT_PIN_ACTION, PinBox.ACTION_DELETE_PIN)
-            val pinBox = PinBox()
-            pinBox.setArguments(bundle)
-            pinBox.isCancelable = false
-            pinBox.setOnPinResultListener(this)
-            pinBox.show(this.supportFragmentManager, "PIN_DIALOG")
-        }
-
     }
 
-    fun showSnackbar(message: String) {
+    private fun showSnackbar(message: String) {
         // Функция выводит Snackbar со строкой message.
         Snackbar.make(parentLayout, message, Snackbar.LENGTH_SHORT).show()
     }
 
-    fun showSnackbar(resId: Int) {
+    private fun showSnackbar(resId: Int) {
         // Функция выводит Snackbar со строкой, хранимой в ресурсе resId.
         showSnackbar(getString(resId))
     }

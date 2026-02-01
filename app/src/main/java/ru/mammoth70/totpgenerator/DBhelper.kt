@@ -11,7 +11,7 @@ import java.sql.SQLException
 class DBhelper(context: Context?) : SQLiteOpenHelper(context, "totpDB",
         null, DB_VERSION) {
     // Класс обслуживает базу данных со списком OTPauth.
-    // Поле secret хранится зашифрованным, в поле iv лежит инициализационный вектор
+    // Поле secret в таблице otpauth хранится зашифрованным, в поле iv лежит инициализационный вектор.
 
     companion object {
         const val OK = 0
@@ -40,7 +40,7 @@ class DBhelper(context: Context?) : SQLiteOpenHelper(context, "totpDB",
     }
 
     fun readAllSecrets() {
-        // Функция считывает все OTPauth в список secrets.
+        // Функция считывает все OTPauth в глобальный список appSecrets.
         appSecrets.clear()
         readableDatabase.use { db ->
             db.rawQuery("SELECT * FROM otpauth ORDER BY id;", null).use { cursor ->
@@ -74,7 +74,7 @@ class DBhelper(context: Context?) : SQLiteOpenHelper(context, "totpDB",
 
     fun addSecret(otpauth: OTPauth): Int  {
         // Функция добавляет запись OTPauth в БД.
-        // Возвращает 0, если успешно и <> 0, если нет.
+        // Если добавлено успешно - возвращает 0, если не успешно - возвращает не 0.
         if (otpauth.label in appSecrets.map(OTPauth::label)) {
             return ERR_LIST_COUNT
         }
@@ -106,7 +106,7 @@ class DBhelper(context: Context?) : SQLiteOpenHelper(context, "totpDB",
     fun editSecret(otpauth: OTPauth): Int {
         // Функция обновляет запись OTPauth в БД.
         // Поиск записи идёт по полю id.
-        // Возвращает 0, если успешно и <> 0, если нет.
+        // Если обнновлено успешно - возвращает 0, если не успешно - возвращает не 0.
         val pair = encryptString(otpauth.secret)
         if (pair.encodedText.isEmpty() || pair.iv.isEmpty()) {
             return ERR_CRYPTO
@@ -136,7 +136,7 @@ class DBhelper(context: Context?) : SQLiteOpenHelper(context, "totpDB",
     fun deleteSecret(id: Long): Int {
         // Функция удаляет запись OTPauth в БД.
         // Поиск записи идёт по полю id.
-        // Возвращает 0, если успешно и <> 0, если нет.
+        // Если удалено успешно - возвращает 0, если не успешно - возвращает не 0.
         if (id !in appSecrets.map(OTPauth::id)) {
             return ERR_LIST_COUNT
         }

@@ -38,7 +38,9 @@ private enum class OtpType(val id: Int) {
 }
 
 fun parseQR(url: String?): List<OTPauth> {
-    // Функция разбирает строку url
+    // Функция разбирает строку url.
+    // В зависимости от результатов предварительного разбора,
+    // вызывает функции parseOTPauth или parseGoogleMigration.
     val auths = mutableListOf<OTPauth>()
     if (url.isNullOrBlank()) {
         return auths
@@ -56,7 +58,7 @@ fun parseQR(url: String?): List<OTPauth> {
     return auths
 }
 
-fun parseOTPauth(url: String): OTPauth?  {
+private fun parseOTPauth(url: String): OTPauth?  {
     // Функция разбирает строку url otpauth://totp и в случае удачи возвращат OTPauth, в противном случае - null.
     val url = URLDecoder.decode(url, "UTF-8")
 
@@ -132,7 +134,7 @@ fun parseOTPauth(url: String): OTPauth?  {
     return auth
 }
 
-fun parseGoogleMigration(url: String): List<OTPauth> {
+private fun parseGoogleMigration(url: String): List<OTPauth> {
     // Функция разбирает строку url otpauth-migration://offline,
     // и в случае удачи возвращат список OTPauth, в противном случае - список возвращается пустым.
     val auths = mutableListOf<OTPauth>()

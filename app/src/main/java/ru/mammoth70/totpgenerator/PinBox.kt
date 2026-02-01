@@ -16,13 +16,14 @@ import ru.mammoth70.totpgenerator.App.Companion.appContext
 import ru.mammoth70.totpgenerator.MainActivity.Companion.mainContext
 
 var isHaveBiometric: Boolean = false
-    internal set
+    internal set    // Флаг наличия в смартфоне датчиков строгой биометрической идентификации.
 
 private var pinBuffer = CharArray(6)
 private var pinBuffer1 = CharArray(6)
 private var pinIndex = 0
 
 fun checkBiometricInDevice() {
+    // Функция проверяет наличие в смартфоне датчиков строгой биометрической идентификации.
     val biometricManager = BiometricManager.from(appContext)
     isHaveBiometric = when (biometricManager.canAuthenticate(
         BiometricManager.Authenticators.BIOMETRIC_STRONG)) {
@@ -197,7 +198,7 @@ class PinBox : DialogFragment() {
         }
     }
 
-    fun addCharPin(digit: Char) {
+    private fun addCharPin(digit: Char) {
         errorMessage.text = ""
         if (pinIndex < pinBuffer.size) {
             pinBuffer[pinIndex] = digit
@@ -209,7 +210,7 @@ class PinBox : DialogFragment() {
         }
     }
 
-    fun deleteCharPin() {
+    private fun deleteCharPin() {
         errorMessage.text = ""
         if (pinIndex > 0) {
             pinIndex--
@@ -218,13 +219,13 @@ class PinBox : DialogFragment() {
         }
     }
 
-    fun clearAllPins() {
+    private fun clearAllPins() {
         pinBuffer.fill('\u0000')
         pinBuffer1.fill('\u0000')
         pinIndex=0
     }
 
-    fun bulletsAdd(num: Int) {
+    private fun bulletsAdd(num: Int) {
         when (num) {
             1 -> bullet1.setImageResource(R.drawable.circle_on)
             2 -> bullet2.setImageResource(R.drawable.circle_on)
@@ -235,7 +236,7 @@ class PinBox : DialogFragment() {
         }
     }
 
-    fun bulletDel(num:Int) {
+    private fun bulletDel(num:Int) {
         when (num) {
             0 -> bullet1.setImageResource(R.drawable.circle_off)
             1 -> bullet2.setImageResource(R.drawable.circle_off)
@@ -246,7 +247,7 @@ class PinBox : DialogFragment() {
         }
     }
 
-    fun bulletsClear() {
+    private fun bulletsClear() {
         bullet1.setImageResource(R.drawable.circle_off)
         bullet2.setImageResource(R.drawable.circle_off)
         bullet3.setImageResource(R.drawable.circle_off)
@@ -255,7 +256,7 @@ class PinBox : DialogFragment() {
         bullet6.setImageResource(R.drawable.circle_off)
     }
 
-    fun validatePin() {
+    private fun validatePin() {
         when (variant) {
             CHECK_PIN -> {
                 // Вариант. Проверить PIN и вернуть результат проверки.
@@ -363,7 +364,7 @@ class PinBox : DialogFragment() {
         }
     }
 
-    fun authenticate(context: FragmentActivity) {
+    private fun authenticate(context: FragmentActivity) {
         val executor = context.mainExecutor
         val biometricPrompt = BiometricPrompt(
             context,
@@ -397,7 +398,7 @@ class PinBox : DialogFragment() {
         biometricPrompt.authenticate(promptInfo)
     }
 
-    fun checkPin(): Boolean {
+    private fun checkPin(): Boolean {
         // Сравнить хеш pinBuffer с хешем из секретного хранилища
         return verifyPin(pinBuffer)
     }

@@ -41,12 +41,13 @@ class TokensViewModel : ViewModel() {
                 val now = System.currentTimeMillis()
                 val sec = (now / 1000).toInt()
                 val dateForGenerator = Date(now)
-                // Генерируем список токенов на текущую секунду.
+                // Генерируем список токенов/
                 val tokenList = currentSecrets.mapIndexed { index, auth ->
                     val remain = auth.period - (sec % auth.period)
                     val progress = (auth.period - remain) * 100 / auth.period
 
                     val generatedTotp = try {
+                        // На текущую секунду.
                         generators[index].generateCode(
                             secretBytes[index],
                             dateForGenerator
@@ -56,6 +57,7 @@ class TokensViewModel : ViewModel() {
                     }
 
                     val generatedTotpNext = if (enableNextToken) {
+                        // На следующий период.
                         try {
                             generators[index].generateCode(
                                 secretBytes[index],
@@ -103,7 +105,7 @@ class TokensViewModel : ViewModel() {
 }
 
 object TokensRepository {
-    // Глобальный триггер обновления
+    // Глобальный триггер обновления.
     private val _updateTrigger = MutableStateFlow(System.currentTimeMillis())
     val updateTrigger: StateFlow<Long> = _updateTrigger.asStateFlow()
 

@@ -85,6 +85,7 @@ private fun getSecretKey(): SecretKey? {
 
 fun encryptString(startedText: String): StringPair {
     // Функция шифрует заданную строку с помощью AES GSM на ключе для шифрования TOTP секретов.
+    // Функция возвращает пару из зашифрованной строки и инициализационного вектора.
     try {
         val plaintext: ByteArray = startedText.toByteArray()
         val cipher = Cipher.getInstance(TRANSFORMATION)
@@ -104,8 +105,8 @@ fun encryptString(startedText: String): StringPair {
 }
 
 fun decryptString(encryptedPair: StringPair): String {
-    // Функция расшифровывает заданную строку с помощью AES GSM ключом для шифрования TOTP секретов.
-    // В фунцию передаётся пара из зашифрованной строки и инициализационного вектора
+    // Функция возвращает расшифрованную заданную строку с помощью AES GSM ключом для шифрования TOTP секретов.
+    // В функцию передаётся пара из зашифрованной строки и инициализационного вектора.
     try {
         // Конвертация зашифрованных данных из base64.
         val iv = Base64.decode(encryptedPair.iv, Base64.DEFAULT)

@@ -13,14 +13,16 @@ abstract class AppActivity : AppCompatActivity() {
 
     protected abstract val idLayout : Int
     protected abstract val idActivity : Int
-    protected open val isSecure: Boolean = false
+    protected open val isSecure: Boolean = false // Флаг запрещения скринштов.
     protected open val topAppBar: MaterialToolbar by lazy { findViewById(R.id.topAppBar) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         // Функция вызывается при создании Activity.
-        // Может (даже должна) быть переопределена.
+        // Может (и даже должна) быть переопределена.
         super.onCreate(savedInstanceState)
         if (isSecure) {
+            // Если в Activity-потомке будет включён флаг isSecure,
+            // то в ней будет запрещено создание скинштов.
             window.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
         }
         enableEdgeToEdge()

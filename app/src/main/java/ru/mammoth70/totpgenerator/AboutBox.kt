@@ -15,6 +15,7 @@ class AboutBox : DialogFragment() {
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        // Функция создаёт диалоговое окно.
         val builder = AlertDialog.Builder(requireActivity(),
         R.style.AboutDialogStyle)
         builder.setIcon(R.mipmap.ic_launcher_round)

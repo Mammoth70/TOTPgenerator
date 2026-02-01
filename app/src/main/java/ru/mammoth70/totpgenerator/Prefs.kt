@@ -8,14 +8,14 @@ import androidx.core.content.edit
 // Переменные и функции для хранения установок в SharedPreferences.
 
 var appThemeMode = AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
-    internal set
+    internal set    // Режим темы.
 var progressClockWise: Boolean = true
-    internal set
+    internal set    // Флаг показа на индикаторе прогресса, сколько прошло (false - сколько осталось).
 var enableBiometric: Boolean = false
-    internal set
+    internal set    // Флаг разрешения входа по биометрии.
 
 var enableNextToken: Boolean = false
-    internal set
+    internal set    // Флаг разрешения вычисления и показа следующего за текущим токена.
 
 private const val NAME_SETTINGS = "settings"
 private const val NAME_PASSED = "passed"
@@ -24,7 +24,7 @@ private const val NAME_BIO = "enablebiometric"
 private const val NAME_NEXT_TOKEN = "enablenexttoken"
 
 fun setProgressMode(passed: Boolean) {
-    // Записать способ показа Progress в SharedPreferences
+    // Функция устанавливает флаг показа прогресса и записывает его в SharedPreferences.
     progressClockWise = passed
     val settings = appContext.getSharedPreferences(NAME_SETTINGS, MODE_PRIVATE)
     settings.edit {
@@ -33,13 +33,13 @@ fun setProgressMode(passed: Boolean) {
 }
 
 fun getProgressMode() {
-    // Считать способ показа Progress из SharedPreferences
+    // Функция считывает флаг показа прогресса из SharedPreferences и устанавливает его.
     val settings = appContext.getSharedPreferences(NAME_SETTINGS, MODE_PRIVATE)
     progressClockWise =  settings.getBoolean(NAME_PASSED, true)
 }
 
 fun setNextToken(passed: Boolean) {
-    // Записать режим показа следующего токена в SharedPreferences
+    // Функция устанавливает флаг показа следующего токена и записывает его в SharedPreferences.
     enableNextToken = passed
     val settings = appContext.getSharedPreferences(NAME_SETTINGS, MODE_PRIVATE)
     settings.edit {
@@ -48,12 +48,13 @@ fun setNextToken(passed: Boolean) {
 }
 
 fun getNextToken() {
-    // Считать режим показа следующего токена из SharedPreferences
+    // Функция считывает флаг показа следующего токена из SharedPreferences и устанавливает его.
     val settings = appContext.getSharedPreferences(NAME_SETTINGS, MODE_PRIVATE)
     enableNextToken =  settings.getBoolean(NAME_NEXT_TOKEN, false)
 }
 
 private fun installThemeMode() {
+    // Функция устанавливает режим темы.
     when (appThemeMode) {
         AppCompatDelegate.MODE_NIGHT_NO -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
         AppCompatDelegate.MODE_NIGHT_YES -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
@@ -62,24 +63,24 @@ private fun installThemeMode() {
 }
 
 fun setThemeMode(mode: Int) {
-    // Записать режим темы в SharedPreferences
+    // Функция устанавливает режим темы и записывет его в SharedPreferences.
     appThemeMode = mode
+    installThemeMode()
     val settings = appContext.getSharedPreferences(NAME_SETTINGS, MODE_PRIVATE)
     settings.edit {
         putInt(NAME_THEME_MODE, appThemeMode)
     }
-    installThemeMode()
 }
 
 fun getThemeMode() {
-    // Считать режим темы из SharedPreferences
+    // Функция считывает режим темы из SharedPreferences и устанавливает его.
     val settings = appContext.getSharedPreferences(NAME_SETTINGS, MODE_PRIVATE)
     appThemeMode =  settings.getInt(NAME_THEME_MODE, AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
     installThemeMode()
 }
 
 fun setBiometricLogin(biomeric: Boolean) {
-    // Записать разрешение аутентификации по биометрии в SharedPreferences
+    // Функция устанавливает флаг разрешения аутентификации по биометрии и записывает его в SharedPreferences.
     enableBiometric = biomeric
     val settings = appContext.getSharedPreferences(NAME_SETTINGS, MODE_PRIVATE)
     settings.edit {
@@ -88,7 +89,7 @@ fun setBiometricLogin(biomeric: Boolean) {
 }
 
 fun getBiometricLogin() {
-    // Считать разрешение аутентификации по биометрии из SharedPreferences
+    // Функция считывает флаг разрешения аутентификации по биометрии из SharedPreferences и устанавливает его.
     val settings = appContext.getSharedPreferences(NAME_SETTINGS, MODE_PRIVATE)
     enableBiometric =  settings.getBoolean(NAME_BIO, false) && isHaveBiometric
 }

@@ -25,7 +25,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.lazy
 
-var unLocked = false
+private var unLocked = false
 
 class MainActivity : AppActivity(),
     SecretBox.OnAddResultListener, SecretBox.OnDeleteResultListener, PinBox.OnPinResultListener {
@@ -37,7 +37,7 @@ class MainActivity : AppActivity(),
 
     override val idLayout = R.layout.activity_main
     override val idActivity = R.id.frameMainActivity
-    override val isSecure = true
+    override val isSecure = true // Нельзя делать скриншоты.
 
     private val floatingActionButtonQR: FloatingActionButton by lazy { findViewById(R.id.floatingActionButtonQR) }
     private val navView: BottomNavigationView by lazy { findViewById(R.id.bottom_navigation) }
@@ -48,6 +48,14 @@ class MainActivity : AppActivity(),
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mainContext = this as FragmentActivity
+
+        if (!unLocked && isHaveHashPin) {
+            // Ввод и проверка PIN-кода перед входом.
+            enterPin()
+        } else {
+            unLocked = true
+        }
+
         topAppBar.setTitle(R.string.app_name)
         topAppBar.setNavigationOnClickListener {
             // Обработчик кнопки "назад".
@@ -85,13 +93,6 @@ class MainActivity : AppActivity(),
         // Подписка на ViewModel.
         viewModel.tokensLiveData.observe(this) { adapter.submitList(it) }
 
-        if (!unLocked && isHaveHashPin) {
-            // Ввод и проверка PIN-кода перед входом.
-            enterPin()
-        } else {
-            unLocked = true
-        }
-
         floatingActionButtonQR.setOnClickListener { _ ->
             // Обработчик кнопки "QR".
             addQRsecret()
@@ -125,17 +126,17 @@ class MainActivity : AppActivity(),
         }
     }
 
-    fun showSnackbar(message: String) {
+    private fun showSnackbar(message: String) {
         // Функция выводит Snackbar со строкой message.
         Snackbar.make(tokensList, message, Snackbar.LENGTH_SHORT).show()
     }
 
-    fun showSnackbar(resId: Int) {
+    private fun showSnackbar(resId: Int) {
         // Функция выводит Snackbar со строкой, хранимой в ресурсе resId.
         showSnackbar(getString(resId))
     }
 
-    fun addQRsecret() {
+    private fun addQRsecret() {
         // Функция читает QR, парсит его, добавляет распарсенный OTPauth в БД и вызывает refreshSecrets().
         val options = GmsBarcodeScannerOptions.Builder()
             .setBarcodeFormats(
@@ -164,7 +165,7 @@ class MainActivity : AppActivity(),
             .addOnFailureListener { _ -> showSnackbar(R.string.qr_error) }
     }
 
-    fun addSecret() {
+    private fun addSecret() {
         // Функция вызывает Dialog для добавления OTPauth.
         // Dialog возвращает результат через листенер.
         val bundle = Bundle()
@@ -176,7 +177,7 @@ class MainActivity : AppActivity(),
         secretDialog.show(this.supportFragmentManager, "SECRET_DIALOG")
     }
 
-    fun viewSecret(id: Long) {
+    private fun viewSecret(id: Long) {
         // Функция вызывает Dialog для чтения OTPauth.
         val bundle = Bundle()
         bundle.putString(SecretBox.INTENT_TOTP_ACTION, SecretBox.ACTION_TOTP_VIEW)
@@ -187,7 +188,7 @@ class MainActivity : AppActivity(),
         secretDialog.show(this.supportFragmentManager, "SECRET_DIALOG")
     }
 
-    fun deleteSecret(id: Long) {
+    private fun deleteSecret(id: Long) {
         // Функция вызывает Dialog для удаления OTPauth.
         // Dialog возвращает результат через листенер.
         val bundle = Bundle()
@@ -237,7 +238,7 @@ class MainActivity : AppActivity(),
         popupMenu.show()
     }
 
-    fun tokenToClipBoard(totp: String) {
+    private fun tokenToClipBoard(totp: String) {
         // Функция копирует токен в clipboard.
         if (totp.isEmpty()) return
 
@@ -293,7 +294,7 @@ class MainActivity : AppActivity(),
         }
     }
 
-    fun enterPin() {
+    private fun enterPin() {
         // Вызов окна ввода PIN.
         val bundle = Bundle()
         bundle.putString(PinBox.INTENT_PIN_ACTION, PinBox.ACTION_ENTER_PIN)
