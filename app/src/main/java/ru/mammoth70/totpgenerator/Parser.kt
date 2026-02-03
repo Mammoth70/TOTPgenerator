@@ -5,16 +5,12 @@ import java.net.URLDecoder
 import android.util.Base64
 import com.google.protobuf.CodedInputStream
 import org.apache.commons.codec.binary.Base32
+import androidx.core.net.toUri
 
 // Парсер разбора строки схем otpauth://totp и otpauth-migration://offline
 
 private const val REGEXP_HEAD1 = "^otpauth://totp/(\\S+?)\\?"
 private const val REGEXP_HEAD2 = "^otpauth-migration://offline\\?data=(\\S+?)$"
-private const val REGEXP_SECRET = "[?&]secret=([2-7A-Za-z]+?)(&|$)"
-private const val REGEXP_ISSUER = "[?&]issuer=(\\S+?)(&|$)"
-private const val REGEXP_PERIOD = "[?&]period=(\\d+?)(&|$)"
-private const val REGEXP_ALGORITHM = "[?&]algorithm=(SHA1|SHA256|SHA512)(&|$)"
-private const val REGEXP_DIGITS = "[?&]digits=([6-8])(&|$)"
 
 private enum class OtpAlgorithm(val id: Int) {
     UNSPECIFIED(0), SHA1(1), SHA256(2), SHA512(3), MD5(4);
@@ -37,6 +33,7 @@ private enum class OtpType(val id: Int) {
     }
 }
 
+
 fun parseQR(url: String?): List<OTPauth> {
     // Функция разбирает строку url.
     // В зависимости от результатов предварительного разбора,
@@ -58,91 +55,50 @@ fun parseQR(url: String?): List<OTPauth> {
     return auths
 }
 
-private fun parseOTPauth(url: String): OTPauth?  {
-    // Функция разбирает строку url otpauth://totp и в случае удачи возвращат OTPauth, в противном случае - null.
-    val url = URLDecoder.decode(url, "UTF-8")
 
-    val pattern1 = Pattern.compile(REGEXP_HEAD1)
-    val matcher1 = pattern1.matcher(url)
-    if ((!matcher1.find())) {
-        return null
-    }
-    if (matcher1.group(1).isNullOrBlank()) {
-        return null
-    }
-    var label = matcher1.group(1)!!
+private fun parseOTPauth(url: String): OTPauth? {
+// Функция разбирает строку url otpauth://totp и в случае удачи возвращат OTPauth, в противном случае - null.
 
-    val pattern2 = Pattern.compile(REGEXP_SECRET)
-    val matcher2 = pattern2.matcher(url)
-    if ((!matcher2.find())) {
-        return null
-    }
-    if (matcher2.group(1).isNullOrBlank()) {
-        return null
-    }
-    val secret = matcher2.group(1)!!.uppercase()
+    val uri = url.toUri()
 
-    val pattern3 = Pattern.compile(REGEXP_ISSUER)
-    val matcher3 = pattern3.matcher(url)
-    var issuer = ""
-    if ((matcher3.find())) {
-        if (!matcher3.group(1).isNullOrBlank()) {
-            issuer = matcher3.group(1)!!
-        }
-    }
-    if (label.startsWith("$issuer:")) {
-        // Google значение issuer хранит в поле label через двоеточие.
-        label = label.replace("$issuer:","")
+    // Извлекаем секрет. Если его нет, OTP невозможен.
+    val secret = uri.getQueryParameter("secret")?.uppercase() ?: return null
+    if (!isValidBase32(secret)) return null
+
+    // Извлекаем label (из пути) и issuer.
+    var label = uri.path?.removePrefix("/") ?: ""
+    val issuer = uri.getQueryParameter("issuer") ?: ""
+
+    // // Google часто значение issuer хранит в начале поля label через двоеточие.
+    if (issuer.isNotBlank() && label.startsWith("$issuer:", ignoreCase = true)) {
+        label = label.substring(issuer.length + 1).trim()
     }
 
-    val pattern4 = Pattern.compile(REGEXP_PERIOD)
-    val matcher4 = pattern4.matcher(url)
-    var period = 30
-    if ((matcher4.find())) {
-        if (!matcher4.group(1).isNullOrBlank()) {
-            period = matcher4.group(1)!!.toInt()
-        }
-    }
-
-    val pattern5 = Pattern.compile(REGEXP_ALGORITHM)
-    val matcher5 = pattern5.matcher(url)
-    var hash = SHA1
-    if ((matcher5.find())) {
-        if (!matcher5.group(1).isNullOrBlank()) {
-            hash = matcher5.group(1)!!
-        }
-    }
-
-    val pattern6 = Pattern.compile(REGEXP_DIGITS)
-    val matcher6 = pattern6.matcher(url)
-    var digits = 6
-    if ((matcher6.find())) {
-        if (!matcher6.group(1).isNullOrBlank()) {
-            digits = matcher6.group(1)!!.toInt()
-        }
-    }
-
-    val auth = OTPauth(
+    return OTPauth(
         label = label,
         secret = secret,
         issuer = issuer,
-        period = period,
-        hash = hash,
-        digits = digits,
+        period = uri.getQueryParameter("period")?.toIntOrNull() ?: 30,
+        hash = uri.getQueryParameter("algorithm")?.uppercase() ?: "SHA1",
+        digits = uri.getQueryParameter("digits")?.toIntOrNull() ?: 6
     )
-
-    return auth
 }
+
 
 private fun parseGoogleMigration(url: String): List<OTPauth> {
     // Функция разбирает строку url otpauth-migration://offline,
     // и в случае удачи возвращат список OTPauth, в противном случае - список возвращается пустым.
+
     val auths = mutableListOf<OTPauth>()
     val pattern2 = Pattern.compile(REGEXP_HEAD2)
     val matcher2 = pattern2.matcher(url)
     if ((matcher2.find()) && (!matcher2.group(1).isNullOrBlank())) {
         val data = matcher2.group(1)!!
-        val binaryData = Base64.decode(URLDecoder.decode(data, "UTF-8"),Base64.DEFAULT)
+        val binaryData = try {
+            Base64.decode(URLDecoder.decode(data, "UTF-8"), Base64.DEFAULT)
+        } catch (_: Exception) {
+            return emptyList()
+        }
         val input = CodedInputStream.newInstance(binaryData)
         while (!input.isAtEnd) {
             val tag = input.readTag()
@@ -167,6 +123,7 @@ private fun parseGoogleMigration(url: String): List<OTPauth> {
     }
     return auths
 }
+
 
 private fun parseOtpParameters(input: CodedInputStream): OTPauth? {
     // Функция разбирает параметры OTP в потоке CodedInputStream
@@ -214,4 +171,25 @@ private fun parseOtpParameters(input: CodedInputStream): OTPauth? {
             hash = hash,
             digits = digits
         ).takeIf { (type == OtpType.TOTP) && (hash.isNotBlank()) && (name.isNotBlank()) }
+}
+
+
+fun isValidBase32(secret: String): Boolean {
+    // Функция проверяет строку Base32 на валидность.
+
+    // Проверка на пустоту/
+    if (secret.isBlank()) return false
+
+    // Проверка алфавита (A-Z и 2-7).
+    // Допускаем Padding (=), но обычно в ссылках его нет.
+    val base32Regex = Regex("^[A-Z2-7]+=*$")
+    if (!base32Regex.matches(secret.uppercase())) return false
+
+    // Проверка кратности согласно RFC 4648.
+    // Полный блок Base32 должен быть кратен 8 символам.
+    // Если padding отсутствует (что часто в QR), длина должна быть 2, 4, 5, 7 символов в остатке от деления на 8.
+    // Длины с остатком 1, 3, 6 — некорректны.
+    val lengthMod = secret.filter { it != '=' }.length % 8
+    val invalidMods = listOf(1, 3, 6)
+    return lengthMod !in invalidMods
 }

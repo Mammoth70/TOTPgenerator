@@ -56,7 +56,7 @@ class TokensViewModel : ViewModel() {
                         GEN_ERROR
                     }
 
-                    val generatedTotpNext = if (enableNextToken) {
+                    val generatedTotpNext = if (SettingsManager.enableNextToken) {
                         // На следующий период.
                         try {
                             generators[index].generateCode(

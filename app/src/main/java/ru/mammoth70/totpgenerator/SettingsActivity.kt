@@ -58,7 +58,7 @@ class SettingsActivity : AppActivity(), PinBox.OnPinResultListener {
             pinBox.show(this.supportFragmentManager, "PIN_DIALOG")
         }
 
-        checkEnableBio.isChecked = enableBiometric
+        checkEnableBio.isChecked = SettingsManager.enableBiometric
         if (isHaveHashPin && isHaveBiometric) {
             checkEnableBio.visibility = View.VISIBLE
         } else {
@@ -67,30 +67,30 @@ class SettingsActivity : AppActivity(), PinBox.OnPinResultListener {
 
         checkEnableBio.setOnCheckedChangeListener { _: CompoundButton?,
                                                     isChecked: Boolean ->
-            setBiometricLogin(isChecked)
+            SettingsManager. enableBiometric = isChecked
         }
 
-        checkEnableNextToken.isChecked = enableNextToken
+        checkEnableNextToken.isChecked = SettingsManager.enableNextToken
 
         checkEnableNextToken.setOnCheckedChangeListener { _: CompoundButton?,
                                                           isChecked: Boolean ->
-            setNextToken(isChecked)
+            SettingsManager.enableNextToken = isChecked
             //TokensRepository.sendCommandUpdate()
         }
 
-        if (progressClockWise) {
+        if (SettingsManager.progressClockWise) {
             toggleProgress.check(R.id.btnProgressPassed)
         } else {
             toggleProgress.check(R.id.btnProgressRemaining)
         }
         toggleProgress.addOnButtonCheckedListener { _, checkedId, isChecked ->
             when (checkedId) {
-                R.id.btnProgressPassed ->  setProgressMode(isChecked)
-                R.id.btnProgressRemaining ->  setProgressMode(!isChecked)
+                R.id.btnProgressPassed -> SettingsManager.progressClockWise = isChecked
+                R.id.btnProgressRemaining -> SettingsManager.progressClockWise = !isChecked
             }
         }
 
-        when (appThemeMode) {
+        when (SettingsManager.appThemeMode) {
             AppCompatDelegate.MODE_NIGHT_NO -> toggleTheme.check(R.id.btnThemeDay)
             AppCompatDelegate.MODE_NIGHT_YES -> toggleTheme.check(R.id.btnThemeNight)
             else -> toggleTheme.check(R.id.btnThemeSystem)
@@ -98,9 +98,9 @@ class SettingsActivity : AppActivity(), PinBox.OnPinResultListener {
         toggleTheme.addOnButtonCheckedListener { _, checkedId, isChecked ->
             if (isChecked) {
                 when (checkedId) {
-                    R.id.btnThemeDay -> setThemeMode(AppCompatDelegate.MODE_NIGHT_NO)
-                    R.id.btnThemeNight -> setThemeMode(AppCompatDelegate.MODE_NIGHT_YES)
-                    R.id.btnThemeSystem -> setThemeMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
+                    R.id.btnThemeDay -> SettingsManager.appThemeMode = AppCompatDelegate.MODE_NIGHT_NO
+                    R.id.btnThemeNight -> SettingsManager.appThemeMode = AppCompatDelegate.MODE_NIGHT_YES
+                    R.id.btnThemeSystem -> SettingsManager.appThemeMode = AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
                 }
             }
         }

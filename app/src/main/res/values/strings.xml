@@ -39,6 +39,7 @@
     <string name="err_empty_label">You must enter a name</string>
     <string name="err_not_unique_label">The name should be a recognition</string>
     <string name="err_empty_key">You must enter a key</string>
+    <string name="err_base32_key">Invalid Base32 key</string>
     <string name="err_empty_period">You must enter a period</string>
     <string name="token_to_clipboard">The token has been copied to the clipboard</string>
     <string name="set_PIN">Set PIN</string>

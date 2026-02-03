@@ -19,11 +19,8 @@ class App : Application() {
         generateSecretKey()
         DBhelper.dbHelper.readAllSecrets()
         checkExistsHashPin()
-        getProgressMode()
-        getNextToken()
-        getThemeMode()
         checkBiometricInDevice()
-        getBiometricLogin()
+        SettingsManager.installThemeMode()
     }
 
 }

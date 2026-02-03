@@ -141,12 +141,12 @@ internal class TokensAdapter : ListAdapter<Token, RecyclerView.ViewHolder>(Token
         // Настройка и вывод колёсика прогресса, вывод оставшихся секунд.
         holder.remainView.text = token.remain.toString()
         holder.progressView.apply {
-            indicatorDirection = if (progressClockWise)
+            indicatorDirection = if (SettingsManager.progressClockWise)
                 CircularProgressIndicator.INDICATOR_DIRECTION_CLOCKWISE
             else
                 CircularProgressIndicator.INDICATOR_DIRECTION_COUNTERCLOCKWISE
 
-            this.progress = if (progressClockWise) token.progress else (100 - token.progress)
+            this.progress = if (SettingsManager.progressClockWise) token.progress else (100 - token.progress)
         }
     }
 

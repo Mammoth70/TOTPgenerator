@@ -110,7 +110,7 @@ class PinBox : DialogFragment() {
             ACTION_ENTER_PIN -> {
                 // Проверить PIN и вернуть результат проверки.
                 builder.setTitle(getString(R.string.enter_PIN))
-                variant = if (enableBiometric) {
+                variant = if (SettingsManager.enableBiometric) {
                     CHECK_PIN_AND_BIO
                 } else {
                     CHECK_PIN_WHILE_FALSE
@@ -264,7 +264,7 @@ class PinBox : DialogFragment() {
                     pinListener.onPinResult(action, true, "ok")
                     if (action == ACTION_DELETE_PIN) {
                         deleteHashPin()
-                        setBiometricLogin(false)
+                        SettingsManager.enableBiometric = false
                     }
                 } else {
                     pinListener.onPinResult(action, false,

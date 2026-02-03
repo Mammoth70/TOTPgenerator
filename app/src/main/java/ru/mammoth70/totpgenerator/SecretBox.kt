@@ -195,6 +195,10 @@ class SecretBox: DialogFragment() {
             ilKey.error = getString(R.string.err_empty_key)
             isChecked = false
         }
+        if (edKey.text.toString().isNotBlank() && (!isValidBase32(edKey.text.toString()))) {
+            ilKey.error = getString(R.string.err_base32_key)
+            isChecked = false
+        }
         if (edPeriod.text.toString().isEmpty()) {
             ilPeriod.error = getString(R.string.err_empty_period)
             isChecked = false

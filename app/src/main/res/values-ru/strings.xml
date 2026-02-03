@@ -39,6 +39,7 @@
     <string name="err_empty_label">Нужно ввести название</string>
     <string name="err_not_unique_label">Название должно быть уникальным</string>
     <string name="err_empty_key">Нужно ввести ключ</string>
+    <string name="err_base32_key">Ключ не в формате Base32</string>
     <string name="err_empty_period">Нужно ввести период</string>
     <string name="token_to_clipboard">Токен скопирован в буфер обмена</string>
     <string name="set_PIN">Назначить PIN</string>
