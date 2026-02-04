@@ -8,10 +8,16 @@ android {
         version = release(36)
     }
 
+    testOptions {
+        unitTests.all {
+            it.useJUnitPlatform()
+        }
+    }
+
     defaultConfig {
         val versionMajor = 1
         val versionMinor = 8
-        val versionPatch = 3
+        val versionPatch = 4
         applicationId = "ru.mammoth70.totpgenerator"
         minSdk = 30
         targetSdk = 36
@@ -63,7 +69,9 @@ dependencies {
     implementation(libs.protobuf.javalite)
     implementation(libs.androidx.biometric)
 
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
+    testImplementation(libs.junit.jupiter)
+    testImplementation(libs.junit.jupiter.params)
+    testRuntimeOnly(libs.junit.platform.launcher)
+    //androidTestImplementation(libs.androidx.junit)
+    //androidTestImplementation(libs.androidx.espresso.core)
 }

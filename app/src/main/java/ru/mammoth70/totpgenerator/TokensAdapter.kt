@@ -11,9 +11,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.progressindicator.CircularProgressIndicator
 
-private const val TYPE_ITEM = 0
-private const val TYPE_FOOTER = 1
-
 private const val PAYLOAD_TOTP = "PAYLOAD_TOTP"
 private const val PAYLOAD_TOTP_NEXT = "PAYLOAD_TOTP_NEXT"
 private const val PAYLOAD_PROGRESS = "PAYLOAD_PROGRESS"
@@ -28,21 +25,6 @@ internal class TokensAdapter : ListAdapter<Token, RecyclerView.ViewHolder>(Token
     fun setOnBtnMenuClick(listener: (View, Long) -> Unit) { onBtnMenuClick = listener }
     fun setOnItemViewClick(listener: (String) -> Unit) { onItemClick = listener }
     fun setOnItemViewLongClick(listener: (String) -> Boolean) { onItemLongClick = listener }
-
-    override fun getItemCount(): Int {
-        // Функция вызывается LayoutManager'ом и возвращает общее количество элементов в списке + футер.
-        val actualCount = super.getItemCount()
-        // Футер нужен только если список не пуст
-        return if (actualCount > 0) actualCount + 1 else 0
-    }
-
-    override fun getItemViewType(position: Int): Int {
-        // Функция определяет тип элемента (токен или футер).
-        return if (position == super.getItemCount()) TYPE_FOOTER else TYPE_ITEM
-    }
-
-    class FooterViewHolder(view: View) : RecyclerView.ViewHolder(view)
-    // Представление viewHolder для футера.
 
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         // Представление viewHolder для токена.
@@ -77,37 +59,23 @@ internal class TokensAdapter : ListAdapter<Token, RecyclerView.ViewHolder>(Token
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         // Функция вызывается LayoutManager'ом, чтобы создать viewHolder'ы и передать им макет.
-        return if (viewType == TYPE_FOOTER) {
-            // Создаём холдер для футера.
-            val footer = View(parent.context).apply {
-                layoutParams = ViewGroup.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    (100 * resources.displayMetrics.density).toInt()
-                )
-            }
-            FooterViewHolder(footer)
-        } else {
-            // Создаём холдер для токена.
-            val view = LayoutInflater.from(parent.context).inflate(R.layout.item_token, parent, false)
-            ViewHolder(view)
-        }
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_token, parent, false)
+        return ViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        // Функция привязывает к viewHolder'у данные списка токенов.
-        if (holder is ViewHolder && position < super.getItemCount()) {
-            val token = getItem(position)
-            holder.nameView.text = if (token.issuer.isBlank()) token.label else "${token.issuer}:${token.label}"
-            updateTOTP(holder, token)
-            updateTOTPnext(holder, token)
-            updateProgress(holder, token)
-        }
+        val token = getItem(position)
+        val vh = holder as ViewHolder
+        vh.nameView.text = if (token.issuer.isBlank()) token.label else "${token.issuer}:${token.label}"
+        updateTOTP(vh, token)
+        updateTOTPnext(vh, token)
+        updateProgress(vh, token)
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int, payloads: MutableList<Any>) {
         // Перегруженная функция привязывает к viewHolder'у только изменённые данные списка токенов.
         val payloadsSet = payloads.firstOrNull() as? Set<*>
-        if (holder is ViewHolder && position < super.getItemCount() && payloadsSet != null) {
+        if (holder is ViewHolder && payloadsSet != null) {
             val token = getItem(position)
 
             if (payloadsSet.contains(PAYLOAD_TOTP)) {
