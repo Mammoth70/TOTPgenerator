@@ -23,6 +23,7 @@ class SettingsActivity : AppActivity(), PinBox.OnPinResultListener {
     private val toggleProgress: MaterialButtonToggleGroup by lazy { findViewById(R.id.toggleProgress) }
     private val toggleTheme: MaterialButtonToggleGroup by lazy { findViewById(R.id.toggleTheme) }
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -75,7 +76,6 @@ class SettingsActivity : AppActivity(), PinBox.OnPinResultListener {
         checkEnableNextToken.setOnCheckedChangeListener { _: CompoundButton?,
                                                           isChecked: Boolean ->
             SettingsManager.enableNextToken = isChecked
-            //TokensRepository.sendCommandUpdate()
         }
 
         if (SettingsManager.progressClockWise) {
@@ -107,18 +107,24 @@ class SettingsActivity : AppActivity(), PinBox.OnPinResultListener {
 
     }
 
+
     private fun showSnackbar(message: String) {
         // Функция выводит Snackbar со строкой message.
+
         Snackbar.make(parentLayout, message, Snackbar.LENGTH_SHORT).show()
     }
 
+
     private fun showSnackbar(resId: Int) {
         // Функция выводит Snackbar со строкой, хранимой в ресурсе resId.
+
         showSnackbar(getString(resId))
     }
 
+
     override fun onPinResult(action: String, result: Boolean, message: String) {
         // Обработчик возврата из PinDialog.
+
         when (action) {
             PinBox.ACTION_DELETE_PIN -> {
                 if (result) {

@@ -1,0 +1,11 @@
+url;                                                                                                    isValid; period; hash;   digits; label;                  issuer     secret
+"otpauth://totp/User?secret=JBSWY3DP";                                                                  true;    30;     SHA1;   6;      "User";                 "";        "JBSWY3DP"
+"otpauth://totp/Example:alice@google.com?secret=JBSWY3DPEHPK3PXP&issuer=Example";                       true;    30;     SHA1;   6;      "alice@google.com";     "Example"; "JBSWY3DPEHPK3PXP"
+"otpauth://totp/Service?secret=JBSWY3DP&period=60&algorithm=SHA256&digits=8";                           true;    60;     SHA256; 8;      "Service";              "";        "JBSWY3DP"
+"otpauth://totp/Google%3Aexample%40gmail.com?secret=qjv3en5jjjhgq4pk3m6e576ymwuc5d4x&issuer=Google";    true;    30;     SHA1;   6;      "example@gmail.com";    "Google";  "QJV3EN5JJJHGQ4PK3M6E576YMWUC5D4X"
+"otpauth://totp/test@example.org?secret=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";                              true;    30;     SHA1;   6;      "test@example.org";     "";        "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+"otpauth://totp/ACME%20Co:john.doe@example.com?secret=HXDMVJECJJWSRB3HWIZR4IFUGFTMXBOZ&issuer=ACME+Co"; true;    30;     SHA1;   6;      "john.doe@example.com"; "ACME Co"; "HXDMVJECJJWSRB3HWIZR4IFUGFTMXBOZ"
+"otpauth://totp/NoSecret";                                                                              false;    0;     "";     0;      "";                     "";        "";
+"just-text";                                                                                            false;    0;     "";     0;      "";                     "";        "";
+"otpauth://totp/User?secret=INVALID123";                                                                false;    0;     "";     0;      "";                     "";        "";
+"otpauth://totp/Example:alice@://google.com";                                                           false;    0;     "";     0;      "";                     "";        "";

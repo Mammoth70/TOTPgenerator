@@ -19,12 +19,15 @@ abstract class AppActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         // Функция вызывается при создании Activity.
         // Может (и даже должна) быть переопределена.
+
         super.onCreate(savedInstanceState)
+
         if (isSecure) {
             // Если в Activity-потомке будет включён флаг isSecure,
             // то в ней будет запрещено создание скинштов.
             window.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
         }
+
         enableEdgeToEdge()
         setContentView(idLayout)
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(idActivity))

@@ -13,7 +13,7 @@ import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import androidx.core.view.size
 
-class SecretBox: DialogFragment() {
+class OTPauthDialog: DialogFragment() {
     // Диалоговое окно с формой OTPauth.
     // Умеет добавлять, просматривать и удалять OTPauth.
 
@@ -28,13 +28,16 @@ class SecretBox: DialogFragment() {
     interface OnAddResultListener {
         fun onAddResult(auth: OTPauth)
     }
+
     private lateinit var addListener: OnAddResultListener
     fun setOnAddResultListener(listener: OnAddResultListener) {
         this.addListener = listener
     }
+
     interface OnDeleteResultListener {
         fun onDeleteResult(id: Long)
     }
+
     private lateinit var deleteListener: OnDeleteResultListener
     fun setOnDeleteResultListener(listener: OnDeleteResultListener) {
         this.deleteListener = listener
@@ -58,25 +61,27 @@ class SecretBox: DialogFragment() {
 
     private val action: String by lazy { requireArguments().getString(INTENT_TOTP_ACTION,"") }
 
+
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         // Функция создаёт диалоговое окно.
+
         val builder = AlertDialog.Builder(requireActivity())
-        builder.setView(R.layout.dialog_key)
+        builder.setView(R.layout.dialog_otpauth)
         builder.setCancelable(false)
         when (action) {
             ACTION_TOTP_VIEW -> {
-                builder.setTitle(getString(R.string.view_key))
+                builder.setTitle(getString(R.string.view_secret))
                 builder.setNegativeButton(R.string.cancel) { _, _ -> }
             }
 
             ACTION_TOTP_ADD -> {
-                builder.setTitle(getString(R.string.add_key))
+                builder.setTitle(getString(R.string.add_secret))
                 builder.setNegativeButton(R.string.cancel) { _, _ -> }
                 builder.setPositiveButton(R.string.ok) { _, _ -> }
             }
 
             ACTION_TOTP_DELETE -> {
-                builder.setTitle(getString(R.string.delete_key))
+                builder.setTitle(getString(R.string.delete_secret))
                 builder.setNegativeButton(R.string.cancel) { _, _ -> }
                 builder.setPositiveButton(R.string.ok) { _, _ -> }
             }
@@ -85,6 +90,7 @@ class SecretBox: DialogFragment() {
         dialog.window?.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
         return dialog
     }
+
 
     override fun onResume() {
         super.onResume()
@@ -111,6 +117,7 @@ class SecretBox: DialogFragment() {
             }
         }
     }
+
 
     @SuppressLint("SetTextI18n")
     fun fillFields(secret: OTPauth) {
@@ -141,15 +148,19 @@ class SecretBox: DialogFragment() {
         }
     }
 
+
     fun deleteSecret(secret: OTPauth) {
         // Функция вызывает deleteListener и закрывает окно.
+
         deleteListener.onDeleteResult(secret.id)
         dismiss()
     }
 
+
     fun addSecret() {
         // Функция проверяет правильность заполнения полей
         // и если всё в порядке вызывает addListener и закрывает окно.
+
         var isChecked = true
         var selectedHash = SHA1
         var selectedDigits = 6
@@ -192,11 +203,11 @@ class SecretBox: DialogFragment() {
             isChecked = false
         }
         if (edKey.text.toString().isEmpty()) {
-            ilKey.error = getString(R.string.err_empty_key)
+            ilKey.error = getString(R.string.err_empty_secret)
             isChecked = false
         }
         if (edKey.text.toString().isNotBlank() && (!isValidBase32(edKey.text.toString()))) {
-            ilKey.error = getString(R.string.err_base32_key)
+            ilKey.error = getString(R.string.err_base32_secret)
             isChecked = false
         }
         if (edPeriod.text.toString().isEmpty()) {
@@ -217,6 +228,6 @@ class SecretBox: DialogFragment() {
             addListener.onAddResult(secretNew)
             dismiss()
         }
-
     }
+
 }

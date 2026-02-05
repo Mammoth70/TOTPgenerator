@@ -3,7 +3,7 @@ package ru.mammoth70.totpgenerator
 
 import android.security.keystore.KeyProperties
 import android.security.keystore.KeyGenParameterSpec
-import android.util.Base64
+import java.util.Base64
 import java.security.KeyStore
 import java.security.SecureRandom
 import java.time.LocalTime
@@ -26,15 +26,19 @@ private const val KEY_ALIAS = "key_totp_generator"
 private const val SHA1PRNG = "SHA1PRNG"
 private const val TRANSFORMATION = "AES/GCM/NoPadding"
 
+
 fun isSecretKey(): Boolean {
     // Функция проверяет наличие в AndroidKeyStore ключа для шифрования TOTP секретов.
+
     val keyStore = KeyStore.getInstance(PROVIDER)
     keyStore.load(null)
     return keyStore.containsAlias(KEY_ALIAS)
 }
 
+
 fun generateSecretKey() {
     // Функция создаёт в AndroidKeyStore ключ для шифрования TOTP секретов, если его нет.
+
     val keyStore = KeyStore.getInstance(PROVIDER)
     keyStore.load(null)
     if (keyStore.containsAlias(KEY_ALIAS)) {
@@ -63,8 +67,10 @@ fun generateSecretKey() {
     keyGenerator.generateKey()
 }
 
+
 fun deleteSecretKey() {
     // Функция удаляет из AndroidKeyStore ключ для шифрования TOTP секретов, если он есть.
+
     val keyStore = KeyStore.getInstance(PROVIDER)
     keyStore.load(null)
     if (keyStore.containsAlias(KEY_ALIAS)) {
@@ -72,8 +78,10 @@ fun deleteSecretKey() {
     }
 }
 
+
 private fun getSecretKey(): SecretKey? {
     // Функция получает из AndroidKeyStore ключ для шифрования TOTP секретов, если он есть.
+
     val keyStore = KeyStore.getInstance(PROVIDER)
     keyStore.load(null)
     return if (keyStore.containsAlias(KEY_ALIAS)) {
@@ -83,9 +91,11 @@ private fun getSecretKey(): SecretKey? {
     }
 }
 
+
 fun encryptString(startedText: String): StringPair {
     // Функция шифрует заданную строку с помощью AES GSM на ключе для шифрования TOTP секретов.
     // Функция возвращает пару из зашифрованной строки и инициализационного вектора.
+
     try {
         val plaintext: ByteArray = startedText.toByteArray()
         val cipher = Cipher.getInstance(TRANSFORMATION)
@@ -93,8 +103,8 @@ fun encryptString(startedText: String): StringPair {
         val encodedBytes = cipher.doFinal(plaintext)
 
         // Конвертация зашифрованных данных в base64.
-        val encodedText = Base64.encodeToString(encodedBytes, Base64.DEFAULT).trimEnd { it == '\n' }
-        val iv = Base64.encodeToString(cipher.iv, Base64.DEFAULT).trimEnd { it == '\n' }
+        val encodedText = Base64.getEncoder().encodeToString(encodedBytes)
+        val iv = Base64.getEncoder().encodeToString(cipher.iv)
 
         // Возврат зашифрованных данных с вектором инициализации.
         return StringPair(encodedText, iv)
@@ -104,13 +114,15 @@ fun encryptString(startedText: String): StringPair {
     }
 }
 
+
 fun decryptString(encryptedPair: StringPair): String {
     // Функция возвращает расшифрованную заданную строку с помощью AES GSM ключом для шифрования TOTP секретов.
     // В функцию передаётся пара из зашифрованной строки и инициализационного вектора.
+
     try {
         // Конвертация зашифрованных данных из base64.
-        val iv = Base64.decode(encryptedPair.iv, Base64.DEFAULT)
-        val encodedBytes = Base64.decode(encryptedPair.encodedText, Base64.DEFAULT)
+        val iv = Base64.getDecoder().decode(encryptedPair.iv)
+        val encodedBytes = Base64.getDecoder().decode(encryptedPair.encodedText)
 
         // Расшифрование зашифрованных данных.
         val cipher = Cipher.getInstance(TRANSFORMATION)
@@ -125,4 +137,5 @@ fun decryptString(encryptedPair: StringPair): String {
     } catch (_: java.lang.Exception) {
         return ""
     }
+
 }

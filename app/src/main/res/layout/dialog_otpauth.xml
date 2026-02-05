@@ -35,7 +35,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:hint="@string/ed_key"
+            android:hint="@string/ed_secret"
             app:errorEnabled="true"
             app:passwordToggleEnabled="true">
 

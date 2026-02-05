@@ -12,8 +12,10 @@ class App : Application() {
             private set
     }
 
+
     override fun onCreate() {
         // Выполняется один раз, при старте приложения.
+
         super.onCreate()
         appContext = applicationContext
         generateSecretKey()

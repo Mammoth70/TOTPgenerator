@@ -29,129 +29,153 @@ class DBhelper(context: Context?) : SQLiteOpenHelper(context, "totpDB",
                 "step integer DEFAULT 30, hash text DEFAULT 'SHA1', digits integer DEFAULT 6);"
     }
 
+
+    override fun onOpen(db: SQLiteDatabase) {
+        // Функция включает Write-Ahead Logging для стабильности. (minSdk 30).
+
+        super.onOpen(db)
+        db.enableWriteAheadLogging()
+    }
+
+
     override fun onCreate(db: SQLiteDatabase) {
         // Функция создаёт таблицу OTPauth.
+
         db.execSQL(CREATE_TABLE_SECRETS)
     }
+
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
         // Функция делает апгрейд БД.
         // Пока, это заглушка.
     }
 
+
     fun readAllSecrets() {
         // Функция считывает все OTPauth в глобальный список appSecrets.
+
         appSecrets.clear()
-        readableDatabase.use { db ->
-            db.rawQuery("SELECT * FROM otpauth ORDER BY id;", null).use { cursor ->
-                while (cursor.moveToNext()) {
-                    val encryptedPair = StringPair(
-                        encodedText = cursor.getString(
-                        cursor.getColumnIndexOrThrow("secret")),
-                        iv = cursor.getString(
-                        cursor.getColumnIndexOrThrow("iv")),
-                        )
-                    val secret = OTPauth(
-                        id = cursor.getLong(
-                            cursor.getColumnIndexOrThrow("id")),
-                        label = cursor.getString(
-                            cursor.getColumnIndexOrThrow("label")),
-                        issuer = cursor.getString(
-                            cursor.getColumnIndexOrThrow("issuer")),
-                        secret = decryptString(encryptedPair),
-                        period = cursor.getInt(
-                            cursor.getColumnIndexOrThrow("step")),
-                        hash = cursor.getString(
-                            cursor.getColumnIndexOrThrow("hash")),
-                        digits = cursor.getInt(
-                            cursor.getColumnIndexOrThrow("digits")),
-                    )
-                    appSecrets.add(secret)
-                }
+
+        readableDatabase.rawQuery("SELECT * FROM otpauth ORDER BY id;", null).use { cursor ->
+            val idIdx = cursor.getColumnIndexOrThrow("id")
+            val labelIdx = cursor.getColumnIndexOrThrow("label")
+            val issuerIdx = cursor.getColumnIndexOrThrow("issuer")
+            val secretIdx = cursor.getColumnIndexOrThrow("secret")
+            val ivIdx = cursor.getColumnIndexOrThrow("iv")
+            val stepIdx = cursor.getColumnIndexOrThrow("step")
+            val hashIdx = cursor.getColumnIndexOrThrow("hash")
+            val digitsIdx = cursor.getColumnIndexOrThrow("digits")
+
+            while (cursor.moveToNext()) {
+                val encryptedPair = StringPair(
+                    encodedText = cursor.getString(secretIdx),
+                    iv = cursor.getString(ivIdx)
+                )
+
+                val secret = OTPauth(
+                    id = cursor.getLong(idIdx),
+                    label = cursor.getString(labelIdx),
+                    issuer = cursor.getString(issuerIdx),
+                    secret = decryptString(encryptedPair),
+                    period = cursor.getInt(stepIdx),
+                    hash = cursor.getString(hashIdx),
+                    digits = cursor.getInt(digitsIdx)
+                )
+                appSecrets.add(secret)
             }
         }
     }
+
 
     fun addSecret(otpauth: OTPauth): Int  {
         // Функция добавляет запись OTPauth в БД.
         // Если добавлено успешно - возвращает 0, если не успешно - возвращает не 0.
-        if (otpauth.label in appSecrets.map(OTPauth::label)) {
+
+        if (appSecrets.any { it.label == otpauth.label }) {
             return ERR_LIST_COUNT
         }
+
         val pair = encryptString(otpauth.secret)
         if (pair.encodedText.isEmpty() || pair.iv.isEmpty()) {
             return ERR_CRYPTO
         }
-        writableDatabase.use { db ->
-            try {
-                val values = ContentValues()
-                values.put("label", otpauth.label)
-                values.put("issuer", otpauth.issuer)
-                values.put("secret", pair.encodedText)
-                values.put("iv", pair.iv)
-                values.put("step", otpauth.period)
-                values.put("hash", otpauth.hash)
-                values.put("digits", otpauth.digits)
-                val result = db.insert("otpauth", null, values)
-                if (result == -1L) {
-                    return ERR_RES_COUNT
-                }
-            } catch (_: SQLException) {
-                return ERR_SQL_EXCEPT
+
+        return try {
+            val values = ContentValues().apply {
+                put("label", otpauth.label)
+                put("issuer", otpauth.issuer)
+                put("secret", pair.encodedText)
+                put("iv", pair.iv)
+                put("step", otpauth.period)
+                put("hash", otpauth.hash)
+                put("digits", otpauth.digits)
             }
+
+            val result = writableDatabase.insert("otpauth", null, values)
+            if (result != -1L) OK else ERR_RES_COUNT
+
+        } catch (e: SQLException) {
+            ERR_SQL_EXCEPT
         }
-        return OK
     }
+
 
     fun editSecret(otpauth: OTPauth): Int {
         // Функция обновляет запись OTPauth в БД.
         // Поиск записи идёт по полю id.
-        // Если обнновлено успешно - возвращает 0, если не успешно - возвращает не 0.
+        // Если обновлено успешно - возвращает 0, если не успешно - возвращает не 0.
+
         val pair = encryptString(otpauth.secret)
         if (pair.encodedText.isEmpty() || pair.iv.isEmpty()) {
             return ERR_CRYPTO
         }
-        writableDatabase.use { db ->
-            try {
-                val values = ContentValues()
-                values.put("label", otpauth.label)
-                values.put("issuer", otpauth.issuer)
-                values.put("secret", pair.encodedText)
-                values.put("iv", pair.iv)
-                values.put("step", otpauth.period)
-                values.put("hash", otpauth.hash)
-                values.put("digits", otpauth.digits)
-                val result = db.update("otpauth", values,
-                    "id=?", arrayOf(otpauth.toString()))
-                if (result != 1) {
-                    return ERR_RES_COUNT
-                }
-            } catch (_: SQLException) {
-                return ERR_SQL_EXCEPT
+
+        return try {
+            val values = ContentValues().apply {
+                put("label", otpauth.label)
+                put("issuer", otpauth.issuer)
+                put("secret", pair.encodedText)
+                put("iv", pair.iv)
+                put("step", otpauth.period)
+                put("hash", otpauth.hash)
+                put("digits", otpauth.digits)
             }
+
+            val result = writableDatabase.update(
+                "otpauth",
+                values,
+                "id = ?",
+                arrayOf(otpauth.id.toString())
+            )
+
+            if (result == 1) OK else ERR_RES_COUNT
+
+        } catch (e: SQLException) {
+            ERR_SQL_EXCEPT
         }
-        return OK
     }
+
 
     fun deleteSecret(id: Long): Int {
         // Функция удаляет запись OTPauth в БД.
         // Поиск записи идёт по полю id.
         // Если удалено успешно - возвращает 0, если не успешно - возвращает не 0.
-        if (id !in appSecrets.map(OTPauth::id)) {
+
+        if (appSecrets.none { it.id == id }) {
             return ERR_LIST_COUNT
         }
-        writableDatabase.use { db ->
-            try {
-                val result = db.delete("otpauth",
-                    "id=?", arrayOf(id.toString()))
-                if (result != 1) {
-                    return ERR_RES_COUNT
-                }
-            } catch (_: SQLException) {
-                return ERR_SQL_EXCEPT
-            }
-        }
-        return OK
-    }
 
+        return try {
+            val result = writableDatabase.delete(
+                "otpauth",
+                "id = ?",
+                arrayOf(id.toString())
+            )
+
+            if (result == 1) OK else ERR_RES_COUNT
+
+        } catch (e: SQLException) {
+            ERR_SQL_EXCEPT
+        }
+    }
 }

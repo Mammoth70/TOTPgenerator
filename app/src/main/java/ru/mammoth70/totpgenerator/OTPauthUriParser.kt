@@ -1,11 +1,12 @@
 package ru.mammoth70.totpgenerator
 
 import java.util.regex.Pattern
+import java.net.URI
 import java.net.URLDecoder
-import android.util.Base64
+import java.util.Base64
+import androidx.annotation.VisibleForTesting
 import com.google.protobuf.CodedInputStream
 import org.apache.commons.codec.binary.Base32
-import androidx.core.net.toUri
 
 // Парсер разбора строки схем otpauth://totp и otpauth-migration://offline
 
@@ -38,6 +39,7 @@ fun parseQR(url: String?): List<OTPauth> {
     // Функция разбирает строку url.
     // В зависимости от результатов предварительного разбора,
     // вызывает функции parseOTPauth или parseGoogleMigration.
+
     val auths = mutableListOf<OTPauth>()
     if (url.isNullOrBlank()) {
         return auths
@@ -56,36 +58,50 @@ fun parseQR(url: String?): List<OTPauth> {
 }
 
 
-private fun parseOTPauth(url: String): OTPauth? {
+@VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+internal fun parseOTPauth(url: String): OTPauth? {
 // Функция разбирает строку url otpauth://totp и в случае удачи возвращат OTPauth, в противном случае - null.
 
-    val uri = url.toUri()
+    return try {
+        val uri = URI(url)
 
-    // Извлекаем секрет. Если его нет, OTP невозможен.
-    val secret = uri.getQueryParameter("secret")?.uppercase() ?: return null
-    if (!isValidBase32(secret)) return null
+        // Разбираем query-параметры вручную (т.к. у java.net.URI нет getQueryParameter).
+        val queryParams = uri.query?.split("&")?.associate {
+            val parts = it.split("=", limit = 2)
+            val key = parts[0]
+            val value = if (parts.size > 1) URLDecoder.decode(parts[1], "UTF-8") else ""
+            key to value
+        } ?: emptyMap()
 
-    // Извлекаем label (из пути) и issuer.
-    var label = uri.path?.removePrefix("/") ?: ""
-    val issuer = uri.getQueryParameter("issuer") ?: ""
+        // Извлекаем секрет.
+        val secret = queryParams["secret"]?.uppercase() ?: return null
+        if (!isValidBase32(secret)) return null
 
-    // // Google часто значение issuer хранит в начале поля label через двоеточие.
-    if (issuer.isNotBlank() && label.startsWith("$issuer:", ignoreCase = true)) {
-        label = label.substring(issuer.length + 1).trim()
+        // Извлекаем label (из пути) и issuer.
+        var label = uri.path?.removePrefix("/") ?: ""
+        val issuer = queryParams["issuer"] ?: ""
+
+        // Google часто значение issuer хранит в начале поля label через двоеточие.
+        if (issuer.isNotBlank() && label.startsWith("$issuer:", ignoreCase = true)) {
+            label = label.substring(issuer.length + 1).trim()
+        }
+
+        OTPauth(
+            label = label,
+            secret = secret,
+            issuer = issuer,
+            period = queryParams["period"]?.toIntOrNull() ?: 30,
+            hash = queryParams["algorithm"]?.uppercase() ?: "SHA1",
+            digits = queryParams["digits"]?.toIntOrNull() ?: 6
+        )
+    } catch (_: Exception) {
+        null // Если URL совсем кривой
     }
-
-    return OTPauth(
-        label = label,
-        secret = secret,
-        issuer = issuer,
-        period = uri.getQueryParameter("period")?.toIntOrNull() ?: 30,
-        hash = uri.getQueryParameter("algorithm")?.uppercase() ?: "SHA1",
-        digits = uri.getQueryParameter("digits")?.toIntOrNull() ?: 6
-    )
 }
 
 
-private fun parseGoogleMigration(url: String): List<OTPauth> {
+@VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+internal fun parseGoogleMigration(url: String): List<OTPauth> {
     // Функция разбирает строку url otpauth-migration://offline,
     // и в случае удачи возвращат список OTPauth, в противном случае - список возвращается пустым.
 
@@ -95,7 +111,7 @@ private fun parseGoogleMigration(url: String): List<OTPauth> {
     if ((matcher2.find()) && (!matcher2.group(1).isNullOrBlank())) {
         val data = matcher2.group(1)!!
         val binaryData = try {
-            Base64.decode(URLDecoder.decode(data, "UTF-8"), Base64.DEFAULT)
+            Base64.getMimeDecoder().decode(URLDecoder.decode(data, "UTF-8"))
         } catch (_: Exception) {
             return emptyList()
         }
@@ -108,7 +124,7 @@ private fun parseGoogleMigration(url: String): List<OTPauth> {
                 1 -> { // Поле otp_parameters (repeated message)
                     val length = input.readRawVarint32()
                     val oldLimit = input.pushLimit(length)
-                    parseOtpParameters(input)?.let { // Парсим вложенный объект
+                    decodeOtpParameters(input)?.let { // Парсим вложенный объект
                         auths.add(it)
                     }
                     input.popLimit(oldLimit)
@@ -125,8 +141,9 @@ private fun parseGoogleMigration(url: String): List<OTPauth> {
 }
 
 
-private fun parseOtpParameters(input: CodedInputStream): OTPauth? {
-    // Функция разбирает параметры OTP в потоке CodedInputStream
+private fun decodeOtpParameters(input: CodedInputStream): OTPauth? {
+    // Функция декодирует параметры OTP в потоке CodedInputStream.
+
     var secret = byteArrayOf()
     var name = ""
     var issuer = ""
@@ -164,21 +181,26 @@ private fun parseOtpParameters(input: CodedInputStream): OTPauth? {
         DigitCount.UNSPECIFIED -> 6
     }
 
+    val secretBase32 = Base32().encodeAsString(secret)
     return OTPauth(
             label = name,
             issuer = issuer,
             secret = Base32().encodeAsString(secret),
             hash = hash,
             digits = digits
-        ).takeIf { (type == OtpType.TOTP) && (hash.isNotBlank()) && (name.isNotBlank()) }
+        ).takeIf {type == OtpType.TOTP &&
+                            hash.isNotBlank() &&
+                            name.isNotBlank() &&
+                            isValidBase32(secretBase32)
+        }
 }
 
 
 fun isValidBase32(secret: String): Boolean {
     // Функция проверяет строку Base32 на валидность.
 
-    // Проверка на пустоту/
-    if (secret.isBlank()) return false
+    // Проверка на пустоту.
+        if (secret.isBlank()) return false
 
     // Проверка алфавита (A-Z и 2-7).
     // Допускаем Padding (=), но обычно в ссылках его нет.
@@ -189,6 +211,7 @@ fun isValidBase32(secret: String): Boolean {
     // Полный блок Base32 должен быть кратен 8 символам.
     // Если padding отсутствует (что часто в QR), длина должна быть 2, 4, 5, 7 символов в остатке от деления на 8.
     // Длины с остатком 1, 3, 6 — некорректны.
+    if (secret.contains("=") && secret.length % 8 != 0) return false
     val lengthMod = secret.filter { it != '=' }.length % 8
     val invalidMods = listOf(1, 3, 6)
     return lengthMod !in invalidMods

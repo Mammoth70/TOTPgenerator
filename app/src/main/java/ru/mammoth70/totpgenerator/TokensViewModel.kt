@@ -23,15 +23,15 @@ class TokensViewModel : ViewModel() {
     // Можно заставить перечитать список OTPauth и обновиться.
 
     // Триггер для обновления. Вызываем sendCommandUpdate(), когда appSecrets изменился.
-
     @OptIn(ExperimentalCoroutinesApi::class)
     val tokensLiveData: LiveData<List<Token>> = TokensRepository.updateTrigger.flatMapLatest {
         flow {
+
             // При каждом обновлении триггера считываем актуальный глобальный список секретов.
             val currentSecrets = appSecrets.toList()
             if (currentSecrets.isEmpty()) {
                 emit(emptyList())
-                return@flow // Завершаем выполнение пустого flow. Он "спит" до нового sendCommandUpdate()
+                return@flow // Завершаем выполнение пустого flow. Он "спит" до нового sendCommandUpdate().
             }
             val generators = currentSecrets.map { createGenerator(it) }
             val secretBytes = currentSecrets.map { it.secret.toByteArray() }
@@ -41,13 +41,14 @@ class TokensViewModel : ViewModel() {
                 val now = System.currentTimeMillis()
                 val sec = (now / 1000).toInt()
                 val dateForGenerator = Date(now)
-                // Генерируем список токенов/
+
+                // Генерируем список токенов
                 val tokenList = currentSecrets.mapIndexed { index, auth ->
                     val remain = auth.period - (sec % auth.period)
                     val progress = (auth.period - remain) * 100 / auth.period
 
                     val generatedTotp = try {
-                        // На текущую секунду.
+                        // - на текущую секунду.
                         generators[index].generateCode(
                             secretBytes[index],
                             dateForGenerator
@@ -57,7 +58,7 @@ class TokensViewModel : ViewModel() {
                     }
 
                     val generatedTotpNext = if (SettingsManager.enableNextToken) {
-                        // На следующий период.
+                        // - на следующий период.
                         try {
                             generators[index].generateCode(
                                 secretBytes[index],
@@ -89,8 +90,10 @@ class TokensViewModel : ViewModel() {
         }
     }.flowOn(Dispatchers.Default).asLiveData()
 
+
     private fun createGenerator(it: OTPauth): TotpGenerator {
         // Функция создаёт генератор токенов по заданным параметрам.
+
         val algorithm = when (it.hash) {
             "SHA256" -> HashAlgorithm.SHA256
             "SHA512" -> HashAlgorithm.SHA512
@@ -104,13 +107,16 @@ class TokensViewModel : ViewModel() {
     }
 }
 
+
 object TokensRepository {
     // Глобальный триггер обновления.
+
     private val _updateTrigger = MutableStateFlow(System.currentTimeMillis())
     val updateTrigger: StateFlow<Long> = _updateTrigger.asStateFlow()
 
     fun sendCommandUpdate() {
         // Эта функция должна вызываться при добавлении или удалении секрета в appSecrets.
+
         DBhelper.dbHelper.readAllSecrets()
         _updateTrigger.value = System.currentTimeMillis()
     }

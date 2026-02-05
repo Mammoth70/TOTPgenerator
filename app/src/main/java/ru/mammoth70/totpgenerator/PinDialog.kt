@@ -15,15 +15,17 @@ import androidx.fragment.app.FragmentActivity
 import ru.mammoth70.totpgenerator.App.Companion.appContext
 import ru.mammoth70.totpgenerator.MainActivity.Companion.mainContext
 
-var isHaveBiometric: Boolean = false
-    internal set    // Флаг наличия в смартфоне датчиков строгой биометрической идентификации.
+var isHaveBiometric: Boolean = false  // Флаг наличия в смартфоне датчиков строгой биометрической идентификации.
+    internal set
 
 private var pinBuffer = CharArray(6)
 private var pinBuffer1 = CharArray(6)
 private var pinIndex = 0
 
+
 fun checkBiometricInDevice() {
     // Функция проверяет наличие в смартфоне датчиков строгой биометрической идентификации.
+
     val biometricManager = BiometricManager.from(appContext)
     isHaveBiometric = when (biometricManager.canAuthenticate(
         BiometricManager.Authenticators.BIOMETRIC_STRONG)) {
@@ -42,12 +44,14 @@ private const val CHECK_PIN_WHILE_FALSE = 2
 private const val ENTER_NEW_PIN = 3
 private const val CHECK_PIN_ENTER_NEW_PIN = 4
 
+
 class PinBox : DialogFragment() {
     // Диалоговое окно ввода и проверки PIN.
 
     interface OnPinResultListener {
         fun onPinResult(action: String, result: Boolean, message: String)
     }
+
     companion object {
         const val INTENT_PIN_ACTION = "pin_action"
         const val ACTION_ENTER_PIN = "enter_pin"
@@ -58,6 +62,7 @@ class PinBox : DialogFragment() {
         const val INTENT_PIN_SCREEN = "pin_screen"
         const val SCREEN_FULL = "pin_screen_full"
     }
+
 
     private lateinit var pinListener: OnPinResultListener
     fun setOnPinResultListener(listener: OnPinResultListener) {
@@ -86,19 +91,19 @@ class PinBox : DialogFragment() {
     private val bullet6: ImageView by lazy { dlg.findViewById(R.id.bullet6)!!}
     private val errorMessage: TextView by lazy {dlg.findViewById(R.id.errorMessage)!!}
 
-
     private val action: String by lazy { requireArguments().getString(INTENT_PIN_ACTION,"") }
     private val screen: String by lazy { requireArguments().getString(INTENT_PIN_SCREEN,"") }
 
     private var variant = CHECK_PIN
     private var step = 0
 
+
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        // Фунция создания диалога.
+
         val builder = if (screen == SCREEN_FULL) {
             AlertDialog.Builder(
                 requireActivity(),
-                // Theme_Material_NoActionBar_Fullscreen
-                // Theme_Material_Light_NoActionBar_Fullscreen
                 android.R.style.Theme_Material_Light_NoActionBar_Fullscreen
             )
         } else {
@@ -106,6 +111,7 @@ class PinBox : DialogFragment() {
         }
         builder.setView(R.layout.dialog_pin)
         builder.setCancelable(false)
+
         when (action) {
             ACTION_ENTER_PIN -> {
                 // Проверить PIN и вернуть результат проверки.
@@ -141,16 +147,19 @@ class PinBox : DialogFragment() {
                 }
 
             }
-
         }
         val dialog = builder.create()
         dialog.window?.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
         return dialog
     }
 
+
     override fun onResume() {
         super.onResume()
+
         clearAllPins()
+
+        // Здесь мы устанавливаем листенеры всех кнопок.
         btn0.setOnClickListener {
             addCharPin('0')
         }
@@ -193,12 +202,15 @@ class PinBox : DialogFragment() {
         if (variant == CHECK_PIN_AND_BIO) {
             btnBiomeric.visibility = View.VISIBLE
             btnBiomeric.setOnClickListener {
-                authenticate(mainContext)
+                bioAuthenticate(mainContext)
             }
         }
     }
 
+
     private fun addCharPin(digit: Char) {
+        // Функция добавляет ещё один символ в PIN-код, обновляет интерфейс и проверяет (если надо) PIN-код.
+
         errorMessage.text = ""
         if (pinIndex < pinBuffer.size) {
             pinBuffer[pinIndex] = digit
@@ -210,7 +222,10 @@ class PinBox : DialogFragment() {
         }
     }
 
+
     private fun deleteCharPin() {
+        // Функция удаляет последний символ из PIN-кода и обновляет интерфейс.
+
         errorMessage.text = ""
         if (pinIndex > 0) {
             pinIndex--
@@ -220,12 +235,16 @@ class PinBox : DialogFragment() {
     }
 
     private fun clearAllPins() {
+        // Функция очищает PIN-код, забивая все символы пустым значением.
+
         pinBuffer.fill('\u0000')
         pinBuffer1.fill('\u0000')
         pinIndex=0
     }
 
     private fun bulletsAdd(num: Int) {
+        // Функция добавляет на панель одну точку.
+
         when (num) {
             1 -> bullet1.setImageResource(R.drawable.circle_on)
             2 -> bullet2.setImageResource(R.drawable.circle_on)
@@ -237,6 +256,8 @@ class PinBox : DialogFragment() {
     }
 
     private fun bulletDel(num:Int) {
+        // Функция удаляет с панели последнюю точку.
+
         when (num) {
             0 -> bullet1.setImageResource(R.drawable.circle_off)
             1 -> bullet2.setImageResource(R.drawable.circle_off)
@@ -247,7 +268,10 @@ class PinBox : DialogFragment() {
         }
     }
 
+
     private fun bulletsClear() {
+        // Функция удаляет с панели все точки.
+
         bullet1.setImageResource(R.drawable.circle_off)
         bullet2.setImageResource(R.drawable.circle_off)
         bullet3.setImageResource(R.drawable.circle_off)
@@ -256,7 +280,10 @@ class PinBox : DialogFragment() {
         bullet6.setImageResource(R.drawable.circle_off)
     }
 
+
     private fun validatePin() {
+        // Функция реализует разные варианты логики ввода и проверки PIN-кода.
+
         when (variant) {
             CHECK_PIN -> {
                 // Вариант. Проверить PIN и вернуть результат проверки.
@@ -364,7 +391,10 @@ class PinBox : DialogFragment() {
         }
     }
 
-    private fun authenticate(context: FragmentActivity) {
+
+    private fun bioAuthenticate(context: FragmentActivity) {
+        // Функция реализует проверку входа по биометрии.
+
         val executor = context.mainExecutor
         val biometricPrompt = BiometricPrompt(
             context,
@@ -399,7 +429,7 @@ class PinBox : DialogFragment() {
     }
 
     private fun checkPin(): Boolean {
-        // Сравнить хеш pinBuffer с хешем из секретного хранилища
+        // Функция сравнает хеш pinBuffer с хешем из секретного хранилища.
         return verifyPin(pinBuffer)
     }
 

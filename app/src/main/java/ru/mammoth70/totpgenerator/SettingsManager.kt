@@ -8,7 +8,7 @@ import androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_NO
 import androidx.core.content.edit
 
 object SettingsManager {
-// Объект содержит переменные с настройками.
+// Объект содержит переменные с настройками приложения.
 
     private const val NAME_SETTINGS = "settings"
     private const val NAME_BIO = "enablebiometric"
@@ -55,11 +55,14 @@ object SettingsManager {
             prefs.edit { putInt(NAME_THEME_MODE, value) }
         }
 
+
     fun installThemeMode() {
+        // Функция устанавливает режим темы в приложении. (для внешнего вызова)
         installThemeMode(appThemeMode)
     }
     private fun installThemeMode(mode: Int) {
         // Функция устанавливает режим темы в приложении.
+
         when (mode) {
             MODE_NIGHT_NO -> AppCompatDelegate.setDefaultNightMode(MODE_NIGHT_NO)
             MODE_NIGHT_YES -> AppCompatDelegate.setDefaultNightMode(MODE_NIGHT_YES)

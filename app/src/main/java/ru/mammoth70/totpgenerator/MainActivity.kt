@@ -28,9 +28,10 @@ import kotlin.lazy
 private var unLocked = false
 
 class MainActivity : AppActivity(),
-    SecretBox.OnAddResultListener, SecretBox.OnDeleteResultListener, PinBox.OnPinResultListener {
+    OTPauthDialog.OnAddResultListener, OTPauthDialog.OnDeleteResultListener, PinBox.OnPinResultListener {
     // Главная activity приложения.
     // Выводит список токенов.
+
     companion object {
         lateinit var mainContext : FragmentActivity
     }
@@ -47,6 +48,7 @@ class MainActivity : AppActivity(),
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         mainContext = this as FragmentActivity
 
         if (!unLocked && isHaveHashPin) {
@@ -110,15 +112,15 @@ class MainActivity : AppActivity(),
                 R.id.item_about -> {
                     // Обработчик кнопки "Инфо".
                     val bundle = Bundle()
-                    bundle.putString(AboutBox.ABOUT_TITLE, getString(R.string.app_name))
+                    bundle.putString(AboutDialog.ABOUT_TITLE, getString(R.string.app_name))
                     val text =
                         getString(R.string.description) + "\n\n" +
                                 getString(R.string.version) + " " +
                                 BuildConfig.VERSION_NAME
-                    bundle.putString(AboutBox.ABOUT_MESSAGE, text)
-                    val aboutBox = AboutBox()
-                    aboutBox.setArguments(bundle)
-                    aboutBox.show(this.supportFragmentManager, "ABOUT_DIALOG")
+                    bundle.putString(AboutDialog.ABOUT_MESSAGE, text)
+                    val aboutDialog = AboutDialog()
+                    aboutDialog.setArguments(bundle)
+                    aboutDialog.show(this.supportFragmentManager, "ABOUT_DIALOG")
                 }
 
             }
@@ -126,18 +128,24 @@ class MainActivity : AppActivity(),
         }
     }
 
+
     private fun showSnackbar(message: String) {
         // Функция выводит Snackbar со строкой message.
+
         Snackbar.make(tokensList, message, Snackbar.LENGTH_SHORT).show()
     }
 
+
     private fun showSnackbar(resId: Int) {
         // Функция выводит Snackbar со строкой, хранимой в ресурсе resId.
+
         showSnackbar(getString(resId))
     }
 
+
     private fun addQRsecret() {
         // Функция читает QR, парсит его, добавляет распарсенный OTPauth в БД и вызывает refreshSecrets().
+
         val options = GmsBarcodeScannerOptions.Builder()
             .setBarcodeFormats(
                 Barcode.FORMAT_QR_CODE)
@@ -151,9 +159,9 @@ class MainActivity : AppActivity(),
                 if (secretsNew.isNotEmpty()) {
                     secretsNew.forEach {
                         if (DBhelper.dbHelper.addSecret(it) == 0) {
-                            showSnackbar(R.string.key_added)
+                            showSnackbar(R.string.secret_added)
                         } else {
-                            showSnackbar(R.string.key_add_error)
+                            showSnackbar(R.string.secret_add_error)
                         }
                     }
                     TokensRepository.sendCommandUpdate()
@@ -165,57 +173,69 @@ class MainActivity : AppActivity(),
             .addOnFailureListener { _ -> showSnackbar(R.string.qr_error) }
     }
 
+
     private fun addSecret() {
         // Функция вызывает Dialog для добавления OTPauth.
         // Dialog возвращает результат через листенер.
+
         val bundle = Bundle()
-        bundle.putString(SecretBox.INTENT_TOTP_ACTION, SecretBox.ACTION_TOTP_ADD)
-        val secretDialog = SecretBox()
-        secretDialog.setArguments(bundle)
-        secretDialog.isCancelable = false
-        secretDialog.setOnAddResultListener(this)
-        secretDialog.show(this.supportFragmentManager, "SECRET_DIALOG")
+        bundle.putString(OTPauthDialog.INTENT_TOTP_ACTION, OTPauthDialog.ACTION_TOTP_ADD)
+        val otpAuthDialog = OTPauthDialog()
+        otpAuthDialog.setArguments(bundle)
+        otpAuthDialog.isCancelable = false
+        otpAuthDialog.setOnAddResultListener(this)
+        otpAuthDialog.show(this.supportFragmentManager, "SECRET_DIALOG")
     }
+
 
     private fun viewSecret(id: Long) {
         // Функция вызывает Dialog для чтения OTPauth.
+
         val bundle = Bundle()
-        bundle.putString(SecretBox.INTENT_TOTP_ACTION, SecretBox.ACTION_TOTP_VIEW)
-        bundle.putLong(SecretBox.INTENT_TOTP_ID, id)
-        val secretDialog = SecretBox()
-        secretDialog.setArguments(bundle)
-        secretDialog.isCancelable = false
-        secretDialog.show(this.supportFragmentManager, "SECRET_DIALOG")
+        bundle.putString(OTPauthDialog.INTENT_TOTP_ACTION, OTPauthDialog.ACTION_TOTP_VIEW)
+        bundle.putLong(OTPauthDialog.INTENT_TOTP_ID, id)
+        val otpAuthDialog = OTPauthDialog()
+        otpAuthDialog.setArguments(bundle)
+        otpAuthDialog.isCancelable = false
+        otpAuthDialog.show(this.supportFragmentManager, "SECRET_DIALOG")
     }
+
 
     private fun deleteSecret(id: Long) {
         // Функция вызывает Dialog для удаления OTPauth.
         // Dialog возвращает результат через листенер.
+
         val bundle = Bundle()
-        bundle.putString(SecretBox.INTENT_TOTP_ACTION, SecretBox.ACTION_TOTP_DELETE)
-        bundle.putLong(SecretBox.INTENT_TOTP_ID, id)
-        val secretDialog = SecretBox()
-        secretDialog.setArguments(bundle)
-        secretDialog.isCancelable = false
-        secretDialog.setOnDeleteResultListener(this)
-        secretDialog.show(this.supportFragmentManager, "SECRET_DIALOG")
+        bundle.putString(OTPauthDialog.INTENT_TOTP_ACTION, OTPauthDialog.ACTION_TOTP_DELETE)
+        bundle.putLong(OTPauthDialog.INTENT_TOTP_ID, id)
+        val otpAuthDialog = OTPauthDialog()
+        otpAuthDialog.setArguments(bundle)
+        otpAuthDialog.isCancelable = false
+        otpAuthDialog.setOnDeleteResultListener(this)
+        otpAuthDialog.show(this.supportFragmentManager, "SECRET_DIALOG")
     }
+
 
     private fun itemLongClick(totp: String) : Boolean {
         // Обработчик двойного клика по токену.
         // Вызывает функцию копирования токена в clipboard.
+
         tokenToClipBoard(totp)
         return true
     }
 
+
     private fun itemClick(totp: String) {
         // Обработчик клика по токену.
         // Вызывает функцию копирования токена в clipboard.
+
         tokenToClipBoard(totp)
     }
 
+
     private fun showPopupMenu(view: View, id: Long) {
         // Обработчик клика на кнопку меню.
+
         val popupMenu = PopupMenu(this, view)
         popupMenu.inflate(R.menu.token_menu)
         popupMenu.setOnMenuItemClickListener { item ->
@@ -238,8 +258,10 @@ class MainActivity : AppActivity(),
         popupMenu.show()
     }
 
+
     private fun tokenToClipBoard(totp: String) {
         // Функция копирует токен в clipboard.
+
         if (totp.isEmpty()) return
 
         val clipboard = this.getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
@@ -274,28 +296,34 @@ class MainActivity : AppActivity(),
 
     }
 
+
     override fun onAddResult(auth: OTPauth) {
         // Обработчик возврата из SecretDialog Add после нажатия кнопки PositiveButton.
+
         if (DBhelper.dbHelper.addSecret(auth) == 0) {
             TokensRepository.sendCommandUpdate()
-            showSnackbar(R.string.key_added)
+            showSnackbar(R.string.secret_added)
         } else {
-            showSnackbar(R.string.key_add_error)
+            showSnackbar(R.string.secret_add_error)
         }
     }
+
 
     override fun onDeleteResult(id: Long) {
         // Обработчик возврата из SecretDialog Delete после нажатия кнопки PositiveButton.
+
         if (DBhelper.dbHelper.deleteSecret(id) == 0) {
             TokensRepository.sendCommandUpdate()
-            showSnackbar(R.string.key_deleted)
+            showSnackbar(R.string.secret_deleted)
         } else {
-            showSnackbar(R.string.key_delete_error)
+            showSnackbar(R.string.secret_delete_error)
         }
     }
 
+
     private fun enterPin() {
         // Вызов окна ввода PIN.
+
         val bundle = Bundle()
         bundle.putString(PinBox.INTENT_PIN_ACTION, PinBox.ACTION_ENTER_PIN)
         bundle.putString(PinBox.INTENT_PIN_SCREEN, PinBox.SCREEN_FULL)
@@ -306,8 +334,10 @@ class MainActivity : AppActivity(),
         pinBox.show(this.supportFragmentManager, "PIN_DIALOG")
     }
 
+
     override fun onPinResult(action: String, result: Boolean, message: String) {
         // Обработчик возврата из PinDialog.
+
         if ((action == PinBox.ACTION_ENTER_PIN) && (!result)) {
             finish()
         } else {

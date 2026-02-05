@@ -26,6 +26,7 @@ internal class TokensAdapter : ListAdapter<Token, RecyclerView.ViewHolder>(Token
     fun setOnItemViewClick(listener: (String) -> Unit) { onItemClick = listener }
     fun setOnItemViewLongClick(listener: (String) -> Boolean) { onItemLongClick = listener }
 
+
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         // Представление viewHolder для токена.
 
@@ -37,17 +38,22 @@ internal class TokensAdapter : ListAdapter<Token, RecyclerView.ViewHolder>(Token
         val remainView: TextView = view.findViewById(R.id.remain)
         val progressView: CircularProgressIndicator = view.findViewById(R.id.progress)
 
+
         init {
+            // Привязка листенеров.
+
             btnMenu.setOnClickListener {
                 val pos = bindingAdapterPosition
                 if (pos != RecyclerView.NO_POSITION)
                     onBtnMenuClick(it, getItem(pos).id)
             }
+
             itemToken.setOnClickListener {
                 val pos = bindingAdapterPosition
                 if (pos != RecyclerView.NO_POSITION)
                     onItemClick(getItem(pos).totp)
             }
+
             itemToken.setOnLongClickListener {
                 val pos = bindingAdapterPosition
                 if (pos != RecyclerView.NO_POSITION) {
@@ -57,13 +63,18 @@ internal class TokensAdapter : ListAdapter<Token, RecyclerView.ViewHolder>(Token
         }
     }
 
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         // Функция вызывается LayoutManager'ом, чтобы создать viewHolder'ы и передать им макет.
+
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_token, parent, false)
         return ViewHolder(view)
     }
 
+
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        // Функция привязывает к viewHolder'у данные списка токенов.
+
         val token = getItem(position)
         val vh = holder as ViewHolder
         vh.nameView.text = if (token.issuer.isBlank()) token.label else "${token.issuer}:${token.label}"
@@ -72,8 +83,10 @@ internal class TokensAdapter : ListAdapter<Token, RecyclerView.ViewHolder>(Token
         updateProgress(vh, token)
     }
 
+
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int, payloads: MutableList<Any>) {
         // Перегруженная функция привязывает к viewHolder'у только изменённые данные списка токенов.
+
         val payloadsSet = payloads.firstOrNull() as? Set<*>
         if (holder is ViewHolder && payloadsSet != null) {
             val token = getItem(position)
@@ -95,18 +108,22 @@ internal class TokensAdapter : ListAdapter<Token, RecyclerView.ViewHolder>(Token
         }
     }
 
+
     private fun updateTOTP(holder: ViewHolder, token: Token) {
         // Вывод текста с токеном.
         holder.totpView.text = token.totp
     }
+
 
     private fun updateTOTPnext(holder: ViewHolder, token: Token) {
         // Вывод текста со следующим токеном.
         holder.totpNextView.text = token.totpNext
     }
 
+
     private fun updateProgress(holder: ViewHolder, token: Token) {
         // Настройка и вывод колёсика прогресса, вывод оставшихся секунд.
+
         holder.remainView.text = token.remain.toString()
         holder.progressView.apply {
             indicatorDirection = if (SettingsManager.progressClockWise)
@@ -118,8 +135,10 @@ internal class TokensAdapter : ListAdapter<Token, RecyclerView.ViewHolder>(Token
         }
     }
 
+
     class TokenDiffComparator : DiffUtil.ItemCallback<Token>() {
         // Callback для рассчёта разницы между двумя элементами.
+
         override fun areItemsTheSame(oldItem: Token, newItem: Token) = oldItem.id == newItem.id
         override fun areContentsTheSame(oldItem: Token, newItem: Token) = oldItem == newItem
 
@@ -134,4 +153,5 @@ internal class TokensAdapter : ListAdapter<Token, RecyclerView.ViewHolder>(Token
             return diff.ifEmpty { null }
         }
     }
+
 }
