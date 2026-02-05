@@ -28,7 +28,7 @@ import kotlin.lazy
 private var unLocked = false
 
 class MainActivity : AppActivity(),
-    OTPauthDialog.OnAddResultListener, OTPauthDialog.OnDeleteResultListener, PinBox.OnPinResultListener {
+    OTPauthDialog.OnAddResultListener, OTPauthDialog.OnDeleteResultListener, PinDialog.OnPinResultListener {
     // Главная activity приложения.
     // Выводит список токенов.
 
@@ -325,20 +325,20 @@ class MainActivity : AppActivity(),
         // Вызов окна ввода PIN.
 
         val bundle = Bundle()
-        bundle.putString(PinBox.INTENT_PIN_ACTION, PinBox.ACTION_ENTER_PIN)
-        bundle.putString(PinBox.INTENT_PIN_SCREEN, PinBox.SCREEN_FULL)
-        val pinBox = PinBox()
-        pinBox.setArguments(bundle)
-        pinBox.isCancelable = false
-        pinBox.setOnPinResultListener(this)
-        pinBox.show(this.supportFragmentManager, "PIN_DIALOG")
+        bundle.putString(PinDialog.INTENT_PIN_ACTION, PinDialog.ACTION_ENTER_PIN)
+        bundle.putString(PinDialog.INTENT_PIN_SCREEN, PinDialog.SCREEN_FULL)
+        val pinDialog = PinDialog()
+        pinDialog.setArguments(bundle)
+        pinDialog.isCancelable = false
+        pinDialog.setOnPinResultListener(this)
+        pinDialog.show(this.supportFragmentManager, "PIN_DIALOG")
     }
 
 
     override fun onPinResult(action: String, result: Boolean, message: String) {
         // Обработчик возврата из PinDialog.
 
-        if ((action == PinBox.ACTION_ENTER_PIN) && (!result)) {
+        if ((action == PinDialog.ACTION_ENTER_PIN) && (!result)) {
             finish()
         } else {
             unLocked = true

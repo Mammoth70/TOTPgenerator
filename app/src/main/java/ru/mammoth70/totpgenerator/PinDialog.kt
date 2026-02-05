@@ -45,7 +45,7 @@ private const val ENTER_NEW_PIN = 3
 private const val CHECK_PIN_ENTER_NEW_PIN = 4
 
 
-class PinBox : DialogFragment() {
+class PinDialog : DialogFragment() {
     // Диалоговое окно ввода и проверки PIN.
 
     interface OnPinResultListener {

@@ -9,7 +9,7 @@ import androidx.appcompat.app.AppCompatDelegate
 import com.google.android.material.button.MaterialButtonToggleGroup
 import com.google.android.material.snackbar.Snackbar
 
-class SettingsActivity : AppActivity(), PinBox.OnPinResultListener {
+class SettingsActivity : AppActivity(), PinDialog.OnPinResultListener {
     // Activity показывает и позволяет изменять настройки.
 
     override val idLayout = R.layout.activity_settings
@@ -40,23 +40,23 @@ class SettingsActivity : AppActivity(), PinBox.OnPinResultListener {
         btnChangePin.setOnClickListener { _ ->
             // Вызов окна смены PIN-кода.
             val bundle = Bundle()
-            bundle.putString(PinBox.INTENT_PIN_ACTION, PinBox.ACTION_UPDATE_PIN)
-            val pinBox = PinBox()
-            pinBox.setArguments(bundle)
-            pinBox.isCancelable = false
-            pinBox.setOnPinResultListener(this)
-            pinBox.show(this.supportFragmentManager, "PIN_DIALOG")
+            bundle.putString(PinDialog.INTENT_PIN_ACTION, PinDialog.ACTION_UPDATE_PIN)
+            val pinDialog = PinDialog()
+            pinDialog.setArguments(bundle)
+            pinDialog.isCancelable = false
+            pinDialog.setOnPinResultListener(this)
+            pinDialog.show(this.supportFragmentManager, "PIN_DIALOG")
         }
 
         btnDeletePin.setOnClickListener { _ ->
             // Вызов окна удаления PIN-кода.
             val bundle = Bundle()
-            bundle.putString(PinBox.INTENT_PIN_ACTION, PinBox.ACTION_DELETE_PIN)
-            val pinBox = PinBox()
-            pinBox.setArguments(bundle)
-            pinBox.isCancelable = false
-            pinBox.setOnPinResultListener(this)
-            pinBox.show(this.supportFragmentManager, "PIN_DIALOG")
+            bundle.putString(PinDialog.INTENT_PIN_ACTION, PinDialog.ACTION_DELETE_PIN)
+            val pinDialog = PinDialog()
+            pinDialog.setArguments(bundle)
+            pinDialog.isCancelable = false
+            pinDialog.setOnPinResultListener(this)
+            pinDialog.show(this.supportFragmentManager, "PIN_DIALOG")
         }
 
         checkEnableBio.isChecked = SettingsManager.enableBiometric
@@ -126,7 +126,7 @@ class SettingsActivity : AppActivity(), PinBox.OnPinResultListener {
         // Обработчик возврата из PinDialog.
 
         when (action) {
-            PinBox.ACTION_DELETE_PIN -> {
+            PinDialog.ACTION_DELETE_PIN -> {
                 if (result) {
                     btnChangePin.setText(R.string.set_PIN)
                     btnDeletePin.visibility = View.GONE
@@ -137,7 +137,7 @@ class SettingsActivity : AppActivity(), PinBox.OnPinResultListener {
                 }
             }
 
-            PinBox.ACTION_UPDATE_PIN -> {
+            PinDialog.ACTION_UPDATE_PIN -> {
                 if (result) {
                     btnChangePin.setText(R.string.change_PIN)
                     btnDeletePin.visibility = View.VISIBLE
