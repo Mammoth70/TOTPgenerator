@@ -132,7 +132,7 @@ class MainActivity : AppActivity(),
     private fun showSnackbar(message: String) {
         // Функция выводит Snackbar со строкой message.
 
-        Snackbar.make(tokensList, message, Snackbar.LENGTH_SHORT).show()
+        Snackbar.make(floatingActionButtonQR, message, Snackbar.LENGTH_SHORT).show()
     }
 
 
