@@ -115,6 +115,7 @@ class DBhelper(context: Context?) : SQLiteOpenHelper(context, "totpDB",
             if (result != -1L) OK else ERR_RES_COUNT
 
         } catch (e: SQLException) {
+            LogSmart.e("DBhelper", "SQLException в addSecret($otpauth)", e)
             ERR_SQL_EXCEPT
         }
     }
@@ -151,6 +152,7 @@ class DBhelper(context: Context?) : SQLiteOpenHelper(context, "totpDB",
             if (result == 1) OK else ERR_RES_COUNT
 
         } catch (e: SQLException) {
+            LogSmart.e("DBhelper", "SQLException в editSecret($otpauth)", e)
             ERR_SQL_EXCEPT
         }
     }
@@ -175,6 +177,7 @@ class DBhelper(context: Context?) : SQLiteOpenHelper(context, "totpDB",
             if (result == 1) OK else ERR_RES_COUNT
 
         } catch (e: SQLException) {
+            LogSmart.e("DBhelper", "SQLException в deleteSecret($id)", e)
             ERR_SQL_EXCEPT
         }
     }

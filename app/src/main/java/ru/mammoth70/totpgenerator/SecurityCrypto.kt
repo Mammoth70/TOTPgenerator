@@ -109,7 +109,8 @@ fun encryptString(startedText: String): StringPair {
         // Возврат зашифрованных данных с вектором инициализации.
         return StringPair(encodedText, iv)
 
-    } catch (_: java.lang.Exception) {
+    } catch (e: Exception) {
+        LogSmart.e("SecutityCrypto", "Exception в encryptString", e)
         return StringPair()
     }
 }
@@ -134,7 +135,8 @@ fun decryptString(encryptedPair: StringPair): String {
         // Возврат расшифрованных данных.
         return String(decodedBytes!!)
 
-    } catch (_: java.lang.Exception) {
+    } catch (e: Exception) {
+        LogSmart.e("SecutityCrypto", "Exception в decryptString", e)
         return ""
     }
 

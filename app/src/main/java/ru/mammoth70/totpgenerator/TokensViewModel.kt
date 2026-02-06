@@ -53,7 +53,8 @@ class TokensViewModel : ViewModel() {
                             secretBytes[index],
                             dateForGenerator
                         )
-                    } catch (_: Exception) {
+                    } catch (e: Exception) {
+                        LogSmart.e("TokensViewModel", "Exception в TokensViewModel()", e)
                         GEN_ERROR
                     }
 
@@ -64,7 +65,8 @@ class TokensViewModel : ViewModel() {
                                 secretBytes[index],
                                 Date(now + auth.period * 1000L)
                             )
-                        } catch (_: Exception) {
+                        } catch (e: Exception) {
+                            LogSmart.e("TokensViewModel", "Exception в TokensViewModel()", e)
                             GEN_ERROR
                         }
                     } else {

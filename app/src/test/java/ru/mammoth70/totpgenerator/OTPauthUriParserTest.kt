@@ -6,22 +6,6 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.params.provider.CsvFileSource
 
-class Base32Test {
-    @ParameterizedTest(name = "[{index}] Проверка: {0}")
-    @DisplayName("Проверка валидатора Base32")
-    @CsvFileSource(resources = ["/base32_data.csv"], numLinesToSkip = 1, delimiter = ';')
-
-    fun `isValidBase32 validation test`(input: String?, expected: Boolean, comment: String?) {
-
-        val actualInput = input ?: "" // Используем элвис-оператор для обработки пустых строк из CSV как "".
-        assertEquals(
-            expected,
-            isValidBase32(actualInput),
-            "Ошибка: $comment (вход: '$actualInput')"
-        )
-    }
-}
-
 class OTPParserTest {
     @ParameterizedTest(name = "{index} => URL: {0}")
     @DisplayName("Проверка парсера схемы otpauth://")

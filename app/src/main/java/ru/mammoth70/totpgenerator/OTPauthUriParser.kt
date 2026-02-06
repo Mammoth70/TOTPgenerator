@@ -94,7 +94,8 @@ internal fun parseOTPauth(url: String): OTPauth? {
             hash = queryParams["algorithm"]?.uppercase() ?: "SHA1",
             digits = queryParams["digits"]?.toIntOrNull() ?: 6
         )
-    } catch (_: Exception) {
+    } catch (e: Exception) {
+        LogSmart.e("OTPauthUriParser", "Exception в parseOTPauth($url)", e)
         null // Если URL совсем кривой
     }
 }
@@ -112,7 +113,8 @@ internal fun parseGoogleMigration(url: String): List<OTPauth> {
         val data = matcher2.group(1)!!
         val binaryData = try {
             Base64.getMimeDecoder().decode(URLDecoder.decode(data, "UTF-8"))
-        } catch (_: Exception) {
+        } catch (e: Exception) {
+            LogSmart.e("OTPauthUriParser", "Exception в parseGoogleMigration($url)", e)
             return emptyList()
         }
         val input = CodedInputStream.newInstance(binaryData)
@@ -193,26 +195,4 @@ private fun decodeOtpParameters(input: CodedInputStream): OTPauth? {
                             name.isNotBlank() &&
                             isValidBase32(secretBase32)
         }
-}
-
-
-fun isValidBase32(secret: String): Boolean {
-    // Функция проверяет строку Base32 на валидность.
-
-    // Проверка на пустоту.
-        if (secret.isBlank()) return false
-
-    // Проверка алфавита (A-Z и 2-7).
-    // Допускаем Padding (=), но обычно в ссылках его нет.
-    val base32Regex = Regex("^[A-Z2-7]+=*$")
-    if (!base32Regex.matches(secret.uppercase())) return false
-
-    // Проверка кратности согласно RFC 4648.
-    // Полный блок Base32 должен быть кратен 8 символам.
-    // Если padding отсутствует (что часто в QR), длина должна быть 2, 4, 5, 7 символов в остатке от деления на 8.
-    // Длины с остатком 1, 3, 6 — некорректны.
-    if (secret.contains("=") && secret.length % 8 != 0) return false
-    val lengthMod = secret.filter { it != '=' }.length % 8
-    val invalidMods = listOf(1, 3, 6)
-    return lengthMod !in invalidMods
 }
