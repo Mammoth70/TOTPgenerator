@@ -12,23 +12,20 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.delay
 import java.util.Date
 import java.time.Duration
-import java.util.concurrent.CopyOnWriteArrayList
 
 const val GEN_ERROR = "------"
-val appSecrets: CopyOnWriteArrayList<OTPauth> =
-    CopyOnWriteArrayList() // Список OTPauth, считывается из БД
 
 class TokensViewModel : ViewModel() {
     // Класс в бесконечном цикле каждую секунду вычисляет токены и выдаёт их список в поток.
     // Можно заставить перечитать список OTPauth и обновиться.
 
-    // Триггер для обновления. Вызываем sendCommandUpdate(), когда appSecrets изменился.
+    // Триггер для обновления. Вызываем sendCommandUpdate(), когда список secrets изменился.
     @OptIn(ExperimentalCoroutinesApi::class)
     val tokensLiveData: LiveData<List<Token>> = TokensRepository.updateTrigger.flatMapLatest {
         flow {
 
             // При каждом обновлении триггера считываем актуальный глобальный список секретов.
-            val currentSecrets = appSecrets.toList()
+            val currentSecrets = DataRepository.secrets.toList()
             if (currentSecrets.isEmpty()) {
                 emit(emptyList())
                 return@flow // Завершаем выполнение пустого flow. Он "спит" до нового sendCommandUpdate().
@@ -117,9 +114,7 @@ object TokensRepository {
     val updateTrigger: StateFlow<Long> = _updateTrigger.asStateFlow()
 
     fun sendCommandUpdate() {
-        // Эта функция должна вызываться при добавлении или удалении секрета в appSecrets.
-
-        DBhelper.dbHelper.readAllSecrets()
+        // Эта функция должна вызываться при добавлении, изменении или удалении секрета.
         _updateTrigger.value = System.currentTimeMillis()
     }
 }

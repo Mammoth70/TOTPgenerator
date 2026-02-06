@@ -19,7 +19,7 @@ class App : Application() {
         super.onCreate()
         appContext = applicationContext
         generateSecretKey()
-        DBhelper.dbHelper.readAllSecrets()
+        DataRepository.readAllSecrets()
         checkExistsHashPin()
         checkBiometricInDevice()
         SettingsManager.installThemeMode()

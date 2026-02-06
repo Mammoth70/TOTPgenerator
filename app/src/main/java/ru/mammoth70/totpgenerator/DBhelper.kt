@@ -1,4 +1,3 @@
-@file:Suppress("unused")
 package ru.mammoth70.totpgenerator
 
 import android.content.ContentValues
@@ -14,11 +13,9 @@ class DBhelper(context: Context?) : SQLiteOpenHelper(context, "totpDB",
     // Поле secret в таблице otpauth хранится зашифрованным, в поле iv лежит инициализационный вектор.
 
     companion object {
-        const val OK = 0
-        const val ERR_SQL_EXCEPT = 100
-        const val ERR_CRYPTO = 50
-        const val ERR_RES_COUNT = 2
-        const val ERR_LIST_COUNT = 1
+        const val ERR_SQL_EXCEPT = -100L
+        const val ERR_CRYPTO = -50L
+        const val ERR_RES_COUNT = -1L
 
         private const val DB_VERSION = 1 // версия БД
         val dbHelper = DBhelper(appContext)
@@ -51,10 +48,10 @@ class DBhelper(context: Context?) : SQLiteOpenHelper(context, "totpDB",
     }
 
 
-    fun readAllSecrets() {
-        // Функция считывает все OTPauth в глобальный список appSecrets.
+    fun readAllDbSecrets(): List<OTPauth> {
+        // Функция считывает и возвращает все OTPauth.
 
-        appSecrets.clear()
+        val secretList = mutableListOf<OTPauth>()
 
         readableDatabase.rawQuery("SELECT * FROM otpauth ORDER BY id;", null).use { cursor ->
             val idIdx = cursor.getColumnIndexOrThrow("id")
@@ -81,19 +78,16 @@ class DBhelper(context: Context?) : SQLiteOpenHelper(context, "totpDB",
                     hash = cursor.getString(hashIdx),
                     digits = cursor.getInt(digitsIdx)
                 )
-                appSecrets.add(secret)
+                secretList.add(secret)
             }
         }
+        return secretList
     }
 
 
-    fun addSecret(otpauth: OTPauth): Int  {
+    fun addDbSecret(otpauth: OTPauth): Long  {
         // Функция добавляет запись OTPauth в БД.
         // Если добавлено успешно - возвращает 0, если не успешно - возвращает не 0.
-
-        if (appSecrets.any { it.label == otpauth.label }) {
-            return ERR_LIST_COUNT
-        }
 
         val pair = encryptString(otpauth.secret)
         if (pair.encodedText.isEmpty() || pair.iv.isEmpty()) {
@@ -112,7 +106,7 @@ class DBhelper(context: Context?) : SQLiteOpenHelper(context, "totpDB",
             }
 
             val result = writableDatabase.insert("otpauth", null, values)
-            if (result != -1L) OK else ERR_RES_COUNT
+            if (result != -1L) result else ERR_RES_COUNT
 
         } catch (e: SQLException) {
             LogSmart.e("DBhelper", "SQLException в addSecret($otpauth)", e)
@@ -121,7 +115,7 @@ class DBhelper(context: Context?) : SQLiteOpenHelper(context, "totpDB",
     }
 
 
-    fun editSecret(otpauth: OTPauth): Int {
+    fun editDbSecret(otpauth: OTPauth): Long {
         // Функция обновляет запись OTPauth в БД.
         // Поиск записи идёт по полю id.
         // Если обновлено успешно - возвращает 0, если не успешно - возвращает не 0.
@@ -149,7 +143,7 @@ class DBhelper(context: Context?) : SQLiteOpenHelper(context, "totpDB",
                 arrayOf(otpauth.id.toString())
             )
 
-            if (result == 1) OK else ERR_RES_COUNT
+            if (result == 1) 1L else ERR_RES_COUNT
 
         } catch (e: SQLException) {
             LogSmart.e("DBhelper", "SQLException в editSecret($otpauth)", e)
@@ -158,14 +152,10 @@ class DBhelper(context: Context?) : SQLiteOpenHelper(context, "totpDB",
     }
 
 
-    fun deleteSecret(id: Long): Int {
+    fun deleteDbSecret(id: Long): Long {
         // Функция удаляет запись OTPauth в БД.
         // Поиск записи идёт по полю id.
         // Если удалено успешно - возвращает 0, если не успешно - возвращает не 0.
-
-        if (appSecrets.none { it.id == id }) {
-            return ERR_LIST_COUNT
-        }
 
         return try {
             val result = writableDatabase.delete(
@@ -174,7 +164,7 @@ class DBhelper(context: Context?) : SQLiteOpenHelper(context, "totpDB",
                 arrayOf(id.toString())
             )
 
-            if (result == 1) OK else ERR_RES_COUNT
+            if (result == 1) 1L else ERR_RES_COUNT
 
         } catch (e: SQLException) {
             LogSmart.e("DBhelper", "SQLException в deleteSecret($id)", e)

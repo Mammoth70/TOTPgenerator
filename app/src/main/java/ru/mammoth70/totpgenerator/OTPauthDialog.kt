@@ -97,7 +97,7 @@ class OTPauthDialog: DialogFragment() {
 
         if ((action == ACTION_TOTP_VIEW) || (action == ACTION_TOTP_DELETE)) {
             val secret: OTPauth =
-                appSecrets.find { it.id == requireArguments().getLong(INTENT_TOTP_ID) } ?: run {
+                DataRepository.secrets.find { it.id == requireArguments().getLong(INTENT_TOTP_ID) } ?: run {
                     dismiss()
                     return
                 }
@@ -214,7 +214,7 @@ class OTPauthDialog: DialogFragment() {
             ilPeriod.error = getString(R.string.err_empty_period)
             isChecked = false
         }
-        if ((action == ACTION_TOTP_ADD) && (edLabel.text.toString() in appSecrets.map(OTPauth::label))) {
+        if ((action == ACTION_TOTP_ADD) && (edLabel.text.toString() in DataRepository.secrets.map(OTPauth::label))) {
             ilLabel.error = getString(R.string.err_not_unique_label)
             isChecked = false
         }

@@ -158,7 +158,7 @@ class MainActivity : AppActivity(),
                 val secretsNew = parseQR(rawValue)
                 if (secretsNew.isNotEmpty()) {
                     secretsNew.forEach {
-                        if (DBhelper.dbHelper.addSecret(it) == 0) {
+                        if (DataRepository.addSecret(it)) {
                             showSnackbar(R.string.secret_added)
                         } else {
                             showSnackbar(R.string.secret_add_error)
@@ -300,7 +300,7 @@ class MainActivity : AppActivity(),
     override fun onAddResult(auth: OTPauth) {
         // Обработчик возврата из SecretDialog Add после нажатия кнопки PositiveButton.
 
-        if (DBhelper.dbHelper.addSecret(auth) == 0) {
+        if (DataRepository.addSecret(auth)) {
             TokensRepository.sendCommandUpdate()
             showSnackbar(R.string.secret_added)
         } else {
@@ -312,7 +312,7 @@ class MainActivity : AppActivity(),
     override fun onDeleteResult(id: Long) {
         // Обработчик возврата из SecretDialog Delete после нажатия кнопки PositiveButton.
 
-        if (DBhelper.dbHelper.deleteSecret(id) == 0) {
+        if (DataRepository.deleteSecret(id)) {
             TokensRepository.sendCommandUpdate()
             showSnackbar(R.string.secret_deleted)
         } else {
