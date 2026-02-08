@@ -35,7 +35,7 @@ class TokensViewModel : ViewModel() {
 
             // Цикл генерации токенов для этого набора секретов.
             while (true) {
-                val now = System.currentTimeMillis()
+                val now = System.currentTimeMillis() + (SettingsManager.timeShift * 1000L)
                 val sec = (now / 1000).toInt()
                 val dateForGenerator = Date(now)
 

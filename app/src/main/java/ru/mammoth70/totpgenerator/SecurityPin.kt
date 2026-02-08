@@ -11,7 +11,7 @@ import kotlin.text.isNotBlank
 
 // Функции для проверки PIN-кода и для хранения хешированного и зашифрованного PIN-кода в SharedPreferences.
 
-var isHaveHashPin: Boolean = false // Флаг наличия в SharedPreferences зашифрованного хеша PIN-кода.
+var isHaveHashPin: Boolean = checkExistsHashPin() // Флаг наличия в SharedPreferences зашифрованного хеша PIN-кода.
     internal set
 
 private const val NAME_SETTINGS = "hashpin"
@@ -23,12 +23,12 @@ private const val KEY_LENGTH = 256
 private const val ALGORITHM = "PBKDF2WithHmacSHA256"
 
 
-fun checkExistsHashPin() {
+fun checkExistsHashPin(): Boolean {
     // Функция проверяет наличие зашифрованного хеша PIN-кода в SharedPreferences.
 
     val settings = appContext.getSharedPreferences(NAME_SETTINGS, MODE_PRIVATE)
     settings.apply {
-        isHaveHashPin = (contains(NAME_PIN) && contains(NAME_IV))
+        return (contains(NAME_PIN) && contains(NAME_IV))
     }
 }
 

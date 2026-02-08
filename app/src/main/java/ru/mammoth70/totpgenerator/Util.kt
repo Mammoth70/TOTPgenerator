@@ -27,6 +27,8 @@ fun isValidBase32(secret: String): Boolean {
 
 
 object LogSmart {
+    // Функции выводят в лог ошибки и отладочные сообщения, только если приложение собрано для отладки.
+
     fun e(tag: String, message: String, throwable: Throwable? = null) {
         if (BuildConfig.DEBUG) {
             Log.e(tag, message, throwable)

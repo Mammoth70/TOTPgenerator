@@ -11,40 +11,54 @@ object SettingsManager {
 // Объект содержит переменные с настройками приложения.
 
     private const val NAME_SETTINGS = "settings"
-    private const val NAME_BIO = "enablebiometric"
-    private const val NAME_NEXT_TOKEN = "enablenexttoken"
-    private const val NAME_PROGRESS_CLOCK_WISE = "passed"
-    private const val NAME_THEME_MODE = "thememode"
+    private const val KEY_BIO = "enablebiometric"
+    private const val KEY_TIME_SHIFT = "timeshift"
+    private const val KEY_NEXT_TOKEN = "enablenexttoken"
+    private const val KEY_PROGRESS_CLOCK_WISE = "passed"
+    private const val KEY_THEME_MODE = "thememode"
 
     private val prefs by lazy {
         App.appContext.getSharedPreferences(NAME_SETTINGS, Context.MODE_PRIVATE)
     }
 
-    private var cachedEnableBiometric: Boolean = prefs.getBoolean(NAME_BIO, false)
-    private var cachedEnableNextToken: Boolean = prefs.getBoolean(NAME_NEXT_TOKEN, false)
-    private var cachedProgressClockWise: Boolean = prefs.getBoolean(NAME_PROGRESS_CLOCK_WISE, true)
-    private var cachedAppThemeMode =  prefs.getInt(NAME_THEME_MODE, MODE_NIGHT_FOLLOW_SYSTEM)
+    @Volatile
+    private var cachedEnableBiometric: Boolean = prefs.getBoolean(KEY_BIO, false)
+    @Volatile
+    private var cachedTimeShift: Long = prefs.getLong(KEY_TIME_SHIFT, 0L)
+    @Volatile
+    private var cachedEnableNextToken: Boolean = prefs.getBoolean(KEY_NEXT_TOKEN, false)
+    @Volatile
+    private var cachedProgressClockWise: Boolean = prefs.getBoolean(KEY_PROGRESS_CLOCK_WISE, true)
+    @Volatile
+    private var cachedAppThemeMode =  prefs.getInt(KEY_THEME_MODE, MODE_NIGHT_FOLLOW_SYSTEM)
 
 
     var enableBiometric: Boolean  // Флаг разрешения входа по биометрии.
-        get() = cachedEnableBiometric
+        get() =  cachedEnableBiometric
         set(value) {
             cachedEnableBiometric = value
-            prefs.edit { putBoolean(NAME_BIO, value) }
+            prefs.edit { putBoolean(KEY_BIO, value) }
+        }
+
+    var timeShift: Long  // Сдвиг времени в секундах при генерации токена для компенсации задержки времени.
+        get() =  cachedTimeShift
+        set(value) {
+            cachedTimeShift = value
+            prefs.edit { putLong(KEY_TIME_SHIFT, value) }
         }
 
     var enableNextToken: Boolean  // Флаг разрешения вычисления и показа следующего за текущим токена.
         get() = cachedEnableNextToken
         set(value) {
             cachedEnableNextToken = value
-            prefs.edit { putBoolean(NAME_NEXT_TOKEN, value) }
+            prefs.edit { putBoolean(KEY_NEXT_TOKEN, value) }
         }
 
     var progressClockWise: Boolean  // Флаг показа на индикаторе прогресса, сколько прошло (false - сколько осталось).
         get() = cachedProgressClockWise
         set(value) {
             cachedProgressClockWise = value
-            prefs.edit { putBoolean(NAME_PROGRESS_CLOCK_WISE, value) }
+            prefs.edit { putBoolean(KEY_PROGRESS_CLOCK_WISE, value) }
         }
 
     var appThemeMode: Int    // Режим темы приложения.
@@ -52,7 +66,7 @@ object SettingsManager {
         set(value) {
             cachedAppThemeMode = value
             installThemeMode(value)
-            prefs.edit { putInt(NAME_THEME_MODE, value) }
+            prefs.edit { putInt(KEY_THEME_MODE, value) }
         }
 
 
@@ -69,4 +83,5 @@ object SettingsManager {
             else -> AppCompatDelegate.setDefaultNightMode(MODE_NIGHT_FOLLOW_SYSTEM)
         }
     }
+
 }

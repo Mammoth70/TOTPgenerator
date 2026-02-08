@@ -171,4 +171,5 @@ class DBhelper(context: Context?) : SQLiteOpenHelper(context, "totpDB",
             ERR_SQL_EXCEPT
         }
     }
+
 }

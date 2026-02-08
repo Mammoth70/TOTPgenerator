@@ -15,7 +15,7 @@ import androidx.fragment.app.FragmentActivity
 import ru.mammoth70.totpgenerator.App.Companion.appContext
 import ru.mammoth70.totpgenerator.MainActivity.Companion.mainContext
 
-var isHaveBiometric: Boolean = false  // Флаг наличия в смартфоне датчиков строгой биометрической идентификации.
+var isHaveBiometric: Boolean = checkBiometricInDevice()  // Флаг наличия в смартфоне датчиков строгой биометрической идентификации.
     internal set
 
 private var pinBuffer = CharArray(6)
@@ -23,15 +23,16 @@ private var pinBuffer1 = CharArray(6)
 private var pinIndex = 0
 
 
-fun checkBiometricInDevice() {
+fun checkBiometricInDevice(): Boolean {
     // Функция проверяет наличие в смартфоне датчиков строгой биометрической идентификации.
 
     val biometricManager = BiometricManager.from(appContext)
-    isHaveBiometric = when (biometricManager.canAuthenticate(
+    return when (biometricManager.canAuthenticate(
         BiometricManager.Authenticators.BIOMETRIC_STRONG)) {
         BiometricManager.BIOMETRIC_SUCCESS -> {
             true
         }
+
         else -> {
             false
         }
@@ -194,9 +195,9 @@ class PinDialog : DialogFragment() {
             deleteCharPin()
         }
         btnCancel.setOnClickListener {
+            clearAllPins()
             pinListener.onPinResult(action, false,
                 getString(R.string.PIN_cancel))
-            clearAllPins()
             dismiss()
         }
         if (variant == CHECK_PIN_AND_BIO) {
@@ -288,29 +289,30 @@ class PinDialog : DialogFragment() {
             CHECK_PIN -> {
                 // Вариант. Проверить PIN и вернуть результат проверки.
                 if (checkPin()) {
-                    pinListener.onPinResult(action, true, "ok")
+                    clearAllPins()
                     if (action == ACTION_DELETE_PIN) {
                         deleteHashPin()
                         SettingsManager.enableBiometric = false
                     }
+                    pinListener.onPinResult(action, true, "ok")
                 } else {
+                    clearAllPins()
                     pinListener.onPinResult(action, false,
                         getString(R.string.PIN_bad))
                 }
-                clearAllPins()
                 dismiss()
             }
 
             CHECK_PIN_WHILE_FALSE, CHECK_PIN_AND_BIO -> {
                 // Вариант. Проверять PIN, пока не введётся правильный и вернуть результат проверки..
                 if (checkPin()) {
-                    pinListener.onPinResult(action, true, "ok")
                     clearAllPins()
+                    pinListener.onPinResult(action, true, "ok")
                     dismiss()
                 } else {
-                    errorMessage.setText(R.string.error_PIN)
                     clearAllPins()
                     bulletsClear()
+                    errorMessage.setText(R.string.error_PIN)
                 }
             }
 

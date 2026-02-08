@@ -3,11 +3,12 @@ package ru.mammoth70.totpgenerator
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
-import android.widget.CheckBox
-import android.widget.CompoundButton
 import androidx.appcompat.app.AppCompatDelegate
 import com.google.android.material.button.MaterialButtonToggleGroup
+import com.google.android.material.materialswitch.MaterialSwitch
+import com.google.android.material.slider.Slider
 import com.google.android.material.snackbar.Snackbar
+import kotlin.lazy
 
 class SettingsActivity : AppActivity(), PinDialog.OnPinResultListener {
     // Activity показывает и позволяет изменять настройки.
@@ -18,8 +19,9 @@ class SettingsActivity : AppActivity(), PinDialog.OnPinResultListener {
     private val parentLayout: View by lazy { findViewById(android.R.id.content) }
     private val btnChangePin: Button by lazy { findViewById(R.id.btnChangePIN) }
     private val btnDeletePin: Button by lazy { findViewById(R.id.btnDeletePIN) }
-    private val checkEnableBio: CheckBox by lazy { findViewById(R.id.checkEnableBio) }
-    private val checkEnableNextToken: CheckBox by lazy { findViewById(R.id.checkEnableNextToken) }
+    private val sliderTimeShift: Slider by lazy { findViewById(R.id.sliderTimeShift) }
+    private val checkEnableBio: MaterialSwitch by lazy { findViewById(R.id.checkEnableBio) }
+    private val checkEnableNextToken: MaterialSwitch by lazy { findViewById(R.id.checkEnableNextToken) }
     private val toggleProgress: MaterialButtonToggleGroup by lazy { findViewById(R.id.toggleProgress) }
     private val toggleTheme: MaterialButtonToggleGroup by lazy { findViewById(R.id.toggleTheme) }
 
@@ -65,17 +67,24 @@ class SettingsActivity : AppActivity(), PinDialog.OnPinResultListener {
         } else {
             checkEnableBio.visibility = View.GONE
         }
+        checkEnableBio.setOnCheckedChangeListener { buttonView, isChecked: Boolean ->
+            if (buttonView.isPressed) {
+                SettingsManager.enableBiometric = isChecked
+            }
+        }
 
-        checkEnableBio.setOnCheckedChangeListener { _: CompoundButton?,
-                                                    isChecked: Boolean ->
-            SettingsManager. enableBiometric = isChecked
+        sliderTimeShift.value = SettingsManager.timeShift.toFloat()
+        sliderTimeShift.addOnChangeListener { _, value, fromUser ->
+            if (fromUser) {
+                SettingsManager.timeShift = value.toLong()
+            }
         }
 
         checkEnableNextToken.isChecked = SettingsManager.enableNextToken
-
-        checkEnableNextToken.setOnCheckedChangeListener { _: CompoundButton?,
-                                                          isChecked: Boolean ->
-            SettingsManager.enableNextToken = isChecked
+        checkEnableNextToken.setOnCheckedChangeListener {  buttonView, isChecked: Boolean ->
+            if (buttonView.isPressed) {
+                SettingsManager.enableNextToken = isChecked
+            }
         }
 
         if (SettingsManager.progressClockWise) {
@@ -83,10 +92,13 @@ class SettingsActivity : AppActivity(), PinDialog.OnPinResultListener {
         } else {
             toggleProgress.check(R.id.btnProgressRemaining)
         }
-        toggleProgress.addOnButtonCheckedListener { _, checkedId, isChecked ->
-            when (checkedId) {
-                R.id.btnProgressPassed -> SettingsManager.progressClockWise = isChecked
-                R.id.btnProgressRemaining -> SettingsManager.progressClockWise = !isChecked
+        toggleProgress.addOnButtonCheckedListener { group, checkedId, isChecked ->
+            val button = group.findViewById<View>(checkedId)
+            if (button != null && button.isPressed) {
+                when (checkedId) {
+                    R.id.btnProgressPassed -> SettingsManager.progressClockWise = isChecked
+                    R.id.btnProgressRemaining -> SettingsManager.progressClockWise = !isChecked
+                }
             }
         }
 
@@ -95,12 +107,15 @@ class SettingsActivity : AppActivity(), PinDialog.OnPinResultListener {
             AppCompatDelegate.MODE_NIGHT_YES -> toggleTheme.check(R.id.btnThemeNight)
             else -> toggleTheme.check(R.id.btnThemeSystem)
         }
-        toggleTheme.addOnButtonCheckedListener { _, checkedId, isChecked ->
-            if (isChecked) {
-                when (checkedId) {
-                    R.id.btnThemeDay -> SettingsManager.appThemeMode = AppCompatDelegate.MODE_NIGHT_NO
-                    R.id.btnThemeNight -> SettingsManager.appThemeMode = AppCompatDelegate.MODE_NIGHT_YES
-                    R.id.btnThemeSystem -> SettingsManager.appThemeMode = AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+        toggleTheme.addOnButtonCheckedListener { group, checkedId, isChecked ->
+            val button = group.findViewById<View>(checkedId)
+            if (button != null && button.isPressed) {
+                if (isChecked) {
+                    when (checkedId) {
+                        R.id.btnThemeDay -> SettingsManager.appThemeMode = AppCompatDelegate.MODE_NIGHT_NO
+                        R.id.btnThemeNight -> SettingsManager.appThemeMode = AppCompatDelegate.MODE_NIGHT_YES
+                        R.id.btnThemeSystem -> SettingsManager.appThemeMode = AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+                    }
                 }
             }
         }
@@ -130,6 +145,7 @@ class SettingsActivity : AppActivity(), PinDialog.OnPinResultListener {
                 if (result) {
                     btnChangePin.setText(R.string.set_PIN)
                     btnDeletePin.visibility = View.GONE
+                    checkEnableBio.isChecked = SettingsManager.enableBiometric
                     checkEnableBio.visibility = View.GONE
                     showSnackbar(R.string.PIN_deleted)
                 } else {

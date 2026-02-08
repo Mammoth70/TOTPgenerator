@@ -20,8 +20,6 @@ class App : Application() {
         appContext = applicationContext
         generateSecretKey()
         DataRepository.readAllSecrets()
-        checkExistsHashPin()
-        checkBiometricInDevice()
         SettingsManager.installThemeMode()
     }
 
