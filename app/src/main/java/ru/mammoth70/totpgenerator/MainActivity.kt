@@ -10,7 +10,6 @@ import android.os.PersistableBundle
 import android.view.View
 import android.widget.PopupMenu
 import androidx.activity.viewModels
-import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -32,10 +31,6 @@ class MainActivity : AppActivity(),
     // Главная activity приложения.
     // Выводит список токенов.
 
-    companion object {
-        lateinit var mainContext : FragmentActivity
-    }
-
     override val idLayout = R.layout.activity_main
     override val idActivity = R.id.frameMainActivity
     override val isSecure = true // Нельзя делать скриншоты.
@@ -48,8 +43,6 @@ class MainActivity : AppActivity(),
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        mainContext = this as FragmentActivity
 
         if (!unLocked && isHaveHashPin) {
             // Ввод и проверка PIN-кода перед входом.

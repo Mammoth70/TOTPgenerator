@@ -13,7 +13,6 @@ import androidx.biometric.BiometricPrompt
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentActivity
 import ru.mammoth70.totpgenerator.App.Companion.appContext
-import ru.mammoth70.totpgenerator.MainActivity.Companion.mainContext
 
 var isHaveBiometric: Boolean = checkBiometricInDevice()  // Флаг наличия в смартфоне датчиков строгой биометрической идентификации.
     internal set
@@ -203,7 +202,15 @@ class PinDialog : DialogFragment() {
         if (variant == CHECK_PIN_AND_BIO) {
             btnBiomeric.visibility = View.VISIBLE
             btnBiomeric.setOnClickListener {
-                bioAuthenticate(mainContext)
+                bioAuthenticate(requireActivity())
+            }
+
+            if (isHaveBiometric) {
+                dialog?.window?.decorView?.post {
+                    if (isAdded && !isRemoving) {
+                        bioAuthenticate(requireActivity())
+                    }
+                }
             }
         }
     }

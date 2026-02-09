@@ -36,37 +36,47 @@ object SettingsManager {
     var enableBiometric: Boolean  // Флаг разрешения входа по биометрии.
         get() =  cachedEnableBiometric
         set(value) {
-            cachedEnableBiometric = value
-            prefs.edit { putBoolean(KEY_BIO, value) }
+            if (value != cachedEnableBiometric ) {
+                cachedEnableBiometric = value
+                prefs.edit { putBoolean(KEY_BIO, value) }
+            }
         }
 
     var timeShift: Long  // Сдвиг времени в секундах при генерации токена для компенсации задержки времени.
         get() =  cachedTimeShift
         set(value) {
-            cachedTimeShift = value
-            prefs.edit { putLong(KEY_TIME_SHIFT, value) }
+            if (value != cachedTimeShift ) {
+                cachedTimeShift = value
+                prefs.edit { putLong(KEY_TIME_SHIFT, value) }
+            }
         }
 
     var enableNextToken: Boolean  // Флаг разрешения вычисления и показа следующего за текущим токена.
         get() = cachedEnableNextToken
         set(value) {
-            cachedEnableNextToken = value
-            prefs.edit { putBoolean(KEY_NEXT_TOKEN, value) }
+            if (value != cachedEnableNextToken ) {
+                cachedEnableNextToken = value
+                prefs.edit { putBoolean(KEY_NEXT_TOKEN, value) }
+            }
         }
 
     var progressClockWise: Boolean  // Флаг показа на индикаторе прогресса, сколько прошло (false - сколько осталось).
         get() = cachedProgressClockWise
         set(value) {
-            cachedProgressClockWise = value
-            prefs.edit { putBoolean(KEY_PROGRESS_CLOCK_WISE, value) }
+            if (value != cachedProgressClockWise ) {
+                cachedProgressClockWise = value
+                prefs.edit { putBoolean(KEY_PROGRESS_CLOCK_WISE, value) }
+            }
         }
 
     var appThemeMode: Int    // Режим темы приложения.
         get() = cachedAppThemeMode
         set(value) {
-            cachedAppThemeMode = value
-            installThemeMode(value)
-            prefs.edit { putInt(KEY_THEME_MODE, value) }
+            if (value != cachedAppThemeMode ) {
+                cachedAppThemeMode = value
+                installThemeMode(value)
+                prefs.edit { putInt(KEY_THEME_MODE, value) }
+            }
         }
 
 
