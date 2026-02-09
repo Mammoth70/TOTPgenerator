@@ -67,7 +67,7 @@ class SettingsActivity : AppActivity(), PinDialog.OnPinResultListener {
         } else {
             checkEnableBio.visibility = View.GONE
         }
-        checkEnableBio.setOnCheckedChangeListener { buttonView, isChecked: Boolean ->
+        checkEnableBio.setOnCheckedChangeListener { buttonView, isChecked ->
             if (buttonView.isPressed) {
                 SettingsManager.enableBiometric = isChecked
             }
@@ -81,7 +81,7 @@ class SettingsActivity : AppActivity(), PinDialog.OnPinResultListener {
         }
 
         checkEnableNextToken.isChecked = SettingsManager.enableNextToken
-        checkEnableNextToken.setOnCheckedChangeListener {  buttonView, isChecked: Boolean ->
+        checkEnableNextToken.setOnCheckedChangeListener { buttonView, isChecked ->
             if (buttonView.isPressed) {
                 SettingsManager.enableNextToken = isChecked
             }
