@@ -11,7 +11,7 @@ object DataRepository {
 
 
     fun readAllSecrets() {
-        // Функция считывает все секреты из в БД в DataRepository.
+        // Функция считывает все секреты из БД в DataRepository.
 
         val fromDb = DBhelper.dbHelper.readAllDbSecrets()
         if (fromDb.isEmpty() && _secrets.isEmpty()) return

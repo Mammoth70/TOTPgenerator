@@ -13,17 +13,19 @@ class DBhelper(context: Context?) : SQLiteOpenHelper(context, "totpDB",
     // Поле secret в таблице otpauth хранится зашифрованным, в поле iv лежит инициализационный вектор.
 
     companion object {
-        const val ERR_SQL_EXCEPT = -100L
-        const val ERR_CRYPTO = -50L
-        const val ERR_RES_COUNT = -1L
+        private const val ERR_SQL_EXCEPT = -100L
+        private const val ERR_CRYPTO = -50L
+        private const val ERR_RES_COUNT = -1L
 
         private const val DB_VERSION = 1 // версия БД
         val dbHelper = DBhelper(appContext)
-        private const val CREATE_TABLE_SECRETS = "CREATE TABLE IF NOT EXISTS otpauth " +
-                "(id integer PRIMARY KEY AUTOINCREMENT, " +
-                "label text UNIQUE NOT NULL, issuer text DEFAULT '', " +
-                "secret text UNIQUE NOT NULL, iv NOT NULL, " +
-                "step integer DEFAULT 30, hash text DEFAULT 'SHA1', digits integer DEFAULT 6);"
+        private val CREATE_TABLE_SECRETS = """
+            CREATE TABLE IF NOT EXISTS otpauth 
+            (id integer PRIMARY KEY AUTOINCREMENT, 
+            label text UNIQUE NOT NULL, issuer text DEFAULT '', 
+            secret text UNIQUE NOT NULL, iv NOT NULL, 
+            step integer DEFAULT 30, hash text DEFAULT 'SHA1', digits integer DEFAULT 6);
+        """.trimIndent()
     }
 
 

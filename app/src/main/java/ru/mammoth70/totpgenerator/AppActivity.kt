@@ -24,7 +24,7 @@ abstract class AppActivity : AppCompatActivity() {
 
         if (isSecure) {
             // Если в Activity-потомке будет включён флаг isSecure,
-            // то в ней будет запрещено создание скинштов.
+            // то в ней будет запрещено создание скриншотов.
             window.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
         }
 

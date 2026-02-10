@@ -116,7 +116,7 @@ class PinDialog : DialogFragment() {
             ACTION_ENTER_PIN -> {
                 // Проверить PIN и вернуть результат проверки.
                 builder.setTitle(getString(R.string.enter_PIN))
-                variant = if (SettingsManager.enableBiometric) {
+                variant = if (isHaveHashPin && SettingsManager.enableBiometric) {
                     CHECK_PIN_AND_BIO
                 } else {
                     CHECK_PIN_WHILE_FALSE
@@ -200,6 +200,7 @@ class PinDialog : DialogFragment() {
             dismiss()
         }
         if (variant == CHECK_PIN_AND_BIO) {
+            errorMessage.visibility = View.VISIBLE
             btnBiomeric.visibility = View.VISIBLE
             btnBiomeric.setOnClickListener {
                 errorMessage.text = ""
