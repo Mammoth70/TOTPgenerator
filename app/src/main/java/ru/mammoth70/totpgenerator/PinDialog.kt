@@ -202,6 +202,9 @@ class PinDialog : DialogFragment() {
         if (variant == CHECK_PIN_AND_BIO) {
             btnBiomeric.visibility = View.VISIBLE
             btnBiomeric.setOnClickListener {
+                errorMessage.text = ""
+                clearAllPins()
+                bulletsClear()
                 bioAuthenticate(requireActivity())
             }
 
@@ -419,7 +422,12 @@ class PinDialog : DialogFragment() {
                 }
 
                 override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
-                    errorMessage.setText(R.string.Bio_error)
+                    if (errorCode == BiometricPrompt.ERROR_NEGATIVE_BUTTON || errorCode == BiometricPrompt.ERROR_USER_CANCELED) {
+                        // Пользователь сам нажал "Отмена".
+                    } else {
+                        // Какая-то системная ошибка (например, датчик занят).
+                        errorMessage.text = errString
+                    }
                 }
 
                 override fun onAuthenticationFailed() {

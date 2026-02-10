@@ -28,7 +28,7 @@ object SettingsManager {
     @Volatile
     private var cachedEnableNextToken: Boolean = prefs.getBoolean(KEY_NEXT_TOKEN, false)
     @Volatile
-    private var cachedProgressClockWise: Boolean = prefs.getBoolean(KEY_PROGRESS_CLOCK_WISE, true)
+    private var cachedProgressClockWise: Boolean = prefs.getBoolean(KEY_PROGRESS_CLOCK_WISE, false)
     @Volatile
     private var cachedAppThemeMode =  prefs.getInt(KEY_THEME_MODE, MODE_NIGHT_FOLLOW_SYSTEM)
 
