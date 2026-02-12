@@ -315,7 +315,7 @@ class PinDialog : DialogFragment() {
             }
 
             CHECK_PIN_WHILE_FALSE, CHECK_PIN_AND_BIO -> {
-                // Вариант. Проверять PIN, пока не введётся правильный и вернуть результат проверки..
+                // Вариант. Проверять PIN, пока не введётся правильный и вернуть результат проверки.
                 if (checkPin()) {
                     clearAllPins()
                     pinListener.onPinResult(action, true, "ok")
