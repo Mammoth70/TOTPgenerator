@@ -22,7 +22,8 @@
             android:layout_height="20dp"
             android:src="@drawable/circle_off"
             android:layout_marginHorizontal="4dp"
-            tools:ignore="ContentDescription,ImageContrastCheck" />
+            android:importantForAccessibility="no"
+            tools:ignore="ImageContrastCheck" />
 
         <ImageView
             android:id="@+id/bullet2"
@@ -30,7 +31,8 @@
             android:layout_height="20dp"
             android:src="@drawable/circle_off"
             android:layout_marginHorizontal="4dp"
-            tools:ignore="ContentDescription,ImageContrastCheck" />
+            android:importantForAccessibility="no"
+            tools:ignore="ImageContrastCheck" />
 
         <ImageView
             android:id="@+id/bullet3"
@@ -38,15 +40,17 @@
             android:layout_height="20dp"
             android:src="@drawable/circle_off"
             android:layout_marginHorizontal="4dp"
-            tools:ignore="ContentDescription,ImageContrastCheck" />
+            android:importantForAccessibility="no"
+            tools:ignore="ImageContrastCheck" />
 
         <ImageView
             android:id="@+id/bullet4"
             android:layout_width="20dp"
             android:layout_height="20dp"
-            android:src="@drawable/circle_off"
             android:layout_marginHorizontal="4dp"
-            tools:ignore="ContentDescription,ImageContrastCheck" />
+            android:importantForAccessibility="no"
+            android:src="@drawable/circle_off"
+            tools:ignore="ImageContrastCheck" />
 
         <ImageView
             android:id="@+id/bullet5"
@@ -54,7 +58,8 @@
             android:layout_height="20dp"
             android:src="@drawable/circle_off"
             android:layout_marginHorizontal="4dp"
-            tools:ignore="ContentDescription,ImageContrastCheck" />
+            android:importantForAccessibility="no"
+            tools:ignore="ImageContrastCheck" />
 
         <ImageView
             android:id="@+id/bullet6"
@@ -62,7 +67,8 @@
             android:layout_height="20dp"
             android:src="@drawable/circle_off"
             android:layout_marginHorizontal="4dp"
-            tools:ignore="ContentDescription,ImageContrastCheck" />
+            android:importantForAccessibility="no"
+            tools:ignore="ImageContrastCheck" />
     </LinearLayout>
 
     <TextView

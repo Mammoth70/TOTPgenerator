@@ -14,10 +14,15 @@ android {
         }
     }
 
+    /* androidResources {
+        localeFilters.clear()
+        localeFilters.addAll(listOf("en", "ru"))
+    } */
+
     defaultConfig {
         val versionMajor = 2
-        val versionMinor = 4
-        val versionPatch = 3
+        val versionMinor = 5
+        val versionPatch = 0
         applicationId = "ru.mammoth70.totpgenerator"
         minSdk = 30
         targetSdk = 36

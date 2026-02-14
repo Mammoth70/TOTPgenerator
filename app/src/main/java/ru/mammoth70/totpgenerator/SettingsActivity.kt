@@ -3,6 +3,7 @@ package ru.mammoth70.totpgenerator
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
+import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatDelegate
 import com.google.android.material.button.MaterialButtonToggleGroup
 import com.google.android.material.materialswitch.MaterialSwitch
@@ -130,7 +131,7 @@ class SettingsActivity : AppActivity(), PinDialog.OnPinResultListener {
     }
 
 
-    private fun showSnackbar(resId: Int) {
+    private fun showSnackbar(@StringRes resId: Int) {
         // Функция выводит Snackbar со строкой, хранимой в ресурсе resId.
 
         showSnackbar(getString(resId))

@@ -7,9 +7,11 @@ import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.os.PersistableBundle
+import android.view.Gravity
 import android.view.View
 import android.widget.PopupMenu
 import androidx.activity.viewModels
+import androidx.annotation.StringRes
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -129,7 +131,7 @@ class MainActivity : AppActivity(),
     }
 
 
-    private fun showSnackbar(resId: Int) {
+    private fun showSnackbar(@StringRes resId: Int) {
         // Функция выводит Snackbar со строкой, хранимой в ресурсе resId.
 
         showSnackbar(getString(resId))
@@ -230,6 +232,7 @@ class MainActivity : AppActivity(),
         // Обработчик клика на кнопку меню.
 
         val popupMenu = PopupMenu(this, view)
+        popupMenu.gravity = Gravity.END
         popupMenu.inflate(R.menu.token_menu)
         popupMenu.setOnMenuItemClickListener { item ->
             when (item.itemId) {

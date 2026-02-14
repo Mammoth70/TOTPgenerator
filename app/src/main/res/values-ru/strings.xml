@@ -18,6 +18,8 @@
     <string name="view">Просмотр</string>
     <string name="save">Сохранить</string>
     <string name="menu">Меню</string>
+    <string name="back">Назад</string>
+    <string name="exit">Выход</string>
     <string name="settings">настройки</string>
     <string name="title_settings">Настройки</string>
     <string name="about">инфо</string>

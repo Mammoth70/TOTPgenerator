@@ -7,10 +7,10 @@ import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.params.provider.CsvFileSource
 
 class OTPParserTest {
+
     @ParameterizedTest(name = "{index} => URL: {0}")
     @DisplayName("Проверка парсера схемы otpauth://")
     @CsvFileSource(resources = ["/otp_data.csv"], numLinesToSkip = 1, delimiter = ';')
-
     fun `parseOTPauth validation test`(
         url: String,
         isValid: Boolean,

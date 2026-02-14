@@ -13,5 +13,7 @@
         android:layout_height="wrap_content"
         android:minHeight="?attr/actionBarSize"
         app:navigationIcon="@drawable/ic_action_back"
-        tools:title="Генератор TOTP" />
+        app:navigationContentDescription="@string/back"
+        app:title="@string/title_settings"
+        tools:title="Настройки" />
 </com.google.android.material.appbar.AppBarLayout>
