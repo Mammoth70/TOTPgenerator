@@ -25,7 +25,7 @@ class TokensViewModel : ViewModel() {
         flow {
 
             // При каждом обновлении триггера считываем актуальный глобальный список секретов.
-            val currentSecrets = DataRepository.secrets.toList()
+            val currentSecrets = OTPauthDataRepo.secrets.toList()
             if (currentSecrets.isEmpty()) {
                 emit(emptyList())
                 return@flow // Завершаем выполнение пустого flow. Он "спит" до нового sendCommandUpdate().

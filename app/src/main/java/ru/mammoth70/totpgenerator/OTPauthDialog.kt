@@ -12,6 +12,7 @@ import androidx.fragment.app.DialogFragment
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import androidx.core.view.size
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 class OTPauthDialog: DialogFragment() {
     // Диалоговое окно с формой OTPauth.
@@ -65,7 +66,7 @@ class OTPauthDialog: DialogFragment() {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         // Функция создаёт диалоговое окно.
 
-        val builder = AlertDialog.Builder(requireActivity())
+        val builder = MaterialAlertDialogBuilder(requireContext())
         builder.setView(R.layout.dialog_otpauth)
         builder.setCancelable(false)
         when (action) {
@@ -97,7 +98,7 @@ class OTPauthDialog: DialogFragment() {
 
         if ((action == ACTION_TOTP_VIEW) || (action == ACTION_TOTP_DELETE)) {
             val secret: OTPauth =
-                DataRepository.secrets.find { it.id == requireArguments().getLong(INTENT_TOTP_ID) } ?: run {
+                OTPauthDataRepo.secrets.find { it.id == requireArguments().getLong(INTENT_TOTP_ID) } ?: run {
                     dismiss()
                     return
                 }
@@ -214,7 +215,7 @@ class OTPauthDialog: DialogFragment() {
             ilPeriod.error = getString(R.string.err_empty_period)
             isChecked = false
         }
-        if ((action == ACTION_TOTP_ADD) && (edLabel.text.toString() in DataRepository.secrets.map(OTPauth::label))) {
+        if ((action == ACTION_TOTP_ADD) && (edLabel.text.toString() in OTPauthDataRepo.secrets.map(OTPauth::label))) {
             ilLabel.error = getString(R.string.err_not_unique_label)
             isChecked = false
         }

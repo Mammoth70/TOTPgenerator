@@ -15,11 +15,6 @@ import javax.crypto.spec.GCMParameterSpec
 
 // Функции для работы с защищенным хранилищем AndroidKeyStore.
 
-data class StringPair(
-    // data класс для хранения пары из зашифрованной строки и инициализационного вектора
-    val encodedText: String = "",
-    val iv: String = "",
-)
 
 private const val PROVIDER = "AndroidKeyStore"
 private const val KEY_ALIAS = "key_totp_generator"

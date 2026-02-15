@@ -1,12 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Генератор TOTP</string>
-    <string name="description">Генератор одноразовых паролей
-        \nна основе времени</string>
+    <string name="description">Генератор одноразовых паролей\nна основе времени</string>
     <string name="version">Версия:</string>
-    <string name="for_about">Андрей Яковлев © 2025-2026
-        \nhttps://github.com/mammoth70</string>
-
+    <string name="for_about">Андрей Яковлев © 2025–2026\nhttps://github.com/mammoth70</string>
     <string name="ok">OK</string>
     <string name="cancel">Отмена</string>
     <string name="backspace">Backspace</string>
@@ -20,6 +17,9 @@
     <string name="menu">Меню</string>
     <string name="back">Назад</string>
     <string name="exit">Выход</string>
+    <string name="db_error_title">Критическая ошибка БД</string>
+    <string name="db_fatal_error_message">Приложение не может прочитать ключи.\n\nТехнические данные: %1$s</string>
+    <string name="unknown_error">Неизвестная ошибка</string>
     <string name="settings">настройки</string>
     <string name="title_settings">Настройки</string>
     <string name="about">инфо</string>

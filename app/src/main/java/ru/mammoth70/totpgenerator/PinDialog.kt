@@ -12,6 +12,7 @@ import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentActivity
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import ru.mammoth70.totpgenerator.App.Companion.appContext
 
 var isHaveBiometric: Boolean = checkBiometricInDevice()  // Флаг наличия в смартфоне датчиков строгой биометрической идентификации.
@@ -101,14 +102,13 @@ class PinDialog : DialogFragment() {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         // Фунция создания диалога.
 
-        val builder = if (screen == SCREEN_FULL) {
-            AlertDialog.Builder(
-                requireActivity(),
-                android.R.style.Theme_Material_Light_NoActionBar_Fullscreen
-            )
+        val theme = if (screen == SCREEN_FULL) {
+            //com.google.android.material.R.style.Theme_Material3_DayNight_NoActionBar
+            android.R.style.Theme_Material_Light_NoActionBar_Fullscreen
         } else {
-            AlertDialog.Builder(requireActivity() )
+            0
         }
+        val builder = MaterialAlertDialogBuilder(requireContext(), theme)
         builder.setView(R.layout.dialog_pin)
         builder.setCancelable(false)
 
@@ -149,6 +149,12 @@ class PinDialog : DialogFragment() {
             }
         }
         val dialog = builder.create()
+        if (screen == SCREEN_FULL) {
+            dialog.window?.setLayout(
+                WindowManager.LayoutParams.MATCH_PARENT,
+                WindowManager.LayoutParams.MATCH_PARENT
+            )
+        }
         dialog.window?.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
         return dialog
     }

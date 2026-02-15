@@ -1,12 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">TOTP generator</string>
-    <string name="description">Time-Based One-Time
-        \nPassword generator</string>
+    <string name="description">Time-Based One-Time\nPassword generator</string>
     <string name="version">Версия:</string>
-    <string name="for_about">Andrey Yakovlev © 2025-2026
-        \nhttps://github.com/mammoth70</string>
-
+    <string name="for_about">Andrey Yakovlev © 2025–2026\nhttps://github.com/mammoth70</string>
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
     <string name="backspace">Backspace</string>
@@ -20,6 +17,9 @@
     <string name="menu">Menu</string>
     <string name="back">Back</string>
     <string name="exit">Exit</string>
+    <string name="db_error_title">Critical DB error</string>
+    <string name="db_fatal_error_message">The application cannot read the security keys.\n\nTechnical details: %1$s</string>
+    <string name="unknown_error">Unknown error</string>
     <string name="settings">settings</string>
     <string name="title_settings">Settings</string>
     <string name="about">about</string>

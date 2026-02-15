@@ -1,12 +1,13 @@
 package ru.mammoth70.totpgenerator
 
 import android.app.Dialog
-import android.content.DialogInterface
 import android.os.Bundle
-import androidx.appcompat.app.AlertDialog
+import android.text.method.LinkMovementMethod
+import android.widget.TextView
 import androidx.fragment.app.DialogFragment
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
-class AboutDialog : DialogFragment() {
+class AboutBox : DialogFragment() {
     // Диалоговое окно About.
 
     companion object {
@@ -14,18 +15,21 @@ class AboutDialog : DialogFragment() {
         const val ABOUT_TITLE = "ABOUT_TITLE"
     }
 
-
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        // Функция создаёт диалоговое окно.
+        // Функция создаёт диалоговое окно About.
 
-        val builder = AlertDialog.Builder(requireActivity(),
-        R.style.AboutDialogStyle)
-        builder.setIcon(R.mipmap.ic_launcher_round)
-        builder.setPositiveButton(R.string.ok) { _: DialogInterface?, _: Int -> }
-        builder.setView(R.layout.dialog_about)
-        builder.setTitle(requireArguments().getString(ABOUT_TITLE))
-        builder.setMessage(requireArguments().getString(ABOUT_MESSAGE))
-        return builder.create()
+        val customView = layoutInflater.inflate(R.layout.dialog_about, null)
+        val textView = customView.findViewById<TextView>(R.id.about_text_content)
+
+        textView.text = arguments?.getString(ABOUT_MESSAGE)
+        textView.movementMethod = LinkMovementMethod.getInstance()
+
+        return MaterialAlertDialogBuilder(requireActivity())
+            .setIcon(R.mipmap.ic_launcher_round)
+            .setTitle(arguments?.getString(ABOUT_TITLE))
+            .setView(customView)
+            .setPositiveButton(R.string.ok, null)
+            .create()
     }
 
 }

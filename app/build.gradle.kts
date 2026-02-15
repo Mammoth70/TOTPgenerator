@@ -1,5 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.symbol.processing)
+    alias(libs.plugins.room)
 }
 
 android {
@@ -21,7 +23,7 @@ android {
 
     defaultConfig {
         val versionMajor = 2
-        val versionMinor = 5
+        val versionMinor = 6
         val versionPatch = 0
         applicationId = "ru.mammoth70.totpgenerator"
         minSdk = 30
@@ -54,6 +56,15 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+
+}
+
+ksp {
+    arg("room.schemaLocation", "$projectDir/schemas")
+}
+
+room {
+    schemaDirectory("$projectDir/schemas")
 }
 
 base {
@@ -67,12 +78,16 @@ dependencies {
     implementation(libs.androidx.constraintlayout)
     implementation(libs.google.material)
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
+    implementation(libs.androidx.lifecycle.process)
     implementation(libs.totp.kt)
     implementation(libs.apache.commons.codec)
     implementation(libs.androidx.security.crypto)
     implementation(libs.gms.play.services.code.scanner)
     implementation(libs.protobuf.javalite)
     implementation(libs.androidx.biometric)
+    implementation(libs.room.runtime)
+    implementation(libs.room.ktx)
+    ksp(libs.room.compiler)
 
     testImplementation(libs.junit.jupiter)
     testImplementation(libs.junit.jupiter.params)

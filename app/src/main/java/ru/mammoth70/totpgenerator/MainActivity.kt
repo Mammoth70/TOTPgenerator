@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import com.google.mlkit.vision.barcode.common.Barcode
@@ -57,6 +58,14 @@ class MainActivity : AppActivity(),
         topAppBar.setNavigationOnClickListener {
             // Обработчик кнопки "назад".
             finish()
+        }
+
+        lifecycleScope.launch {
+            // Обработчик "битой" базы.
+            delay(100)
+            if (!OTPauthDataRepo.isDatabaseReady) {
+                showErrorDialog(OTPauthDataRepo.databaseError ?: getString(R.string.unknown_error))
+            }
         }
 
         // Настройка верхнего меню.
@@ -106,16 +115,19 @@ class MainActivity : AppActivity(),
 
                 R.id.item_about -> {
                     // Обработчик кнопки "Инфо".
-                    val bundle = Bundle()
-                    bundle.putString(AboutDialog.ABOUT_TITLE, getString(R.string.app_name))
-                    val text =
-                        getString(R.string.description) + "\n\n" +
-                                getString(R.string.version) + " " +
-                                BuildConfig.VERSION_NAME
-                    bundle.putString(AboutDialog.ABOUT_MESSAGE, text)
-                    val aboutDialog = AboutDialog()
-                    aboutDialog.setArguments(bundle)
-                    aboutDialog.show(this.supportFragmentManager, "ABOUT_DIALOG")
+                    val title = getString(R.string.app_name)
+                    val text = """
+                        |${getString(R.string.description)}
+                        |${getString(R.string.version)} ${BuildConfig.VERSION_NAME}
+                        |
+                        |${getString(R.string.for_about)}
+                        """.trimMargin()
+                    AboutBox().apply {
+                        arguments = Bundle().apply {
+                            putString(AboutBox.ABOUT_TITLE, title)
+                            putString(AboutBox.ABOUT_MESSAGE, text)
+                        }
+                    }.show(supportFragmentManager, "ABOUT_DIALOG")
                 }
 
             }
@@ -152,14 +164,18 @@ class MainActivity : AppActivity(),
                 val rawValue: String? = barcode.rawValue
                 val secretsNew = parseQR(rawValue)
                 if (secretsNew.isNotEmpty()) {
-                    secretsNew.forEach {
-                        if (DataRepository.addSecret(it)) {
-                            showSnackbar(R.string.secret_added)
-                        } else {
-                            showSnackbar(R.string.secret_add_error)
+                    lifecycleScope.launch {
+                        secretsNew.forEach { secret ->
+                            val isAdded = OTPauthDataRepo.addSecret(secret)
+
+                            if (isAdded) {
+                                showSnackbar(R.string.secret_added)
+                            } else {
+                                showSnackbar(R.string.secret_add_error)
+                            }
                         }
+                        TokensRepository.sendCommandUpdate()
                     }
-                    TokensRepository.sendCommandUpdate()
                 } else {
                     showSnackbar(R.string.qr_code_error)
                 }
@@ -296,11 +312,15 @@ class MainActivity : AppActivity(),
     override fun onAddResult(auth: OTPauth) {
         // Обработчик возврата из SecretDialog Add после нажатия кнопки PositiveButton.
 
-        if (DataRepository.addSecret(auth)) {
-            TokensRepository.sendCommandUpdate()
-            showSnackbar(R.string.secret_added)
-        } else {
-            showSnackbar(R.string.secret_add_error)
+        lifecycleScope.launch {
+            val isAdded = OTPauthDataRepo.addSecret(auth)
+
+            if (isAdded) {
+                TokensRepository.sendCommandUpdate()
+                showSnackbar(R.string.secret_added)
+            } else {
+                showSnackbar(R.string.secret_add_error)
+            }
         }
     }
 
@@ -308,11 +328,15 @@ class MainActivity : AppActivity(),
     override fun onDeleteResult(id: Long) {
         // Обработчик возврата из SecretDialog Delete после нажатия кнопки PositiveButton.
 
-        if (DataRepository.deleteSecret(id)) {
-            TokensRepository.sendCommandUpdate()
-            showSnackbar(R.string.secret_deleted)
-        } else {
-            showSnackbar(R.string.secret_delete_error)
+        lifecycleScope.launch {
+            val isDeleted = OTPauthDataRepo.deleteSecret(id)
+
+            if (isDeleted) {
+                TokensRepository.sendCommandUpdate()
+                showSnackbar(R.string.secret_deleted)
+            } else {
+                showSnackbar(R.string.secret_delete_error)
+            }
         }
     }
 
@@ -339,6 +363,21 @@ class MainActivity : AppActivity(),
         } else {
             unLocked = true
         }
+    }
+
+
+    private fun showErrorDialog(errorMessage: String) {
+        // Вызывает диалоговое окно, если БД накрылась.
+
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.db_error_title)
+            .setMessage(getString(R.string.db_fatal_error_message, errorMessage))
+            .setIcon(R.drawable.ic_action_error)
+            .setCancelable(false)
+            .setPositiveButton(R.string.exit) { _, _ ->
+                finishAffinity() // Закрываем всё приложение.
+            }
+            .show()
     }
 
 }
