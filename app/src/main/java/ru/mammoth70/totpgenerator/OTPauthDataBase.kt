@@ -9,13 +9,17 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 
 @Database(entities = [OTPauthEntity::class], version = 2, exportSchema = false)
 abstract class OTPauthDataBase : RoomDatabase() {
+    // Класс, описывающий базу данных приложения.
+
     abstract fun otpDao(): OTPauthDao
+    // Метод доступа к DAO.
 
     companion object {
         private const val DB_NAME = "totpDB"
 
         val MIGRATION_1_2 = object : Migration(1, 2) {
             override fun migrate(db: SupportSQLiteDatabase) {
+                // Функция миграции с предыдущей версии БД на версию БД, описываемую Room.
 
                 db.execSQL("""
                     CREATE TABLE IF NOT EXISTS `otpauth_new` (
@@ -47,8 +51,11 @@ abstract class OTPauthDataBase : RoomDatabase() {
 
         @Volatile
         private var INSTANCE: OTPauthDataBase? = null
+        // Ссылка на объект базы данных.
 
         fun getInstance(context: Context): OTPauthDataBase {
+            // Функция создаёт INSTANS, гарантируя, что только один поток создаст экземпляр БД,
+            // даже если несколько потоков вызовут метод одновременно.
             return INSTANCE ?: synchronized(this) {
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
