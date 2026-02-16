@@ -90,9 +90,9 @@ internal fun parseOTPauth(url: String): OTPauth? {
             label = label,
             secret = secret,
             issuer = issuer,
-            period = queryParams["period"]?.toIntOrNull() ?: 30,
-            hash = queryParams["algorithm"]?.uppercase() ?: "SHA1",
-            digits = queryParams["digits"]?.toIntOrNull() ?: 6
+            period = queryParams["period"]?.toIntOrNull() ?: DEFAULT_PERIOD,
+            hash = queryParams["algorithm"]?.uppercase() ?: SHA1,
+            digits = queryParams["digits"]?.toIntOrNull() ?: DEFAULT_DIGITS,
         )
     } catch (e: Exception) {
         LogSmart.e("OTPauthUriParser", "Exception в parseOTPauth($url)", e)
@@ -171,16 +171,16 @@ private fun decodeOtpParameters(input: CodedInputStream): OTPauth? {
     }
 
     val hash = when (algorithm) {
-        OtpAlgorithm.SHA1 -> "SHA1"
-        OtpAlgorithm.SHA256 -> "SHA256"
-        OtpAlgorithm.SHA512 -> "SHA512"
+        OtpAlgorithm.SHA1 -> SHA1
+        OtpAlgorithm.SHA256 -> SHA256
+        OtpAlgorithm.SHA512 -> SHA512
         OtpAlgorithm.MD5 -> ""
-        OtpAlgorithm.UNSPECIFIED -> "SHA1"
+        OtpAlgorithm.UNSPECIFIED -> SHA1
     }
     val digits = when (digs) {
         DigitCount.SIX -> 6
         DigitCount.EIGHT -> 8
-        DigitCount.UNSPECIFIED -> 6
+        DigitCount.UNSPECIFIED -> DEFAULT_DIGITS
     }
 
     val secretBase32 = Base32().encodeAsString(secret)
@@ -189,7 +189,7 @@ private fun decodeOtpParameters(input: CodedInputStream): OTPauth? {
             issuer = issuer,
             secret = Base32().encodeAsString(secret),
             hash = hash,
-            digits = digits
+            digits = digits,
         ).takeIf {type == OtpType.TOTP &&
                             hash.isNotBlank() &&
                             name.isNotBlank() &&

@@ -20,6 +20,7 @@ class TokensViewModel : ViewModel() {
     // Можно заставить перечитать список OTPauth и обновиться.
 
     // Триггер для обновления. Вызываем sendCommandUpdate(), когда список secrets изменился.
+
     @OptIn(ExperimentalCoroutinesApi::class)
     val tokensLiveData: LiveData<List<Token>> = TokensRepository.updateTrigger.flatMapLatest {
         flow {
@@ -94,8 +95,8 @@ class TokensViewModel : ViewModel() {
         // Функция создаёт генератор токенов по заданным параметрам.
 
         val algorithm = when (it.hash) {
-            "SHA256" -> HashAlgorithm.SHA256
-            "SHA512" -> HashAlgorithm.SHA512
+            SHA256 -> HashAlgorithm.SHA256
+            SHA512 -> HashAlgorithm.SHA512
             else -> HashAlgorithm.SHA1
         }
         return TotpGenerator(

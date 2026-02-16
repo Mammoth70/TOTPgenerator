@@ -21,6 +21,7 @@ object OTPauthDataRepo {
     var databaseError: String? = null
         private set
 
+
     suspend fun readAllSecrets() = withContext(Dispatchers.IO) {
         // Функция считывает все секреты из БД в DataRepository.
 
@@ -33,9 +34,9 @@ object OTPauthDataRepo {
                     label = entity.label,
                     issuer = entity.issuer ?: "",
                     secret = decryptString(entity.encryptedSecret),
-                    period = entity.period ?: 30,
-                    hash = entity.hash ?: "SHA1",
-                    digits = entity.digits ?: 6
+                    period = entity.period ?: DEFAULT_PERIOD,
+                    hash = entity.hash ?: SHA1,
+                    digits = entity.digits ?: DEFAULT_DIGITS,
                 )
             }
 
@@ -73,7 +74,7 @@ object OTPauthDataRepo {
             encryptedSecret = pair,
             period = otpauth.period,
             hash = otpauth.hash,
-            digits = otpauth.digits
+            digits = otpauth.digits,
         )
 
         try {
@@ -122,7 +123,7 @@ object OTPauthDataRepo {
             encryptedSecret = pair,
             period = otpauth.period,
             hash = otpauth.hash,
-            digits = otpauth.digits
+            digits = otpauth.digits,
         )
 
         return@withContext try {
@@ -170,6 +171,7 @@ object OTPauthDataRepo {
 
         false
     }
+
 
     @Suppress("unused")
     fun clearDatabaseError()  = synchronized(this) {

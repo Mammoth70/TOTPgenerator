@@ -4,6 +4,7 @@ import android.util.Log
 
 // Статические функции.
 
+
 fun isValidBase32(secret: String): Boolean {
     // Функция проверяет строку Base32 на валидность.
 

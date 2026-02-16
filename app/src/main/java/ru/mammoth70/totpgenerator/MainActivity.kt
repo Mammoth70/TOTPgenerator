@@ -44,6 +44,7 @@ class MainActivity : AppActivity(),
     private val adapter : TokensAdapter by lazy { TokensAdapter() }
     private val viewModel: TokensViewModel by viewModels()
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 

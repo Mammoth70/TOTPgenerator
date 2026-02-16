@@ -18,11 +18,6 @@ import ru.mammoth70.totpgenerator.App.Companion.appContext
 var isHaveBiometric: Boolean = checkBiometricInDevice()  // Флаг наличия в смартфоне датчиков строгой биометрической идентификации.
     internal set
 
-private var pinBuffer = CharArray(6)
-private var pinBuffer1 = CharArray(6)
-private var pinIndex = 0
-
-
 fun checkBiometricInDevice(): Boolean {
     // Функция проверяет наличие в смартфоне датчиков строгой биометрической идентификации.
 
@@ -38,6 +33,11 @@ fun checkBiometricInDevice(): Boolean {
         }
     }
 }
+
+
+private var pinBuffer = CharArray(6)
+private var pinBuffer1 = CharArray(6)
+private var pinIndex = 0
 
 private const val CHECK_PIN = 0
 private const val CHECK_PIN_AND_BIO = 1
@@ -260,6 +260,7 @@ class PinDialog : DialogFragment() {
         pinIndex=0
     }
 
+
     private fun bulletsAdd(num: Int) {
         // Функция добавляет на панель одну точку.
 
@@ -272,6 +273,7 @@ class PinDialog : DialogFragment() {
             6 -> bullet6.setImageResource(R.drawable.circle_on)
         }
     }
+
 
     private fun bulletDel(num:Int) {
         // Функция удаляет с панели последнюю точку.

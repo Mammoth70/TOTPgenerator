@@ -16,19 +16,21 @@ import androidx.room.PrimaryKey
     ]
 )
 
+
 data class OTPauthEntity(
-    // data класс, описывающий поля таблицы для хранения OTPauth.
+    // Класс данных, описывающий поля таблицы для хранения OTPauth.
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val label: String,
     val issuer: String? = "",
     @Embedded val encryptedSecret: StringPair,
-    val period: Int? = 30,
-    val hash: String? = "SHA1",
-    val digits: Int? = 6,
+    val period: Int? = DEFAULT_PERIOD,
+    val hash: String? = SHA1,
+    val digits: Int? = DEFAULT_DIGITS,
 )
 
+
 data class StringPair(
-    // data класс, описывающий пару для хранения зашифрованной строки и иницализационного вектора.
+    // Класс данных, описывающий пару для хранения зашифрованной строки и иницализационного вектора.
     @ColumnInfo(name = "secret") val encodedText: String = "",
     @ColumnInfo(name = "iv") val iv: String = ""
 )

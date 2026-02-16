@@ -30,6 +30,7 @@ class OTPauthDialog: DialogFragment() {
         fun onAddResult(auth: OTPauth)
     }
 
+
     private lateinit var addListener: OnAddResultListener
     fun setOnAddResultListener(listener: OnAddResultListener) {
         this.addListener = listener
@@ -43,6 +44,7 @@ class OTPauthDialog: DialogFragment() {
     fun setOnDeleteResultListener(listener: OnDeleteResultListener) {
         this.deleteListener = listener
     }
+
 
     private val dlg: AlertDialog by lazy { dialog as AlertDialog }
     private val ilLabel: TextInputLayout by lazy { dlg.findViewById(R.id.ilLabel)!!}
@@ -164,7 +166,7 @@ class OTPauthDialog: DialogFragment() {
 
         var isChecked = true
         var selectedHash = SHA1
-        var selectedDigits = 6
+        var selectedDigits = DEFAULT_DIGITS
 
         if (radioSHA1.isChecked) {
             selectedHash = SHA1

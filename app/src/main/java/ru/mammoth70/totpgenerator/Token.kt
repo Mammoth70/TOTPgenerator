@@ -1,7 +1,7 @@
 package ru.mammoth70.totpgenerator
 
 data class Token(
-    // data класс для хранения токенов, оставшегося времени жизни и оставшегося процента жизни.
+    // Класс данных для хранения токенов, оставшегося времени жизни и оставшегося процента жизни.
     val id: Long,
     val label: String,
     val issuer: String = "",

@@ -42,6 +42,7 @@ object SettingsManager {
             }
         }
 
+
     var timeShift: Long  // Сдвиг времени в секундах при генерации токена для компенсации задержки времени.
         get() =  cachedTimeShift
         set(value) {
@@ -50,6 +51,7 @@ object SettingsManager {
                 prefs.edit { putLong(KEY_TIME_SHIFT, value) }
             }
         }
+
 
     var enableNextToken: Boolean  // Флаг разрешения вычисления и показа следующего за текущим токена.
         get() = cachedEnableNextToken
@@ -60,6 +62,7 @@ object SettingsManager {
             }
         }
 
+
     var progressClockWise: Boolean  // Флаг показа на индикаторе прогресса, сколько прошло (false - сколько осталось).
         get() = cachedProgressClockWise
         set(value) {
@@ -68,6 +71,7 @@ object SettingsManager {
                 prefs.edit { putBoolean(KEY_PROGRESS_CLOCK_WISE, value) }
             }
         }
+
 
     var appThemeMode: Int    // Режим темы приложения.
         get() = cachedAppThemeMode
