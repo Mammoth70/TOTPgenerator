@@ -15,7 +15,6 @@ import javax.crypto.spec.GCMParameterSpec
 
 // Функции для работы с защищенным хранилищем AndroidKeyStore.
 
-
 private const val PROVIDER = "AndroidKeyStore"
 private const val KEY_ALIAS = "key_totp_generator"
 private const val SHA1PRNG = "SHA1PRNG"

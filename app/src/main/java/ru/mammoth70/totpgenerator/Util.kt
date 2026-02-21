@@ -2,8 +2,15 @@ package ru.mammoth70.totpgenerator
 
 import android.util.Log
 
-// Статические функции.
+const val SHA1 = "SHA1"
+const val SHA256 = "SHA256"
+const val SHA512 = "SHA512"
+const val DEFAULT_PERIOD = 30
+const val DEFAULT_DIGITS = 6
+const val EMPTY_OTP = -1L
 
+
+// Статические функции.
 
 fun isValidBase32(secret: String): Boolean {
     // Функция проверяет строку Base32 на валидность.

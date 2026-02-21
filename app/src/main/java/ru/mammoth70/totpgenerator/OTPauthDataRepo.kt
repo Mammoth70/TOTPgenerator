@@ -7,6 +7,7 @@ import java.util.concurrent.CopyOnWriteArrayList
 object OTPauthDataRepo {
     // Основной список объектов (единственный источник истины).
 
+
     private val dao by lazy {
         OTPauthDataBase.getInstance(App.appContext).otpDao()
     }

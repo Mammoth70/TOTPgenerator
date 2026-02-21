@@ -10,6 +10,7 @@ import androidx.core.content.edit
 object SettingsManager {
 // Объект содержит переменные с настройками приложения.
 
+
     private const val NAME_SETTINGS = "settings"
     private const val KEY_BIO = "enablebiometric"
     private const val KEY_TIME_SHIFT = "timeshift"

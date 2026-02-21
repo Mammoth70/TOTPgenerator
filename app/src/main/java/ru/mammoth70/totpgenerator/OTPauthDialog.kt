@@ -18,6 +18,7 @@ class OTPauthDialog: DialogFragment() {
     // Диалоговое окно с формой OTPauth.
     // Умеет добавлять, просматривать и удалять OTPauth.
 
+
     companion object {
         const val INTENT_TOTP_ACTION = "totp_action"
         const val INTENT_TOTP_ID = "totp_id"
@@ -26,10 +27,10 @@ class OTPauthDialog: DialogFragment() {
         const val ACTION_TOTP_DELETE = "totp_delete"
     }
 
+
     interface OnAddResultListener {
         fun onAddResult(auth: OTPauth)
     }
-
 
     private lateinit var addListener: OnAddResultListener
     fun setOnAddResultListener(listener: OnAddResultListener) {

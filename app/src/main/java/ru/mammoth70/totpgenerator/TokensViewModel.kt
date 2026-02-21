@@ -13,16 +13,18 @@ import kotlinx.coroutines.delay
 import java.util.Date
 import java.time.Duration
 
-const val GEN_ERROR = "------"
-
 class TokensViewModel : ViewModel() {
     // Класс в бесконечном цикле каждую секунду вычисляет токены и выдаёт их список в поток.
     // Можно заставить перечитать список OTPauth и обновиться.
 
-    // Триггер для обновления. Вызываем sendCommandUpdate(), когда список secrets изменился.
+
+    companion object {
+        private const val GEN_ERROR = "------"
+    }
+
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    val tokensLiveData: LiveData<List<Token>> = TokensRepository.updateTrigger.flatMapLatest {
+    val tokensLiveData: LiveData<List<Token>> = TokensTrigger.update.flatMapLatest {
         flow {
 
             // При каждом обновлении триггера считываем актуальный глобальный список секретов.
@@ -104,18 +106,5 @@ class TokensViewModel : ViewModel() {
             codeLength = it.digits,
             timePeriod = Duration.ofSeconds(it.period.toLong())
         )
-    }
-}
-
-
-object TokensRepository {
-    // Глобальный триггер обновления.
-
-    private val _updateTrigger = MutableStateFlow(System.currentTimeMillis())
-    val updateTrigger: StateFlow<Long> = _updateTrigger.asStateFlow()
-
-    fun sendCommandUpdate() {
-        // Эта функция должна вызываться при добавлении, изменении или удалении секрета.
-        _updateTrigger.value = System.currentTimeMillis()
     }
 }

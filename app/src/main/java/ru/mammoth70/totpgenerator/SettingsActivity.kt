@@ -14,6 +14,7 @@ import kotlin.lazy
 class SettingsActivity : AppActivity(), PinDialog.OnPinResultListener {
     // Activity показывает и позволяет изменять настройки.
 
+
     override val idLayout = R.layout.activity_settings
     override val idActivity = R.id.frameSettingsActivity
 

@@ -27,16 +27,19 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.lazy
 
-private var unLocked = false
-
 class MainActivity : AppActivity(),
     OTPauthDialog.OnAddResultListener, OTPauthDialog.OnDeleteResultListener, PinDialog.OnPinResultListener {
     // Главная activity приложения.
     // Выводит список токенов.
 
+
     override val idLayout = R.layout.activity_main
     override val idActivity = R.id.frameMainActivity
     override val isSecure = true // Нельзя делать скриншоты.
+
+    companion object {
+        private var unLocked = false
+    }
 
     private val floatingActionButtonQR: FloatingActionButton by lazy { findViewById(R.id.floatingActionButtonQR) }
     private val navView: BottomNavigationView by lazy { findViewById(R.id.bottom_navigation) }
@@ -163,7 +166,7 @@ class MainActivity : AppActivity(),
                                 showSnackbar(R.string.secret_add_error)
                             }
                         }
-                        TokensRepository.sendCommandUpdate()
+                        TokensTrigger.sendCommandUpdate()
                     }
                 } else {
                     showSnackbar(R.string.qr_code_error)
@@ -305,7 +308,7 @@ class MainActivity : AppActivity(),
             val isAdded = OTPauthDataRepo.addSecret(auth)
 
             if (isAdded) {
-                TokensRepository.sendCommandUpdate()
+                TokensTrigger.sendCommandUpdate()
                 showSnackbar(R.string.secret_added)
             } else {
                 showSnackbar(R.string.secret_add_error)
@@ -321,7 +324,7 @@ class MainActivity : AppActivity(),
             val isDeleted = OTPauthDataRepo.deleteSecret(id)
 
             if (isDeleted) {
-                TokensRepository.sendCommandUpdate()
+                TokensTrigger.sendCommandUpdate()
                 showSnackbar(R.string.secret_deleted)
             } else {
                 showSnackbar(R.string.secret_delete_error)

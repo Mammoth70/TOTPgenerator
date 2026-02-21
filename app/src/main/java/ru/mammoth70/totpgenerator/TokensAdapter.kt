@@ -11,12 +11,16 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.progressindicator.CircularProgressIndicator
 
-private const val PAYLOAD_TOTP = "PAYLOAD_TOTP"
-private const val PAYLOAD_TOTP_NEXT = "PAYLOAD_TOTP_NEXT"
-private const val PAYLOAD_PROGRESS = "PAYLOAD_PROGRESS"
-
 internal class TokensAdapter : ListAdapter<Token, RecyclerView.ViewHolder>(TokenDiffComparator()) {
     // Класс ListAdapter для показа токенов.
+
+
+    companion object {
+        private const val PAYLOAD_TOTP = "PAYLOAD_TOTP"
+        private const val PAYLOAD_TOTP_NEXT = "PAYLOAD_TOTP_NEXT"
+        private const val PAYLOAD_PROGRESS = "PAYLOAD_PROGRESS"
+    }
+
 
     private var onBtnMenuClick: (view: View, id: Long) -> Unit = { _, _ ->}
     private var onItemClick: (totp: String) -> Unit = { }

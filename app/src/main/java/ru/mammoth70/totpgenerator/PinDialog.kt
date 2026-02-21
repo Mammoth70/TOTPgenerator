@@ -13,45 +13,10 @@ import androidx.biometric.BiometricPrompt
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentActivity
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import ru.mammoth70.totpgenerator.App.Companion.appContext
-
-var isHaveBiometric: Boolean = checkBiometricInDevice()  // Флаг наличия в смартфоне датчиков строгой биометрической идентификации.
-    internal set
-
-fun checkBiometricInDevice(): Boolean {
-    // Функция проверяет наличие в смартфоне датчиков строгой биометрической идентификации.
-
-    val biometricManager = BiometricManager.from(appContext)
-    return when (biometricManager.canAuthenticate(
-        BiometricManager.Authenticators.BIOMETRIC_STRONG)) {
-        BiometricManager.BIOMETRIC_SUCCESS -> {
-            true
-        }
-
-        else -> {
-            false
-        }
-    }
-}
-
-
-private var pinBuffer = CharArray(6)
-private var pinBuffer1 = CharArray(6)
-private var pinIndex = 0
-
-private const val CHECK_PIN = 0
-private const val CHECK_PIN_AND_BIO = 1
-private const val CHECK_PIN_WHILE_FALSE = 2
-private const val ENTER_NEW_PIN = 3
-private const val CHECK_PIN_ENTER_NEW_PIN = 4
-
 
 class PinDialog : DialogFragment() {
     // Диалоговое окно ввода и проверки PIN.
 
-    interface OnPinResultListener {
-        fun onPinResult(action: String, result: Boolean, message: String)
-    }
 
     companion object {
         const val INTENT_PIN_ACTION = "pin_action"
@@ -62,13 +27,28 @@ class PinDialog : DialogFragment() {
 
         const val INTENT_PIN_SCREEN = "pin_screen"
         const val SCREEN_FULL = "pin_screen_full"
+
+        private var pinBuffer = CharArray(6)
+        private var pinBuffer1 = CharArray(6)
+        private var pinIndex = 0
+
+        private const val CHECK_PIN = 0
+        private const val CHECK_PIN_AND_BIO = 1
+        private const val CHECK_PIN_WHILE_FALSE = 2
+        private const val ENTER_NEW_PIN = 3
+        private const val CHECK_PIN_ENTER_NEW_PIN = 4
     }
 
+
+    interface OnPinResultListener {
+        fun onPinResult(action: String, result: Boolean, message: String)
+    }
 
     private lateinit var pinListener: OnPinResultListener
     fun setOnPinResultListener(listener: OnPinResultListener) {
         this.pinListener = listener
     }
+
 
     private val dlg: AlertDialog by lazy { dialog as AlertDialog }
     private val btn0: Button by lazy { dlg.findViewById(R.id.btn0)!!}
