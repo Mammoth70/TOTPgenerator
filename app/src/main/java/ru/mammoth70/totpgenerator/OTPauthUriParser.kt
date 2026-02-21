@@ -12,6 +12,8 @@ import org.apache.commons.codec.binary.Base32
 
 private const val REGEXP_HEAD1 = "^otpauth://totp/(\\S+?)\\?"
 private const val REGEXP_HEAD2 = "^otpauth-migration://offline\\?data=(\\S+?)$"
+private val patternHead1 = Pattern.compile(REGEXP_HEAD1)
+private val patternHead2 = Pattern.compile(REGEXP_HEAD2)
 
 private enum class OtpAlgorithm(val id: Int) {
     UNSPECIFIED(0), SHA1(1), SHA256(2), SHA512(3), MD5(4);
@@ -45,10 +47,8 @@ fun parseQR(url: String?): List<OTPauth> {
         return auths
     }
 
-    val pattern1 = Pattern.compile(REGEXP_HEAD1)
-    val matcher1 = pattern1.matcher(url)
-    val pattern2 = Pattern.compile(REGEXP_HEAD2)
-    val matcher2 = pattern2.matcher(url)
+    val matcher1 = patternHead1.matcher(url)
+    val matcher2 = patternHead2.matcher(url)
     if ((matcher1.find())) {
         parseOTPauth(url)?.let { auths.add(it) }
     } else if ((matcher2.find())) {
