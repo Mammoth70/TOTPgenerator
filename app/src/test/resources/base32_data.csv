@@ -1,51 +1,51 @@
-input;	        expected;     comment
-"JBSWY3DP";	true;	      Стандарт Hello
-"jbswy3dp";	true;	      Нижний регистр
-"23";          	true;         символа - ок
-"2345";        	true;         4 символа - ок
-"23456";       	true;         5 символов - ок
-"2345672";     	true;         7 символов - ок
-"23456723";    	true;         8 символов - ок
-"ME";          	true;         Длина 2 (mod 2) - ок
-"MFRA";        	true;         Длина 4 (mod 4) - ок
-"MFRGG";       	true;         Длина 5 (mod 5) - ок
-"MFRGGZA";     	true;         Длина 7 (mod 7) - ок
-"MFRGGZDF";    	true;         Длина 8 (mod 0) - ок
-"MFRGGZA=";    	true;         Паддинг (1 знак) - ок
-"MFRGG===";    	true;         Паддинг (3 знака)
-"MY======";    	true;         Паддинг (6 знаков)
-"jBsWy3dP";    	true;         Смешанный регистр (Hello)
-"mfrggZA";     	true;         Часть маленькими, часть большими
-"2345672a";    	true;         Цифры + маленькая буква в конце
-"MFRgg===";    	true;         Большие + маленькие + паддинг
-"aBcD2345";    	true;         8 символов, разный регистр
-"my======";    	true;         Паддинг и нижний регистр
-"4567abcd";    	true;         Начинается с цифр
-"234567";	false;	      Неправильое количество символов
-"";             false;        Пустая строка
-"   ";          false;        Пробелы
-"JBSWY1DP";     false;        Запрещенная цифра 1
-"JBSWY8DP";     false;        Запрещенная цифра 8
-"JBSWY#DP";     false;        Спецсимвол
-"A";            false;        Ошибка длины (mod 1)
-"ABC";          false;        Ошибка длины (mod 3)
-"ABCDEF";       false;        Ошибка длины (mod 6)
-"MFRGG====";    false;        Лишний паддинг (длина 9, mod 1)
-"MFRGG==";      false;        Недобор паддинга (длина 7, но есть =)
-" jbswy3dp";    false;        Пробел в начале
-"JBSW-Y3DP";    false;        Тире (часто бывает в ключах, но это не Base32)
-"JBSWY.3D";     false;        Точка
-"JBSWY/3D";     false;        Слэш
-"JBSW_Y3DP";    false;        Нижнее подчеркивание
-"JBSWY8DP";     false;        Цифра 8 (алфавит только до 7)
-"JBSWY9DP";     false;        Цифра 9
-"0BSWY3DP";     false;        Цифра 0 (вместо O)
-"1BSWY3DP";     false;        Цифра 1 (в Base32 её нет, чтобы не путать с I)
-"JBSW Y3DP";    false;        Пробел посередине
-"JBSWY3DP ";    false;        Пробел в конце
-"	JBSWY3DP";   false;        Табуляция вместо пробела
-"=JBSWY3D";     false;        Паддинг в начале
-"JB=SWY3D";     false;        Паддинг внутри
-"JBSWY3D==";    false;        Два = при длине 7 букв (должно быть 0 или 1)
-"MFRGG==";      false;        Два = при длине 5 букв (должно быть 0 или 3)
-"ABCDEF";       false;        Длина 6 (mod 6) - по-прежнему false
+input;         isValid; description
+"JBSWY3DP";    true;    Стандарт Hello
+"jbswy3dp";    true;    Нижний регистр
+"23";          true;    2 символа - ок
+"2345";        true;    4 символа - ок
+"23456";       true;    5 символов - ок
+"2345672";     true;    7 символов - ок
+"23456723";    true;    8 символов - ок
+"ME";          true;    Длина 2 (mod 2) - ок
+"MFRA";        true;    Длина 4 (mod 4) - ок
+"MFRGG";       true;    Длина 5 (mod 5) - ок
+"MFRGGZA";     true;    Длина 7 (mod 7) - ок
+"MFRGGZDF";    true;    Длина 8 (mod 0) - ок
+"MFRGGZA=";    true;    Паддинг (1 знак) - ок
+"MFRGG===";    true;    Паддинг (3 знака)
+"MY======";    true;    Паддинг (6 знаков)
+"jBsWy3dP";    true;    Смешанный регистр (Hello)
+"mfrggZA";     true;    Часть маленькими, часть большими
+"2345672a";    true;    Цифры + маленькая буква в конце
+"MFRgg===";    true;    Большие + маленькие + паддинг
+"aBcD2345";    true;    8 символов, разный регистр
+"my======";    true;    Паддинг и нижний регистр
+"4567abcd";    true;    Начинается с цифр
+"234567";      false;   Неправильное количество символов
+"";            false;   Пустая строка
+"   ";         false;   Пробелы
+"JBSWY1DP";    false;   Запрещенная цифра 1
+"JBSWY8DP";    false;   Запрещенная цифра 8
+"JBSWY#DP";    false;   Спецсимвол
+"A";           false;   Ошибка длины (mod 1)
+"ABC";         false;   Ошибка длины (mod 3)
+"ABCDEF";      false;   Ошибка длины (mod 6)
+"MFRGG====";   false;   Лишний паддинг (длина 9, mod 1)
+"MFRGG==";     false;   Недобор паддинга (длина 7, но есть =)
+" jbswy3dp";   false;   Пробел в начале
+"JBSW-Y3DP";   false;   Тире (часто бывает в ключах, но это не Base32)
+"JBSWY.3D";    false;   Точка
+"JBSWY/3D";    false;   Слэш
+"JBSW_Y3DP";   false;   Нижнее подчеркивание
+"JBSWY8DP";    false;   Цифра 8 (алфавит только до 7)
+"JBSWY9DP";    false;   Цифра 9
+"0BSWY3DP";    false;   Цифра 0 (вместо O)
+"1BSWY3DP";    false;   Цифра 1 (в Base32 её нет, чтобы не путать с I)
+"JBSW Y3DP";   false;   Пробел посередине
+"JBSWY3DP ";   false;   Пробел в конце
+"	JBSWY3DP"; false;   Табуляция вместо пробела
+"=JBSWY3D";    false;   Паддинг в начале
+"JB=SWY3D";    false;   Паддинг внутри
+"JBSWY3D==";   false;   Два = при длине 7 букв (должно быть 0 или 1)
+"MFRGG==";     false;   Два = при длине 5 букв (должно быть 0 или 3)
+"ABCDEF";      false;   Длина 6 (mod 6) - по-прежнему false

@@ -9,45 +9,46 @@ import org.junit.jupiter.params.provider.CsvFileSource
 class OTPParserTest {
 
     @ParameterizedTest(name = "{index} => URL: {0}")
-    @DisplayName("Проверка парсера схемы otpauth://")
+    @DisplayName("Тестирование парсера схемы otpauth://")
     @CsvFileSource(resources = ["/otp_data.csv"], numLinesToSkip = 1, delimiter = ';')
     fun `parseOTPauth validation test`(
         url: String,
         isValid: Boolean,
-        period: Int,
-        hash: String,
-        digits: Int,
-        label:  String,
-        issuer: String,
-        secret: String,
+        expectedPeriod: Int,
+        expectedHash: String,
+        expectedDigits: Int,
+        expectedLabel:  String,
+        expectedIssuer: String,
+        expectedSecret: String,
     ) {
         val result = parseOTPauth(url)
 
-        if (!isValid) {
-            assertNull(result, "Ожидался null для невалидного URL: $url")
-        } else {
-            // Сначала проверяем, что объект вообще создался
-            assertNotNull(result, "Объект не должен быть null для: $url")
+        if (isValid) {
+            // Сначала проверяем, что объект вообще создался.
+            assertNotNull(result, "Объект не должен быть null для URL $url")
 
-            // Теперь проверяем поля
+            // Теперь проверяем поля.
             checkNotNull(result)
             assertAll(
-                "Проверка полей OTP для URL: $url",
-                { assertEquals(period, result.period, "Неверный period для URL: $url") },
-                { assertEquals(hash, result.hash, "Неверный алгоритм (hash) для URL: $url") },
-                { assertEquals(digits, result.digits, "Неверное количество цифр (digits) для URL: $url") },
-                { assertEquals(label, result.label, "Ошибка в поле label для URL: $url") },
-                { assertEquals(issuer, result.issuer, "Ошибка в поле issuer для URL: $url") },
-                { assertEquals(secret, result.secret, "Ошибка в секретном ключе для URL: $url") })
+                "Проверка полей OTP для URL $url",
+                { assertEquals(expectedPeriod, result.period, "Неверное поле period") },
+                { assertEquals(expectedHash, result.hash, "Неверный поле hash") },
+                { assertEquals(expectedDigits, result.digits, "Неверное поле digits") },
+                { assertEquals(expectedLabel, result.label, "Неверное поле label") },
+                { assertEquals(expectedIssuer, result.issuer, "Неверное поле issuer") },
+                { assertEquals(expectedSecret, result.secret, "Неверный поле secret") })
+        } else {
+            assertNull(result, "Ожидался null для невалидного URL $url")
         }
     }
 }
 
 class GoogleMigrationTest {
+    // Для прохождения 10-го варианта теста нужно временно закомментировать вызов LogSmart в функции parseGoogleMigration.
     @ParameterizedTest(name = "{index} => {0}")
-    @DisplayName("Проверка парсера схемы otpauth-migration://")
+    @DisplayName("Тестирование парсера схемы otpauth-migration://")
     @CsvFileSource(resources = ["/migration_data.csv"], numLinesToSkip = 1, delimiter = ';')
-    fun `test google migration parsing`(
+    fun `parseGoogleMigration validation test`(
         description: String,
         url: String,
         expectedCount: Int,
@@ -56,13 +57,13 @@ class GoogleMigrationTest {
     ) {
         val result = parseGoogleMigration(url)
 
-        assertEquals(expectedCount, result.size, "Неверное количество аккаунтов: $description")
+        assertEquals(expectedCount, result.size, "Неверное количество аккаунтов для варианта $description")
 
         if (expectedCount > 0) {
             val firstAccount = result[0]
-            assertAll("Проверка полей первого аккаунта ($description)",
-                { assertEquals(expectedLabel, firstAccount.label, "Label mismatch") },
-                { assertEquals(expectedSecret, firstAccount.secret, "Secret mismatch") }
+            assertAll("Проверка полей первого аккаунта для варианта $description ",
+                { assertEquals(expectedLabel, firstAccount.label, "Неверное поле label") },
+                { assertEquals(expectedSecret, firstAccount.secret, "Неверное поле secret") }
             )
         }
     }
