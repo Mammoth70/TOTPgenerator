@@ -18,7 +18,7 @@
     <string name="back">Назад</string>
     <string name="exit">Выход</string>
     <string name="db_error_title">Критическая ошибка БД</string>
-    <string name="db_fatal_error_message">Приложение не может прочитать ключи.\n\nТехнические данные: %1$s</string>
+    <string name="db_fatal_error_message">Приложение не может прочитать секреты.\n\nТехнические данные: %1$s</string>
     <string name="unknown_error">Неизвестная ошибка</string>
     <string name="settings">настройки</string>
     <string name="title_settings">Настройки</string>

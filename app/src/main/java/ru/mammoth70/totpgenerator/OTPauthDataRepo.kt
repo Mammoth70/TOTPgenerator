@@ -1,6 +1,11 @@
 package ru.mammoth70.totpgenerator
 
+import androidx.lifecycle.ProcessLifecycleOwner
+import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.concurrent.CopyOnWriteArrayList
 
@@ -12,15 +17,21 @@ object OTPauthDataRepo {
         OTPauthDataBase.getInstance(App.appContext).otpDao()
     }
 
-    val secrets: List<OTPauth> get() = synchronized(_secrets) { _secrets.toList() }
     private val _secrets= CopyOnWriteArrayList<OTPauth>()  // Список OTPauth, считывается из БД.
+    val secrets: List<OTPauth> get() = synchronized(_secrets) { _secrets.toList() }
 
-    @Volatile
-    var isDatabaseReady = false
-        private set
-    @Volatile
-    var databaseError: String? = null
-        private set
+    private val _databaseError = MutableSharedFlow<String?>(replay = 1)
+    val databaseError = _databaseError.asSharedFlow()
+
+
+    fun initialize() {
+        // Функция запускает readAllSecrets() в IO потоке.
+        // Функция вызывается в Application.onCreate().
+
+        ProcessLifecycleOwner.get().lifecycleScope.launch(Dispatchers.IO) {
+            readAllSecrets()
+        }
+    }
 
 
     suspend fun readAllSecrets() = withContext(Dispatchers.IO) {
@@ -44,15 +55,10 @@ object OTPauthDataRepo {
             synchronized(_secrets) {
                 _secrets.clear()
                 _secrets.addAll(fromDb)
-                isDatabaseReady = true
-                databaseError = null
             }
 
         } catch (e: Exception) {
-            synchronized(this@OTPauthDataRepo) {
-                isDatabaseReady = false
-                databaseError = e.message
-            }
+            _databaseError.emit(e.message ?: App.appContext.getString(R.string.unknown_error))
             LogSmart.e("OTPauthDataRepo", "Ошибка базы", e)
         }
     }
@@ -174,9 +180,10 @@ object OTPauthDataRepo {
     }
 
 
-    @Suppress("unused")
-    fun clearDatabaseError()  = synchronized(this) {
-        databaseError = null
+    fun clearDatabaseError() {
+        // Очистка ошибки базы данных.
+
+        _databaseError.tryEmit(null)
     }
 
 }

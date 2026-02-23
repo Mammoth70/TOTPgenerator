@@ -66,9 +66,11 @@ class MainActivity : AppActivity(),
 
         lifecycleScope.launch {
             // Обработчик "битой" базы.
-            delay(100)
-            if (!OTPauthDataRepo.isDatabaseReady) {
-                showErrorDialog(OTPauthDataRepo.databaseError ?: getString(R.string.unknown_error))
+            OTPauthDataRepo.databaseError.collect { errorMessage ->
+                if (errorMessage != null) {
+                    showErrorDialog(errorMessage)
+                    OTPauthDataRepo.clearDatabaseError()
+                }
             }
         }
 

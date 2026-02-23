@@ -18,7 +18,7 @@
     <string name="back">Back</string>
     <string name="exit">Exit</string>
     <string name="db_error_title">Critical DB error</string>
-    <string name="db_fatal_error_message">The application cannot read the security keys.\n\nTechnical details: %1$s</string>
+    <string name="db_fatal_error_message">The application cannot read the secrets.\n\nTechnical details: %1$s</string>
     <string name="unknown_error">Unknown error</string>
     <string name="settings">settings</string>
     <string name="title_settings">Settings</string>

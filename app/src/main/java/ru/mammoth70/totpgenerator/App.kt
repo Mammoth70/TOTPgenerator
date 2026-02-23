@@ -2,10 +2,6 @@ package ru.mammoth70.totpgenerator
 
 import android.app.Application
 import android.content.Context
-import androidx.lifecycle.ProcessLifecycleOwner
-import androidx.lifecycle.lifecycleScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 class App : Application() {
     // Класс приложения.
@@ -24,9 +20,7 @@ class App : Application() {
         super.onCreate()
         appContext = applicationContext
         generateSecretKey()
-        ProcessLifecycleOwner.get().lifecycleScope.launch(Dispatchers.IO) {
-            OTPauthDataRepo.readAllSecrets()
-        }
+        OTPauthDataRepo.initialize()
         SettingsManager.installThemeMode()
     }
 
