@@ -18,9 +18,9 @@ private const val NAME_SETTINGS = "hashpin"
 private const val NAME_PIN = "pin"
 private const val NAME_IV = "iv"
 
+private const val ALGORITHM = "PBKDF2WithHmacSHA256"
 private const val ITERATIONS = 10000
 private const val KEY_LENGTH = 256
-private const val ALGORITHM = "PBKDF2WithHmacSHA256"
 
 
 fun checkExistsHashPin(): Boolean {

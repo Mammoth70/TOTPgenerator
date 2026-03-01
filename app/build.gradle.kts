@@ -23,8 +23,8 @@ android {
 
     defaultConfig {
         val versionMajor = 2
-        val versionMinor = 6
-        val versionPatch = 8
+        val versionMinor = 7
+        val versionPatch = 0
         applicationId = "ru.mammoth70.totpgenerator"
         minSdk = 30
         targetSdk = 36
@@ -91,6 +91,7 @@ dependencies {
 
     testImplementation(libs.junit.jupiter)
     testImplementation(libs.junit.jupiter.params)
+    testImplementation(libs.json.org)
     testRuntimeOnly(libs.junit.platform.launcher)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

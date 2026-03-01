@@ -262,7 +262,7 @@
     <Button
         style="?attr/materialIconButtonStyle"
         android:id="@+id/btnBiomeric"
-        android:contentDescription="@string/FingerPrint_login"
+        android:contentDescription="@string/fingerprint_login"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:icon="@drawable/ic_action_fingerprint"

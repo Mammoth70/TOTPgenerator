@@ -15,6 +15,7 @@ class AboutDialog : DialogFragment() {
         // Функция создаёт диалоговое окно About.
 
         val customView = layoutInflater.inflate(R.layout.dialog_about, null)
+
         val textView = customView.findViewById<TextView>(R.id.about_text_content)
         val title = getString(R.string.app_name)
         val text = """
@@ -26,7 +27,7 @@ class AboutDialog : DialogFragment() {
         textView.text = text
         textView.movementMethod = LinkMovementMethod.getInstance()
 
-        return MaterialAlertDialogBuilder(requireActivity())
+        return MaterialAlertDialogBuilder(requireContext())
             .setIcon(R.mipmap.ic_launcher_round)
             .setTitle(title)
             .setView(customView)

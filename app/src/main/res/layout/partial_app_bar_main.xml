@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Top AppBar с кнопкой возврата и меню. -->
+<!-- Top AppBar с кнопкой возврата и меню для MainActivity. -->
 <com.google.android.material.appbar.AppBarLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -14,7 +14,7 @@
         android:minHeight="?attr/actionBarSize"
         app:navigationIcon="@drawable/ic_action_back"
         app:navigationContentDescription="@string/exit"
-        app:menu="@menu/top_app_bar"
+        app:menu="@menu/top_app_bar_main"
         app:title="@string/app_name"
         tools:title="Генератор TOTP" />
 </com.google.android.material.appbar.AppBarLayout>

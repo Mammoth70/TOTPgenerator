@@ -4,12 +4,14 @@ import android.content.ClipData
 import android.content.ClipDescription
 import android.content.ClipboardManager
 import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.PersistableBundle
 import android.view.Gravity
 import android.view.View
 import android.widget.PopupMenu
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.annotation.StringRes
 import androidx.lifecycle.lifecycleScope
@@ -19,12 +21,13 @@ import androidx.recyclerview.widget.SimpleItemAnimator
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.android.material.snackbar.Snackbar
 import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.mlkit.vision.codescanner.GmsBarcodeScannerOptions
 import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlin.lazy
 
 class MainActivity : AppActivity(),
@@ -46,6 +49,13 @@ class MainActivity : AppActivity(),
     private val tokensList: RecyclerView by lazy { findViewById(R.id.tokensList) }
     private val adapter : TokensAdapter by lazy { TokensAdapter() }
     private val viewModel: TokensViewModel by viewModels()
+
+    private val importLauncher = registerForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
+        // Launcher вызывается сразу после нажатия кнопки "Импорт".
+        uri?.let {
+            handleImportFile(it)
+        }
+    }
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -85,7 +95,19 @@ class MainActivity : AppActivity(),
 
                 // Обработчик меню "QR".
                 R.id.item_qr -> {
-                    addQRsecret()
+                    addQRsecrets()
+                    true
+                }
+
+                // Обработчик меню "Экспорт".
+                R.id.item_export -> {
+                    startExportActivity()
+                    true
+                }
+
+                // Обработчик меню "Импорт".
+                R.id.item_import -> {
+                    startImport()
                     true
                 }
 
@@ -107,7 +129,7 @@ class MainActivity : AppActivity(),
 
         floatingActionButtonQR.setOnClickListener { _ ->
             // Обработчик кнопки "QR".
-            addQRsecret()
+            addQRsecrets()
         }
 
         // Настройка нижнего меню.
@@ -115,8 +137,7 @@ class MainActivity : AppActivity(),
             when (item.itemId) {
                 R.id.item_settings -> {
                     // Обработчик кнопки "Настройка".
-                    val intent = Intent(this, SettingsActivity::class.java)
-                    startActivity(intent)
+                    startSetingsActivity()
                 }
 
                 R.id.item_about -> {
@@ -130,22 +151,136 @@ class MainActivity : AppActivity(),
     }
 
 
-    private fun showSnackbar(message: String) {
-        // Функция выводит Snackbar со строкой message.
+    private fun startExportActivity() {
+        // Функция запускает ExportActivity.
 
-        Snackbar.make(floatingActionButtonQR, message, Snackbar.LENGTH_SHORT).show()
+        val intent = Intent(this, ExportActivity::class.java)
+        startActivity(intent)
     }
 
 
-    private fun showSnackbar(@StringRes resId: Int) {
-        // Функция выводит Snackbar со строкой, хранимой в ресурсе resId.
+    private fun startSetingsActivity() {
+        // Функция запускает SettingsActivity.
 
-        showSnackbar(getString(resId))
+        val intent = Intent(this, SettingsActivity::class.java)
+        startActivity(intent)
     }
 
 
-    private fun addQRsecret() {
-        // Функция читает QR, парсит его, добавляет распарсенный OTPauth в БД и вызывает refreshSecrets().
+    private fun startImport() {
+        // Функция вызывает Launcher выбора файла.
+
+        importLauncher.launch(arrayOf("*/*"))
+    }
+
+
+    private fun handleImportFile(uri: Uri) {
+        // Функция пытается считать файл с секретами.
+        // Если он зашифрованный - вызывает диалог с паролем.
+        // Если открытый - вызывает addSecrets(secretsFromJson(result)).
+
+        lifecycleScope.launch(Dispatchers.IO) {
+            try {
+                contentResolver.openInputStream(uri)?.use { inputStream ->
+                    // Пробуем прочитать без пароля (для TOTPgen0)
+                    val result = readAndDecrypt(inputStream, "")
+
+                    withContext(Dispatchers.Main) {
+                        when (result) {
+                            ERROR_INVALID_FILE_TYPE -> {
+                                showSnackbar(R.string.invalid_file_format_error)
+                            }
+                            ERROR_WRONG_PASSWORD -> {
+                                showImportPasswordDialog(uri)
+                            }
+                            else -> {
+                                addSecrets(secretsFromJson(result), R.string.json_error)
+                            }
+                        }
+                    }
+                }
+
+            } catch (e: Exception) {
+                val errorMessage = e.localizedMessage ?: getString(R.string.unknown_error)
+                withContext(Dispatchers.Main) { showSnackbar(getString(R.string.error_detail, errorMessage)) }
+            }
+        }
+    }
+
+
+    private fun showImportPasswordDialog(uri: Uri) {
+        // Функция вызывает диалог с паролем.
+        // В лямбде диалога пытается расшифровать файл.
+        // Если удалось расшифровать - вызывает addSecrets(secretsFromJson(result)).
+
+        PasswordImportDialog { password ->
+
+            val loadingDialog = LoadingDialog()
+            loadingDialog.show(supportFragmentManager, "LOADING_DIALOG")
+
+            lifecycleScope.launch(Dispatchers.IO) {
+                try {
+                    contentResolver.openInputStream(uri)?.use { inputStream ->
+                        val result = readAndDecrypt(inputStream, password)
+
+                        withContext(Dispatchers.Main) {
+                            loadingDialog.dismiss()
+
+                            if (result == ERROR_WRONG_PASSWORD) {
+                                showSnackbar(R.string.incorrect_password_error)
+                            } else if (result.isNotEmpty()) {
+                                addSecrets(secretsFromJson(result), R.string.json_error)
+                            }
+                        }
+                    }
+
+                } catch (_: Exception) {
+                    if (loadingDialog.isAdded) loadingDialog.dismiss()
+                    withContext(Dispatchers.Main) { showSnackbar(R.string.import_failed_error) }
+                }
+            }
+        }.show(supportFragmentManager, "IMPORT_PASSWORD_DIALOG")
+    }
+
+
+    private fun addSecrets(secretsNew: List<OTPauth>, @StringRes resId: Int) {
+        // Функция добавляет OTPauth в БД и вызывает refreshSecrets().
+
+        if (secretsNew.isEmpty()) {
+            showSnackbar(resId)
+            return
+        }
+
+        lifecycleScope.launch {
+            var addedCount = 0
+            val total = secretsNew.size
+
+            secretsNew.forEach { secret ->
+                if (OTPauthDataRepo.addSecret(secret)) {
+                    addedCount++
+                }
+            }
+
+            when (addedCount) {
+                total -> {
+                    showSnackbar(R.string.secrets_added)
+                }
+                0 -> {
+                    showSnackbar(R.string.secrets_add_error)
+                }
+                else -> {
+                    val failed = total - addedCount
+                    showSnackbar(getString(R.string.add_partial_success, addedCount, failed))
+                }
+            }
+
+            TokensTrigger.sendCommandUpdate()
+        }
+    }
+
+
+    private fun addQRsecrets() {
+        // Функция читает QR, парсит его, и вызывает addSecrets() для распарсенного OTPauth.
 
         val options = GmsBarcodeScannerOptions.Builder()
             .setBarcodeFormats(
@@ -156,23 +291,7 @@ class MainActivity : AppActivity(),
         scanner.startScan()
             .addOnSuccessListener { barcode ->
                 val rawValue: String? = barcode.rawValue
-                val secretsNew = parseQR(rawValue)
-                if (secretsNew.isNotEmpty()) {
-                    lifecycleScope.launch {
-                        secretsNew.forEach { secret ->
-                            val isAdded = OTPauthDataRepo.addSecret(secret)
-
-                            if (isAdded) {
-                                showSnackbar(R.string.secret_added)
-                            } else {
-                                showSnackbar(R.string.secret_add_error)
-                            }
-                        }
-                        TokensTrigger.sendCommandUpdate()
-                    }
-                } else {
-                    showSnackbar(R.string.qr_code_error)
-                }
+                addSecrets(parseQR(rawValue), R.string.qr_code_error)
             }
             .addOnCanceledListener { }
             .addOnFailureListener { _ -> showSnackbar(R.string.qr_error) }

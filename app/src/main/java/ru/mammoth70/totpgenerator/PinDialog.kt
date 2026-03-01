@@ -29,7 +29,7 @@ class PinDialog : DialogFragment() {
         const val SCREEN_FULL = "pin_screen_full"
 
         private var pinBuffer = CharArray(6)
-        private var pinBuffer1 = CharArray(6)
+        private var pinBufferConfirm = CharArray(6)
         private var pinIndex = 0
 
         private const val CHECK_PIN = 0
@@ -95,7 +95,7 @@ class PinDialog : DialogFragment() {
         when (action) {
             ACTION_ENTER_PIN -> {
                 // Проверить PIN и вернуть результат проверки.
-                builder.setTitle(getString(R.string.enter_PIN))
+                builder.setTitle(getString(R.string.enter_pin))
                 variant = if (isHaveHashPin && SettingsManager.enableBiometric) {
                     CHECK_PIN_AND_BIO
                 } else {
@@ -105,24 +105,24 @@ class PinDialog : DialogFragment() {
 
             ACTION_DELETE_PIN -> {
                 // Проверить PIN и вернуть результат проверки.
-                builder.setTitle(getString(R.string.enter_PIN))
+                builder.setTitle(getString(R.string.enter_pin))
                 variant = CHECK_PIN
             }
 
             ACTION_SET_NEW_PIN -> {
                 // Ввод два раза нового PIN.
-                builder.setTitle(getString(R.string.enter_PIN1))
+                builder.setTitle(getString(R.string.enter_new_pin))
                 variant = ENTER_NEW_PIN
             }
 
             ACTION_UPDATE_PIN -> {
                 if (!isHaveHashPin) {
                     // Ввод два раза нового PIN, если старого нет.
-                    builder.setTitle(getString(R.string.enter_PIN1))
+                    builder.setTitle(getString(R.string.enter_new_pin))
                     variant = ENTER_NEW_PIN
                 } else {
                     // Проверка старого PIN, ввод два раза нового PIN.
-                    builder.setTitle(getString(R.string.enter_old_PIN))
+                    builder.setTitle(getString(R.string.enter_old_pin))
                     variant = CHECK_PIN_ENTER_NEW_PIN
                 }
 
@@ -182,7 +182,7 @@ class PinDialog : DialogFragment() {
         btnCancel.setOnClickListener {
             clearAllPins()
             pinListener.onPinResult(action, false,
-                getString(R.string.PIN_cancel))
+                getString(R.string.pin_cancel))
             dismiss()
         }
         if (variant == CHECK_PIN_AND_BIO) {
@@ -236,7 +236,7 @@ class PinDialog : DialogFragment() {
         // Функция очищает PIN-код, забивая все символы пустым значением.
 
         pinBuffer.fill('\u0000')
-        pinBuffer1.fill('\u0000')
+        pinBufferConfirm.fill('\u0000')
         pinIndex=0
     }
 
@@ -297,7 +297,7 @@ class PinDialog : DialogFragment() {
                 } else {
                     clearAllPins()
                     pinListener.onPinResult(action, false,
-                        getString(R.string.PIN_bad))
+                        getString(R.string.pin_bad))
                 }
                 dismiss()
             }
@@ -311,7 +311,7 @@ class PinDialog : DialogFragment() {
                 } else {
                     clearAllPins()
                     bulletsClear()
-                    errorMessage.setText(R.string.error_PIN)
+                    errorMessage.setText(R.string.pin_error)
                 }
             }
 
@@ -320,24 +320,24 @@ class PinDialog : DialogFragment() {
                 when (step) {
                     0 -> {
                         step += 1
-                        pinBuffer.copyInto(pinBuffer1)
+                        pinBuffer.copyInto(pinBufferConfirm)
                         pinBuffer.fill('\u0000')
                         pinIndex=0
                         bulletsClear()
-                        dlg.setTitle(getString(R.string.enter_PIN2))
+                        dlg.setTitle(getString(R.string.enter_pin_confirm))
                     }
 
                     1 -> {
-                        if (pinBuffer.contentEquals(pinBuffer1)) {
+                        if (pinBuffer.contentEquals(pinBufferConfirm)) {
                             setHashPin(pinBuffer) // Записать новый PIN в секретное хранище
                             clearAllPins()
                             pinListener.onPinResult(action, true,
-                                getString(R.string.PIN_changed))
+                                getString(R.string.pin_changed))
                             dismiss()
                         } else {
                             clearAllPins()
                             pinListener.onPinResult(action, false,
-                                getString(R.string.PIN_new_bad))
+                                getString(R.string.pin_new_bad))
                             dismiss()
                         }
 
@@ -354,35 +354,35 @@ class PinDialog : DialogFragment() {
                             pinBuffer.fill('\u0000')
                             pinIndex=0
                             bulletsClear()
-                            dlg.setTitle(getString(R.string.enter_PIN1))
+                            dlg.setTitle(getString(R.string.enter_new_pin))
                         } else {
                             clearAllPins()
                             pinListener.onPinResult(action, false,
-                                getString(R.string.PIN_bad))
+                                getString(R.string.pin_bad))
                             dismiss()
                         }
                     }
 
                     1 -> {
                         step += 1
-                        pinBuffer.copyInto(pinBuffer1)
+                        pinBuffer.copyInto(pinBufferConfirm)
                         pinBuffer.fill('\u0000')
                         pinIndex=0
                         bulletsClear()
-                        dlg.setTitle(getString(R.string.enter_PIN2))
+                        dlg.setTitle(getString(R.string.enter_pin_confirm))
                     }
 
                     2 -> {
-                        if (pinBuffer.contentEquals(pinBuffer1)) {
+                        if (pinBuffer.contentEquals(pinBufferConfirm)) {
                             setHashPin(pinBuffer) // Записать новый PIN в секретное хранище
                             clearAllPins()
                             pinListener.onPinResult(action, true,
-                                getString(R.string.PIN_changed))
+                                getString(R.string.pin_changed))
                             dismiss()
                         } else {
                             clearAllPins()
                             pinListener.onPinResult(action, false,
-                                getString(R.string.PIN_new_bad))
+                                getString(R.string.pin_new_bad))
                             dismiss()
                         }
 
@@ -420,13 +420,13 @@ class PinDialog : DialogFragment() {
                 }
 
                 override fun onAuthenticationFailed() {
-                    errorMessage.setText(R.string.Bio_error)
+                    errorMessage.setText(R.string.bio_error)
                 }
             })
 
         val promptInfo = BiometricPrompt.PromptInfo.Builder()
-            .setTitle(getString(R.string.Bio_login))
-            .setDescription(getString(R.string.use_FingerPrint))
+            .setTitle(getString(R.string.bio_login))
+            .setDescription(getString(R.string.use_fingerprint))
             .setNegativeButtonText(getString(R.string.cancel))
             .setAllowedAuthenticators(BiometricManager.Authenticators.BIOMETRIC_STRONG)
             .build()

@@ -3,7 +3,6 @@ package ru.mammoth70.totpgenerator
 import android.annotation.SuppressLint
 import android.app.Dialog
 import android.os.Bundle
-import android.view.View
 import android.view.WindowManager
 import android.widget.RadioButton
 import android.widget.RadioGroup
@@ -12,6 +11,7 @@ import androidx.fragment.app.DialogFragment
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import androidx.core.view.size
+import androidx.core.widget.doOnTextChanged
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 class OTPauthDialog: DialogFragment() {
@@ -187,39 +187,40 @@ class OTPauthDialog: DialogFragment() {
         if (radioDigits8.isChecked) {
             selectedDigits = 8
         }
-        edLabel.setOnFocusChangeListener { _: View?, hasFocus: Boolean ->
-            if (hasFocus) {
-                ilLabel.error = null
-            }
+
+        edLabel.doOnTextChanged { _, _, _, _ -> ilLabel.error = null }
+        edLabel.setOnFocusChangeListener { _, hasFocus ->
+            if (hasFocus) ilLabel.error = null
         }
-        edKey.setOnFocusChangeListener { _: View?, hasFocus: Boolean ->
-            if (hasFocus) {
-                ilKey.error = null
-            }
+
+        edKey.doOnTextChanged { _, _, _, _ -> ilKey.error = null }
+        edKey.setOnFocusChangeListener { _, hasFocus ->
+            if (hasFocus) ilKey.error = null
         }
-        edPeriod.setOnFocusChangeListener { _: View?, hasFocus: Boolean ->
-            if (hasFocus) {
-                ilPeriod.error = null
-            }
+
+        edPeriod.doOnTextChanged { _, _, _, _ -> ilPeriod.error = null }
+        edPeriod.setOnFocusChangeListener { _, hasFocus ->
+            if (hasFocus) ilPeriod.error = null
         }
+
         if (edLabel.text.toString().isEmpty()) {
-            ilLabel.error = getString(R.string.err_empty_label)
+            ilLabel.error = getString(R.string.empty_label_error)
             isChecked = false
         }
         if (edKey.text.toString().isEmpty()) {
-            ilKey.error = getString(R.string.err_empty_secret)
+            ilKey.error = getString(R.string.empty_secret_error)
             isChecked = false
         }
         if (edKey.text.toString().isNotBlank() && (!isValidBase32(edKey.text.toString()))) {
-            ilKey.error = getString(R.string.err_base32_secret)
+            ilKey.error = getString(R.string.base32_secret_error)
             isChecked = false
         }
         if (edPeriod.text.toString().isEmpty()) {
-            ilPeriod.error = getString(R.string.err_empty_period)
+            ilPeriod.error = getString(R.string.empty_period_error)
             isChecked = false
         }
         if ((action == ACTION_TOTP_ADD) && (edLabel.text.toString() in OTPauthDataRepo.secrets.map(OTPauth::label))) {
-            ilLabel.error = getString(R.string.err_not_unique_label)
+            ilLabel.error = getString(R.string.not_unique_label_error)
             isChecked = false
         }
         if (isChecked) {

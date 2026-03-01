@@ -1,0 +1,5 @@
+id; label;        issuer;     secret;           period; hash;   digits
+1;  MyAccount;    Google;     GEZDGNBVGY3TQOJQ; 30;     SHA1;   6
+2;  Backup;       Amazon;     JBSWY3DPEHPK3PXP; 60;     SHA256; 8
+3;  NoIssuer;     ;           KRSXG5CTMVRXEZLU; 30;     SHA1;   6
+4;  Special@Char; Company&Co; MVXGG3LHMVXGG3LH; 15;     SHA512; 10

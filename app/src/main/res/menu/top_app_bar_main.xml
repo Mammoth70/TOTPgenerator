@@ -15,4 +15,19 @@
         android:icon="@drawable/ic_action_qr"
         app:contentDescription="@string/qr"
         app:showAsAction="ifRoom" />
+
+    <item
+        android:title="@string/title_export"
+        android:id="@+id/item_export"
+        android:icon="@drawable/ic_action_export"
+        app:contentDescription="@string/title_export"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:title="@string/title_import"
+        android:id="@+id/item_import"
+        android:icon="@drawable/ic_action_import"
+        app:contentDescription="@string/title_import"
+        app:showAsAction="ifRoom" />
+
 </menu>

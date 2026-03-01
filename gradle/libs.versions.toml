@@ -4,7 +4,7 @@ coreKtx = "1.17.0"
 #junit = "4.13.2"
 junitVersion = "1.3.0"
 espressoCore = "3.7.0"
-junitJupiter = "6.0.2"
+junitJupiter = "6.0.3"
 appcompat = "1.7.1"
 activity = "1.12.4"
 constraintlayout = "2.2.1"
@@ -14,11 +14,12 @@ totpKt = "1.0.1"
 commonsCodec = "1.21.0"
 androidxSecurity = "1.1.0"
 playServicesCodeScanner = "16.1.0"
-protobuf = "4.33.5"
+protobuf = "4.34.0"
 androidxBiometric = "1.4.0-alpha05"
 #noinspection GradleDependency
 ksp = "2.2.10-2.0.2"
 room = "2.8.4"
+json = "20251224"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -45,6 +46,7 @@ androidx-biometric = { group = "androidx.biometric", name = "biometric", version
 room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
 room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
 room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
+json-org = { group = "org.json", name = "json", version.ref = "json" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

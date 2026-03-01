@@ -6,7 +6,7 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.params.provider.CsvFileSource
 
-class OTPParserTest {
+class OTPauthTest {
 
     @ParameterizedTest(name = "{index} => URL: {0}")
     @DisplayName("Тестирование парсера схемы otpauth://")

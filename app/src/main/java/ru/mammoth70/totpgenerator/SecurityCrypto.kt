@@ -1,4 +1,3 @@
-@file:Suppress("unused")
 package ru.mammoth70.totpgenerator
 
 import android.security.keystore.KeyProperties
@@ -21,6 +20,7 @@ private const val SHA1PRNG = "SHA1PRNG"
 private const val TRANSFORMATION = "AES/GCM/NoPadding"
 
 
+@Suppress("unused")
 fun isSecretKey(): Boolean {
     // Функция проверяет наличие в AndroidKeyStore ключа для шифрования TOTP секретов.
 
@@ -62,6 +62,7 @@ fun generateSecretKey() {
 }
 
 
+@Suppress("unused")
 fun deleteSecretKey() {
     // Функция удаляет из AndroidKeyStore ключ для шифрования TOTP секретов, если он есть.
 

@@ -21,7 +21,7 @@
             android:orientation="vertical">
 
             <TextView
-                android:text="@string/PIN_BIO_login"
+                android:text="@string/pin_bio_login"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="12dp"
@@ -33,7 +33,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
-                android:text="@string/change_PIN" />
+                android:text="@string/change_pin" />
 
             <Button
                 android:id="@+id/btnDeletePIN"
@@ -41,7 +41,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
-                android:text="@string/delete_PIN"
+                android:text="@string/delete_pin"
                 app:strokeColor="?attr/colorError"
                 android:textColor="?attr/colorError" />
 
@@ -49,7 +49,7 @@
                 android:id="@+id/checkEnableBio"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/enableBio" />
+                android:text="@string/enable_bio" />
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
@@ -66,7 +66,7 @@
             android:orientation="vertical">
 
             <TextView
-                android:text="@string/TokensGeneration"
+                android:text="@string/tokens_generation"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
@@ -79,7 +79,7 @@
 
                 <com.google.android.material.slider.Slider
                     android:id="@+id/sliderTimeShift"
-                    android:contentDescription="@string/timeShift"
+                    android:contentDescription="@string/time_shift"
                     android:layout_width="150dp"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="8dp"
@@ -93,7 +93,7 @@
                     android:id="@+id/lbColorsSpanCount"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/timeShift"
+                    android:text="@string/time_shift"
                     android:layout_gravity="center_vertical"
                     android:textSize="14sp" />
             </LinearLayout>
@@ -102,7 +102,7 @@
                 android:id="@+id/checkEnableNextToken"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/enableNextToken" />
+                android:text="@string/enable_next_token" />
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
@@ -161,7 +161,7 @@
             android:orientation="vertical">
 
             <TextView
-                android:text="@string/selectThemeMode"
+                android:text="@string/select_theme_mode"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="12dp"
@@ -179,21 +179,21 @@
                     style="?attr/materialButtonOutlinedStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/themeDay" />
+                    android:text="@string/theme_day" />
 
                 <Button
                     android:id="@+id/btnThemeSystem"
                     style="?attr/materialButtonOutlinedStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/themeSystem" />
+                    android:text="@string/theme_system" />
 
                 <Button
                     android:id="@+id/btnThemeNight"
                     style="?attr/materialButtonOutlinedStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/themeNight" />
+                    android:text="@string/theme_night" />
             </com.google.android.material.button.MaterialButtonToggleGroup>
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>

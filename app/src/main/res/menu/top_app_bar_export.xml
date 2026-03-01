@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:title="@string/select_all"
+        android:id="@+id/item_selectAll"
+        android:icon="@drawable/ic_action_select_all"
+        app:contentDescription="@string/select_all"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:title="@string/deselect_all"
+        android:id="@+id/item_deselectAll"
+        android:icon="@drawable/ic_action_deselect_all"
+        app:contentDescription="@string/deselect_all"
+        app:showAsAction="ifRoom" />
+
+</menu>

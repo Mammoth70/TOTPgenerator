@@ -58,7 +58,7 @@ object OTPauthDataRepo {
             }
 
         } catch (e: Exception) {
-            _databaseError.emit(e.message ?: App.appContext.getString(R.string.unknown_error))
+            _databaseError.emit(e.localizedMessage ?: App.appContext.getString(R.string.unknown_error))
             LogSmart.e("OTPauthDataRepo", "Ошибка базы", e)
         }
     }

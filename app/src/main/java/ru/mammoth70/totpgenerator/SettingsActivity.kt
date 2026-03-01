@@ -3,22 +3,20 @@ package ru.mammoth70.totpgenerator
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
-import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatDelegate
 import com.google.android.material.button.MaterialButtonToggleGroup
 import com.google.android.material.materialswitch.MaterialSwitch
 import com.google.android.material.slider.Slider
-import com.google.android.material.snackbar.Snackbar
 import kotlin.lazy
 
-class SettingsActivity : AppActivity(), PinDialog.OnPinResultListener {
+class SettingsActivity : AppActivity(),
+    PinDialog.OnPinResultListener {
     // Activity показывает и позволяет изменять настройки.
 
 
     override val idLayout = R.layout.activity_settings
     override val idActivity = R.id.frameSettingsActivity
 
-    private val parentLayout: View by lazy { findViewById(android.R.id.content) }
     private val btnChangePin: Button by lazy { findViewById(R.id.btnChangePIN) }
     private val btnDeletePin: Button by lazy { findViewById(R.id.btnDeletePIN) }
     private val sliderTimeShift: Slider by lazy { findViewById(R.id.sliderTimeShift) }
@@ -33,11 +31,12 @@ class SettingsActivity : AppActivity(), PinDialog.OnPinResultListener {
 
         topAppBar.setTitle(R.string.title_settings)
         topAppBar.setNavigationOnClickListener {
+            // Обработчик кнопки "назад".
             finish()
         }
 
         if (!isHaveHashPin) {
-            btnChangePin.setText(R.string.set_PIN)
+            btnChangePin.setText(R.string.set_pin)
             btnDeletePin.visibility = View.GONE
         }
 
@@ -125,31 +124,17 @@ class SettingsActivity : AppActivity(), PinDialog.OnPinResultListener {
     }
 
 
-    private fun showSnackbar(message: String) {
-        // Функция выводит Snackbar со строкой message.
-
-        Snackbar.make(parentLayout, message, Snackbar.LENGTH_SHORT).show()
-    }
-
-
-    private fun showSnackbar(@StringRes resId: Int) {
-        // Функция выводит Snackbar со строкой, хранимой в ресурсе resId.
-
-        showSnackbar(getString(resId))
-    }
-
-
     override fun onPinResult(action: String, result: Boolean, message: String) {
         // Обработчик возврата из PinDialog.
 
         when (action) {
             PinDialog.ACTION_DELETE_PIN -> {
                 if (result) {
-                    btnChangePin.setText(R.string.set_PIN)
+                    btnChangePin.setText(R.string.set_pin)
                     btnDeletePin.visibility = View.GONE
                     checkEnableBio.isChecked = SettingsManager.enableBiometric
                     checkEnableBio.visibility = View.GONE
-                    showSnackbar(R.string.PIN_deleted)
+                    showSnackbar(R.string.pin_deleted)
                 } else {
                     showSnackbar(message)
                 }
@@ -157,10 +142,10 @@ class SettingsActivity : AppActivity(), PinDialog.OnPinResultListener {
 
             PinDialog.ACTION_UPDATE_PIN -> {
                 if (result) {
-                    btnChangePin.setText(R.string.change_PIN)
+                    btnChangePin.setText(R.string.change_pin)
                     btnDeletePin.visibility = View.VISIBLE
                     checkEnableBio.visibility = View.VISIBLE
-                    showSnackbar(R.string.PIN_deleted)
+                    showSnackbar(R.string.pin_deleted)
                 }
                 showSnackbar(message)
             }
