@@ -7,7 +7,7 @@ import android.widget.ImageView
 import androidx.fragment.app.DialogFragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
-class QrExportDialog(private val auths: List<OTPauth>) : DialogFragment() {
+class QrExportDialog(private val uri: String) : DialogFragment() {
     // Диалоговое окно вывода QR-кода, полученного из списка секретов.
 
 
@@ -20,8 +20,7 @@ class QrExportDialog(private val auths: List<OTPauth>) : DialogFragment() {
         val btnDone = customView.findViewById<Button>(R.id.btnDone)
 
         try {
-            val migrationUrl = generateMigrationUrl(auths)
-            val bitmap = generateQrCode(migrationUrl, 800)
+            val bitmap = generateQrCode(uri, 800)
             ivQr.setImageBitmap(bitmap)
         } catch (_: Exception) {
             dismiss()

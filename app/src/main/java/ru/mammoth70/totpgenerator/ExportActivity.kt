@@ -30,7 +30,8 @@ class ExportActivity : AppActivity() {
         OTPauthAdapter(
             OTPauthDataRepo.secrets,
             { btnExportJSON.isEnabled = it },
-            { btnExportQR.isEnabled = it }
+            { btnExportQR.isEnabled = it },
+            { startDialogQR(it) }
         )
     }
 
@@ -155,8 +156,17 @@ class ExportActivity : AppActivity() {
             return
         }
 
-        QrExportDialog(secrets).show(supportFragmentManager, "QR_EXPORT_DIALOG")
+        val migrationUri = generateMigrationUri(secrets)
+        QrExportDialog(migrationUri).show(supportFragmentManager, "QR_EXPORT_DIALOG")
         secretsAdapter.deselectAll()
+    }
+
+
+    private fun startDialogQR(secret:OTPauth ) {
+        // Вызов диалогового окна, показывающего QR-код с секретом.
+
+        val uri = generateOtpauthUri(secret)
+        QrExportDialog(uri).show(supportFragmentManager, "QR_EXPORT_DIALOG")
     }
 
 

@@ -11,8 +11,10 @@ class OTPauthAdapter(
     private val secrets: List<OTPauth>,
     private val onSelectionJSONChanged: (Boolean) -> Unit,
     private val onSelectionQRChanged: (Boolean) -> Unit,
+    private val onItemClick: (OTPauth) -> Unit,
 ) : RecyclerView.Adapter<OTPauthAdapter.OTPauthViewHolder>() {
     // Класс RecyclerViewAdapter для показа OTPauth.
+
 
     private val selectedPositions = mutableSetOf<Int>()  // Для хранения выбранных секретов.
 
@@ -34,6 +36,10 @@ class OTPauthAdapter(
 
         fun bind(secret: OTPauth) {
             nameView.text = if (secret.issuer.isBlank()) secret.label else "${secret.issuer}:${secret.label}"
+
+            itemView.setOnClickListener {
+                onItemClick(secret)
+            }
 
             checkBox.setOnCheckedChangeListener(null)
             checkBox.isChecked = selectedPositions.contains(bindingAdapterPosition)

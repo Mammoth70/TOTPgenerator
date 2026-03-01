@@ -11,8 +11,10 @@ android {
     }
 
     testOptions {
-        unitTests.all {
-            it.useJUnitPlatform()
+        unitTests {
+            all {
+                it.useJUnitPlatform()
+            }
         }
     }
 
@@ -23,7 +25,7 @@ android {
 
     defaultConfig {
         val versionMajor = 2
-        val versionMinor = 8
+        val versionMinor = 9
         val versionPatch = 0
         applicationId = "ru.mammoth70.totpgenerator"
         minSdk = 30

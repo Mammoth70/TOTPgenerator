@@ -1,5 +1,17 @@
-id; label;        issuer;     secret;           period; hash;   digits
-1;  MyAccount;    Google;     GEZDGNBVGY3TQOJQ; 30;     SHA1;   6
-2;  Backup;       Amazon;     JBSWY3DPEHPK3PXP; 60;     SHA256; 8
-3;  NoIssuer;     ;           KRSXG5CTMVRXEZLU; 30;     SHA1;   6
-4;  Special@Char; Company&Co; MVXGG3LHMVXGG3LH; 15;     SHA512; 10
+id; label;                  issuer;          secret;                           period; hash;   digits
+1;  "MyAccount";            "Google";        GEZDGNBVGY3TQOJQ;                 30;     SHA1;   6
+2;  "Backup";               "Amazon";        JBSWY3DPEHPK3PXP;                 60;     SHA256; 8
+3;  "NoIssuer";             "";              KRSXG5CTMVRXEZLU;                 300;    SHA1;   6
+4;  "Special@Char";         "Company@Co";    MVXGG3LHMVXGG3LH;                 15;     SHA512; 8
+5;  "SevenDigits";          "CustomService"; MFRGGZDFMFRGGZDF;                 30;     SHA1;   7
+6;  "ShortPeriod";          "FastAuth";      ADRE34567777QWER;                 10;     SHA256; 6
+7;  "RussianLabel";         "Сервис";        GEZDGNBVGY3TQOJQ;                 45;     SHA1;   6
+8;  "Space In Label";       "Web Service";   JBSWY3DPEHPK3PXP;                 30;     SHA1;   7
+9;  "MaxDigits";            "HighSecurity";  GEZDGNBVGY3TQOJQ;                 30;     SHA512; 8
+10; "MinPeriod";            "Nitro";         MVXGG3LHMVXGG3LH;                 1;      SHA1;   6
+11; "alice@google.com";     "Example";       JBSWY3DPEHPK3PXP;                 30;     SHA1;   6
+12; "Service";              "";              JBSWY3DP;                         60;     SHA256; 8
+13; "example@gmail.com";    "Google";        QJV3EN5JJJHGQ4PK3M6E576YMWUC5D4X; 30;     SHA1;   6
+14; "test@example.org";     "";              XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX; 30;     SHA1;   6
+15; "john.doe@example.com"; "ACME Co";       HXDMVJECJJWSRB3HWIZR4IFUGFTMXBOZ; 30;     SHA1;   6
+16; "User";                 "";              JBSWY3DP;                         30;     SHA1;   6

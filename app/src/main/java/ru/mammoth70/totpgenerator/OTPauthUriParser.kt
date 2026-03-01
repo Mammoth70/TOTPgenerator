@@ -12,7 +12,7 @@ import com.google.protobuf.CodedOutputStream
 import org.apache.commons.codec.binary.Base32
 
 // Парсер разбора строки схем otpauth://totp и otpauth-migration://offline
-// Конвертор списка auths в url схемы otpauth-migration://offline
+// Конвертор списка auths в uri схемы otpauth-migration://offline
 
 private const val REGEXP_HEAD1 = "^otpauth://totp/(\\S+?)\\?"
 private const val REGEXP_HEAD2 = "^otpauth-migration://offline\\?data=(\\S+?)$"
@@ -27,7 +27,7 @@ private enum class OtpAlgorithm(val id: Int) {
 }
 
 private enum class DigitCount(val id: Int) {
-    UNSPECIFIED(0), SIX(1), EIGHT(2), SEVEN(3); // (SEVEN - нестандартный ID)
+    UNSPECIFIED(0), SIX(1), EIGHT(2);
     companion object {
         fun fromId(id: Int) = entries.find { it.id == id } ?: SIX
     }
@@ -41,33 +41,33 @@ private enum class OtpType(val id: Int) {
 }
 
 
-fun parseQR(url: String?): List<OTPauth> {
-    // Функция разбирает строку url.
+fun parseQR(uri: String?): List<OTPauth> {
+    // Функция разбирает строку uri.
     // В зависимости от результатов предварительного разбора,
     // вызывает функции parseOTPauth или parseGoogleMigration.
 
     val auths = mutableListOf<OTPauth>()
-    if (url.isNullOrBlank()) {
+    if (uri.isNullOrBlank()) {
         return auths
     }
 
-    val matcher1 = patternHead1.matcher(url)
-    val matcher2 = patternHead2.matcher(url)
+    val matcher1 = patternHead1.matcher(uri)
+    val matcher2 = patternHead2.matcher(uri)
     if ((matcher1.find())) {
-        parseOTPauth(url)?.let { auths.add(it) }
+        parseOTPauth(uri)?.let { auths.add(it) }
     } else if ((matcher2.find())) {
-        parseGoogleMigration(url).forEach { auths.add(it) }
+        parseGoogleMigration(uri).forEach { auths.add(it) }
     }
     return auths
 }
 
 
 @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-internal fun parseOTPauth(url: String): OTPauth? {
-// Функция разбирает строку url otpauth://totp и в случае удачи возвращат OTPauth, в противном случае - null.
+internal fun parseOTPauth(uri: String): OTPauth? {
+// Функция разбирает строку uri otpauth://totp и в случае удачи возвращат OTPauth, в противном случае - null.
 
     return try {
-        val uri = URI(url)
+        val uri = URI(uri)
 
         // Разбираем query-параметры вручную (т.к. у java.net.URI нет getQueryParameter).
         val queryParams = uri.query?.split("&")?.associate {
@@ -99,26 +99,26 @@ internal fun parseOTPauth(url: String): OTPauth? {
             digits = queryParams["digits"]?.toIntOrNull() ?: DEFAULT_DIGITS,
         )
     } catch (e: Exception) {
-        LogSmart.e("OTPauthUriParser", "Exception в parseOTPauth($url)", e)
-        null // Если URL совсем кривой
+        LogSmart.e("OTPauthUriParser", "Exception в parseOTPauth($uri)", e)
+        null // Если URI совсем кривой
     }
 }
 
 
 @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-internal fun parseGoogleMigration(url: String): List<OTPauth> {
-    // Функция разбирает строку url otpauth-migration://offline,
+internal fun parseGoogleMigration(uri: String): List<OTPauth> {
+    // Функция разбирает строку uri otpauth-migration://offline,
     // и в случае удачи возвращат список OTPauth, в противном случае - список возвращается пустым.
 
     val auths = mutableListOf<OTPauth>()
     val pattern2 = Pattern.compile(REGEXP_HEAD2)
-    val matcher2 = pattern2.matcher(url)
+    val matcher2 = pattern2.matcher(uri)
     if ((matcher2.find()) && (!matcher2.group(1).isNullOrBlank())) {
         val data = matcher2.group(1)!!
         val binaryData = try {
             Base64.getMimeDecoder().decode(URLDecoder.decode(data, "UTF-8"))
         } catch (e: Exception) {
-            LogSmart.e("OTPauthUriParser", "Exception в parseGoogleMigration($url)", e)
+            LogSmart.e("OTPauthUriParser", "Exception в parseGoogleMigration($uri)", e)
             return emptyList()
         }
         val input = CodedInputStream.newInstance(binaryData)
@@ -184,7 +184,6 @@ private fun decodeOtpParameters(input: CodedInputStream): OTPauth? {
     }
     val digits = when (digs) {
         DigitCount.SIX -> 6
-        DigitCount.SEVEN -> 7
         DigitCount.EIGHT -> 8
         DigitCount.UNSPECIFIED -> DEFAULT_DIGITS
     }
@@ -204,8 +203,8 @@ private fun decodeOtpParameters(input: CodedInputStream): OTPauth? {
 }
 
 
-fun generateMigrationUrl(auths: List<OTPauth>): String {
-    // Функция конвертирует список auths в url схемы otpauth-migration://offline.
+fun generateMigrationUri(auths: List<OTPauth>): String {
+    // Функция конвертирует список auths в uri схемы otpauth-migration://offline.
 
     val baos = ByteArrayOutputStream()
     val codedOutput = CodedOutputStream.newInstance(baos)
@@ -233,7 +232,6 @@ fun generateMigrationUrl(auths: List<OTPauth>): String {
         val digitId = when (auth.digits) {
             6 -> 1
             8 -> 2
-            7 -> 3 // Нестандартный ID.
             else -> 1 // По умолчанию SIX.
         }
         innerOutput.writeEnum(5, digitId) // Digits (Tag 40).
@@ -254,4 +252,28 @@ fun generateMigrationUrl(auths: List<OTPauth>): String {
 
     val base64Data = Base64.getEncoder().encodeToString(baos.toByteArray())
     return "otpauth-migration://offline?data=${URLEncoder.encode(base64Data, "UTF-8")}"
+}
+
+
+fun generateOtpauthUri(secret: OTPauth): String {
+    // Функция конвертирует OTPauth в uri схемы otpauth://totp.
+
+    val encode: (String) -> String = {
+        URLEncoder.encode(it, "UTF-8").replace("+", "%20")
+    }
+
+    val issuerPart = if (secret.issuer.isNotEmpty()) encode(secret.issuer) else ""
+    val labelPart = encode(secret.label)
+    val path = if (issuerPart.isNotEmpty()) "$issuerPart:$labelPart" else labelPart
+
+    val params = mutableListOf<String>()
+    params.add("secret=${secret.secret}")
+    if (secret.issuer.isNotEmpty()) {
+        params.add("issuer=${encode(secret.issuer)}")
+    }
+    params.add("algorithm=${secret.hash.uppercase()}")
+    params.add("digits=${secret.digits}")
+    params.add("period=${secret.period}")
+
+    return "otpauth://totp/$path?${params.joinToString("&")}"
 }

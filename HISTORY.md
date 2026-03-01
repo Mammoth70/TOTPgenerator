@@ -355,7 +355,14 @@ PIN-код теперь хранится в виде криптографиче�
 - обновлены объявления зависимостей в файле libs.versions.toml;
 - внесены соответствующие изменения в файл build.gradle.kts проекта;
 - добавлен QrExportDialog для показа QR-кода;
-- добавлены функции generateMigrationUrl и generateQrCode;
+- добавлены функции generateMigrationUri и generateQrCode;
 - добавлены необходимые вызовы в ExportActivity;
 - внесены соответствующие изменения в файлах ресурсов;
-- добавлены интеграционные тесты связки функций generateMigrationUrl и parseGoogleMigration.
+- добавлены интеграционные тесты связки функций generateMigrationUri и parseGoogleMigration.
+
+### 2.9.0
+Появилась возможность экспорта секрета в QR-код по схеме "otpauth://".
+- внесены изменения в QrExportDialog;
+- добавлена функция generateOtpauthUri;
+- добавлены необходимые вызовы в ExportActivity;
+- добавлены интеграционные тесты связки функций generateOtpauthUri и parseOTPauth.
