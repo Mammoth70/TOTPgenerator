@@ -24,9 +24,15 @@ class ExportActivity : AppActivity() {
     override val idActivity = R.id.frameExportActivity
 
     private val recyclerView: RecyclerView by lazy { findViewById(R.id.secretsList) }
-    private val btnExport: MaterialButton by lazy { findViewById(R.id.btnExport) }
-    private val secretsAdapter: OTPauthAdapter by lazy { OTPauthAdapter(OTPauthDataRepo.secrets)
-        { hasSelection -> btnExport.isEnabled = hasSelection }}
+    private val btnExportJSON: MaterialButton by lazy { findViewById(R.id.btnExportJSON) }
+    private val btnExportQR: MaterialButton by lazy { findViewById(R.id.btnExportQR) }
+    private val secretsAdapter: OTPauthAdapter by lazy {
+        OTPauthAdapter(
+            OTPauthDataRepo.secrets,
+            { btnExportJSON.isEnabled = it },
+            { btnExportQR.isEnabled = it }
+        )
+    }
 
     private var pendingPassword: String? = null
 
@@ -39,7 +45,7 @@ class ExportActivity : AppActivity() {
         uri?.let { fileUri ->
             val secrets = secretsAdapter.getSelectedItems()
             if (password != null && !secrets.isEmpty()) {
-                startExport(secrets, fileUri, password)
+                startExportJSON(secrets, fileUri, password)
             }
         }
         pendingPassword = null
@@ -74,10 +80,16 @@ class ExportActivity : AppActivity() {
             }
         }
 
-        btnExport.isEnabled = false
-        btnExport.setOnClickListener { _ ->
-            // Обработчик кнопки "Экспорт".
-            startDialogExport()
+        btnExportJSON.isEnabled = false
+        btnExportJSON.setOnClickListener { _ ->
+            // Обработчик кнопки "Экспорт в JSON".
+            startDialogExportJSON()
+        }
+
+        btnExportQR.isEnabled = false
+        btnExportQR.setOnClickListener { _ ->
+            // Обработчик кнопки "Экспорт в QR".
+            startDialogExportQR()
         }
 
         // Настройка адаптера.
@@ -87,7 +99,6 @@ class ExportActivity : AppActivity() {
         }
 
     }
-
 
 
     private fun setButtonLoading(isLoading: Boolean) {
@@ -100,23 +111,23 @@ class ExportActivity : AppActivity() {
             )
             val progressDrawable = IndeterminateDrawable.createCircularDrawable(this, spec)
 
-            btnExport.icon = progressDrawable
-            btnExport.iconGravity = MaterialButton.ICON_GRAVITY_TEXT_START
-            btnExport.isEnabled = false
-            btnExport.setText(R.string.encrypting)
+            btnExportJSON.icon = progressDrawable
+            btnExportJSON.iconGravity = MaterialButton.ICON_GRAVITY_TEXT_START
+            btnExportJSON.isEnabled = false
+            btnExportJSON.setText(R.string.encrypting)
         } else {
-            btnExport.icon = null
+            btnExportJSON.icon = null
             secretsAdapter.deselectAll()
-            btnExport.setText(R.string.title_export)
+            btnExportJSON.setText(R.string.title_export_json)
         }
     }
 
 
-    private fun startDialogExport() {
+    private fun startDialogExportJSON() {
         // Вызов диалогового окна для ввода пароля шифрования экспортируемого файла.
 
         if (secretsAdapter.getSelectedItems().isEmpty()) {
-            showSnackbar(R.string.select_item)
+            showSnackbar(R.string.select_item_error)
             return
         }
 
@@ -130,7 +141,26 @@ class ExportActivity : AppActivity() {
     }
 
 
-    private fun startExport(secrets: List<OTPauth>, uri: Uri, password: String) {
+    private fun startDialogExportQR() {
+        // Вызов диалогового окна, показывающего QR-код с экспортируемыми секретами.
+
+        val secrets = secretsAdapter.getSelectedItems()
+
+        if (secrets.isEmpty()) {
+            showSnackbar(R.string.select_item_error)
+            return
+        }
+        if (secrets.size > 10) {
+            showSnackbar(R.string.select_items_error)
+            return
+        }
+
+        QrExportDialog(secrets).show(supportFragmentManager, "QR_EXPORT_DIALOG")
+        secretsAdapter.deselectAll()
+    }
+
+
+    private fun startExportJSON(secrets: List<OTPauth>, uri: Uri, password: String) {
         // Шифрование и выгрузка файла экспорта.
 
         setButtonLoading(true)

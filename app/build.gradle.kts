@@ -23,7 +23,7 @@ android {
 
     defaultConfig {
         val versionMajor = 2
-        val versionMinor = 7
+        val versionMinor = 8
         val versionPatch = 0
         applicationId = "ru.mammoth70.totpgenerator"
         minSdk = 30
@@ -88,6 +88,7 @@ dependencies {
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
     ksp(libs.room.compiler)
+    implementation(libs.zxing.core)
 
     testImplementation(libs.junit.jupiter)
     testImplementation(libs.junit.jupiter.params)

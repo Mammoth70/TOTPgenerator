@@ -7,6 +7,7 @@
     <string name="ok">OK</string>
     <string name="cancel">Отмена</string>
     <string name="next">Далее</string>
+    <string name="done">Готово</string>
     <string name="backspace">Backspace</string>
     <string name="yes">Да</string>
     <string name="no">Нет</string>
@@ -22,8 +23,11 @@
     <string name="db_fatal_error_message">Приложение не может прочитать секреты.\n\nТехнические данные: %1$s</string>
     <string name="unknown_error">Неизвестная ошибка</string>
     <string name="settings">настройки</string>
-    <string name="title_settings">Настройки</string>
     <string name="title_export">Экспорт</string>
+    <string name="title_settings">Настройки</string>
+    <string name="title_export_json">Экспорт в JSON</string>
+    <string name="title_export_qr">Экспорт в QR</string>
+    <string name="qr_scan_hint">Отсканируйте этот код другим приложением-аутентификатором</string>
     <string name="title_import">Импорт</string>
     <string name="export_file_protection">Защита файла экспорта</string>
     <string name="export_file_protection_text">Введите пароль для шифрования. Без него восстановить данные будет невозможно.</string>
@@ -37,7 +41,8 @@
     <string name="error_password_required">Требуется пароль</string>
     <string name="no_encrypting">Без шифрования</string>
     <string name="encrypting">Шифрование…</string>
-    <string name="select_item">Сначала выберите хотя бы один элемент для экспорта</string>
+    <string name="select_item_error">Сначала выберите хотя бы один элемент для экспорта</string>
+    <string name="select_items_error">Злементов для экспорта не должно быть больше десяти</string>
     <string name="export_success">Экспорт успешно выполнен</string>
     <string name="error_io_stream">Не удалось открыть файл для записи</string>
     <string name="select_all">Выбрать всё</string>

@@ -3,12 +3,16 @@ package ru.mammoth70.totpgenerator
 import java.util.regex.Pattern
 import java.net.URI
 import java.net.URLDecoder
+import java.net.URLEncoder
 import java.util.Base64
+import java.io.ByteArrayOutputStream
 import androidx.annotation.VisibleForTesting
 import com.google.protobuf.CodedInputStream
+import com.google.protobuf.CodedOutputStream
 import org.apache.commons.codec.binary.Base32
 
 // Парсер разбора строки схем otpauth://totp и otpauth-migration://offline
+// Конвертор списка auths в url схемы otpauth-migration://offline
 
 private const val REGEXP_HEAD1 = "^otpauth://totp/(\\S+?)\\?"
 private const val REGEXP_HEAD2 = "^otpauth-migration://offline\\?data=(\\S+?)$"
@@ -23,7 +27,7 @@ private enum class OtpAlgorithm(val id: Int) {
 }
 
 private enum class DigitCount(val id: Int) {
-    UNSPECIFIED(0), SIX(1), EIGHT(2);
+    UNSPECIFIED(0), SIX(1), EIGHT(2), SEVEN(3); // (SEVEN - нестандартный ID)
     companion object {
         fun fromId(id: Int) = entries.find { it.id == id } ?: SIX
     }
@@ -120,6 +124,7 @@ internal fun parseGoogleMigration(url: String): List<OTPauth> {
         val input = CodedInputStream.newInstance(binaryData)
         while (!input.isAtEnd) {
             val tag = input.readTag()
+            if (tag == 0) break
             val fieldNumber = tag ushr 3 // Извлекаем номер поля (Tag ID)
 
             when (fieldNumber) {
@@ -153,7 +158,7 @@ private fun decodeOtpParameters(input: CodedInputStream): OTPauth? {
     var digs = DigitCount.SIX
     var type = OtpType.TOTP
 
-    while (!input.isAtEnd) {
+    while (input.bytesUntilLimit > 0 ) {
         val tag = input.readTag()
         if (tag == 0) {
             break // Конец вложенного сообщения
@@ -179,6 +184,7 @@ private fun decodeOtpParameters(input: CodedInputStream): OTPauth? {
     }
     val digits = when (digs) {
         DigitCount.SIX -> 6
+        DigitCount.SEVEN -> 7
         DigitCount.EIGHT -> 8
         DigitCount.UNSPECIFIED -> DEFAULT_DIGITS
     }
@@ -195,4 +201,57 @@ private fun decodeOtpParameters(input: CodedInputStream): OTPauth? {
                             name.isNotBlank() &&
                             isValidBase32(secretBase32)
         }
+}
+
+
+fun generateMigrationUrl(auths: List<OTPauth>): String {
+    // Функция конвертирует список auths в url схемы otpauth-migration://offline.
+
+    val baos = ByteArrayOutputStream()
+    val codedOutput = CodedOutputStream.newInstance(baos)
+
+    auths.forEach { auth ->
+        val innerBaos = ByteArrayOutputStream()
+        val innerOutput = CodedOutputStream.newInstance(innerBaos)
+
+        val secretBytes = Base32().decode(auth.secret) // Secret (Tag 10).
+        innerOutput.writeBytes(1, com.google.protobuf.ByteString.copyFrom(secretBytes))
+
+        innerOutput.writeString(2, auth.label) // Label (Tag 18).
+
+        innerOutput.writeString(3, auth.issuer) // Issuer (Tag 26).
+
+        val algoId = when (auth.hash) {
+            SHA1   -> 1
+            SHA256 -> 2
+            SHA512 -> 3
+            else   -> 1 // По умолчанию SHA1.
+        }
+        innerOutput.writeEnum(4, algoId) // Algorithm (Tag 32).
+
+
+        val digitId = when (auth.digits) {
+            6 -> 1
+            8 -> 2
+            7 -> 3 // Нестандартный ID.
+            else -> 1 // По умолчанию SIX.
+        }
+        innerOutput.writeEnum(5, digitId) // Digits (Tag 40).
+
+        innerOutput.writeEnum(6, 2) // Type TOTP=2 (Tag 48).
+
+        innerOutput.flush()
+        val innerData = innerBaos.toByteArray()
+
+        codedOutput.writeTag(1, 2) // Внешний контейнер (Tag 10).
+        codedOutput.writeUInt32NoTag(innerData.size)
+        codedOutput.writeRawBytes(innerData)
+    }
+
+    codedOutput.writeInt32(2, 1) // Версия (Tag 16).
+
+    codedOutput.flush()
+
+    val base64Data = Base64.getEncoder().encodeToString(baos.toByteArray())
+    return "otpauth-migration://offline?data=${URLEncoder.encode(base64Data, "UTF-8")}"
 }

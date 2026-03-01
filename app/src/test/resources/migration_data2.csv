@@ -1,0 +1,11 @@
+description;              label;        issuer;        secret;                           hash;   digits
+Single account;           MyAccount;    Google;        GEZDGNBVGY3TQOJQ;                 SHA1;   6
+Two-word label;           Work:Admin;   Corp;          JBSWY3DPEHPK3PXP;                 SHA256; 8
+Short secret;             Alpha;        Issuer1;       KRSXG5A=;                         SHA1;   6
+Long secret 32 chars;     Bravo;        Issuer2;       KRSXG5AIJ7BBSY3DPEHPK3PXPGEZDGNB; SHA1;   6
+SHA256 support;           Charlie;      Security;      GEZDGNBVGY3TQOJQ;                 SHA256; 6
+SHA512 8 digits;          Delta;        Admin;         JBSWY3DPEHPK3PXP;                 SHA512; 8
+Special symbols in label; User @ Home!; SmartHome;     MFRGGZDFMZTWQ2LK;                 SHA1;   6
+Cyrillic support;         Иван Петров;  Банк;          IFGEGR2SGNGE6SBT;                 SHA1;   6
+Space in issuer;          Echo;         Cloud Service; ONXW2LTEORXSA43B;                 SHA256; 6
+Minimal secret;           Zulu;         Small;         AAAAAAAA;                         SHA1;   6
