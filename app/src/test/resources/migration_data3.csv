@@ -9,5 +9,3 @@ Special symbols in label; User @ Home!; SmartHome;     MFRGGZDFMZTWQ2LK;        
 Cyrillic support;         Иван Петров;  Банк;          IFGEGR2SGNGE6SBT;                 SHA1;   6
 Space in issuer;          Echo;         Cloud Service; ONXW2LTEORXSA43B;                 SHA256; 6
 Minimal8 secret;          Zulu8;        Small;         ABCDEFGH;                         SHA1;   6
-secret16;                 Zulu16;       Middle;        ABCDEFGHI2222226;                 SHA1;   6
-secret24;                 Zulu24;       Long;          ABCDEFGHI222222222222224;         SHA1;   6

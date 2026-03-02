@@ -27,8 +27,8 @@ class OTPauthAdapter(
 
         val count = selectedPositions.size
         val standardCount = selectedPositions.count { pos ->
-            val item = secrets[pos]
-            item.digits != 7 && item.period == 30
+            val otpauth = secrets[pos]
+            otpauth.digits != 7 && otpauth.period == 30 && otpauth.secret.length % 8 == 0
         }
         onSelectionJSONChanged(count > 0)
         onSelectionQRChanged(standardCount in 1..10)
@@ -41,17 +41,17 @@ class OTPauthAdapter(
         val nameView: TextView = view.findViewById(R.id.name)
         val checkBox: CheckBox = view.findViewById(R.id.checkBox)
 
-        fun bind(secret: OTPauth) {
-            nameView.text = if (secret.issuer.isBlank()) secret.label else "${secret.issuer}:${secret.label}"
+        fun bind(otpauth: OTPauth) {
+            nameView.text = if (otpauth.issuer.isBlank()) otpauth.label else "${otpauth.issuer}:${otpauth.label}"
 
-            checkBox.buttonTintList = if (secret.digits == 7 || secret.period != 30) {
-                colorCheckBoxUnstandart
-            } else {
+            checkBox.buttonTintList = if ( otpauth.digits != 7 && otpauth.period == 30 && otpauth.secret.length % 8 == 0 ) {
                 colorCheckBoxStandart
+            } else {
+                colorCheckBoxUnstandart
             }
 
             itemView.setOnClickListener {
-                onItemClick(secret)
+                onItemClick(otpauth)
             }
 
             checkBox.setOnCheckedChangeListener(null)

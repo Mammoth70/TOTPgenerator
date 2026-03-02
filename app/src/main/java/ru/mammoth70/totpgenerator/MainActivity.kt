@@ -263,10 +263,18 @@ class MainActivity : AppActivity(),
 
             when (addedCount) {
                 total -> {
-                    showSnackbar(R.string.secrets_added)
+                    if (total == 1) {
+                        showSnackbar(R.string.secret_added)
+                    } else {
+                        showSnackbar(R.string.secrets_added)
+                    }
                 }
                 0 -> {
-                    showSnackbar(R.string.secrets_add_error)
+                    if (total == 1) {
+                        showSnackbar(R.string.secret_add_error)
+                    } else {
+                        showSnackbar(R.string.secrets_add_error)
+                    }
                 }
                 else -> {
                     val failed = total - addedCount

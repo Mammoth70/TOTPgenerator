@@ -199,7 +199,7 @@ class GoogleMigrationTest {
     companion object {
         @JvmStatic
         fun provideOtpAuthList(): List<List<OTPauth>> {
-            val csvFile = File("src/test/resources/migration_data2.csv")
+            val csvFile = File("src/test/resources/migration_data3.csv")
             val auths = csvFile.readLines().drop(1).map { line ->
                 val parts = line.split(";").map { it.trim() }
                 OTPauth(

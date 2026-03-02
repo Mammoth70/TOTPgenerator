@@ -17,7 +17,7 @@ class QrExportDialog(private val uri: String) : DialogFragment() {
         val customView = layoutInflater.inflate(R.layout.dialog_qr_export, null)
 
         val ivQr = customView.findViewById<ImageView>(R.id.ivQrCode)
-        val btnDone = customView.findViewById<Button>(R.id.btnDone)
+        val btnOk = customView.findViewById<Button>(R.id.btnOk)
 
         try {
             val bitmap = generateQrCode(uri, 800)
@@ -26,7 +26,7 @@ class QrExportDialog(private val uri: String) : DialogFragment() {
             dismiss()
         }
 
-        btnDone.setOnClickListener { dismiss() }
+        btnOk.setOnClickListener { dismiss() }
 
         return MaterialAlertDialogBuilder(requireContext())
             .setView(customView)

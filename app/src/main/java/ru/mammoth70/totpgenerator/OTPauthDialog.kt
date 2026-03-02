@@ -211,7 +211,9 @@ class OTPauthDialog: DialogFragment() {
             ilKey.error = getString(R.string.empty_secret_error)
             isChecked = false
         }
-        if (edKey.text.toString().isNotBlank() && (!isValidBase32(edKey.text.toString()))) {
+        val secret = edKey.text.toString()
+        if (secret.isNotBlank() && (!isValidBase32(secret))) {
+            // if (secret.isNotBlank() && (!isValidBase32(secret) || secret.length < 8 || secret.length % 8 != 0))
             ilKey.error = getString(R.string.base32_secret_error)
             isChecked = false
         }

@@ -146,7 +146,7 @@ class ExportActivity : AppActivity() {
         // Вызов диалогового окна, показывающего QR-код с экспортируемыми секретами.
 
         val allSelectedSecrets = secretsAdapter.getSelectedItems()
-        val standardSecrets = allSelectedSecrets.filter { it.digits != 7 && it.period == 30 }
+        val standardSecrets = allSelectedSecrets.filter { it.digits != 7 && it.period == 30 && it.secret.length % 8 == 0 }
         val nonStandardCount = allSelectedSecrets.size - standardSecrets.size
 
         if (allSelectedSecrets.isEmpty()) {
