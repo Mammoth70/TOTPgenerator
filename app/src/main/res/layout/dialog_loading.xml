@@ -21,5 +21,4 @@
         android:text="@string/loading_decrypting"
         android:textAlignment="center"
         android:textAppearance="@style/TextAppearance.MaterialComponents.Body1" />
-
 </LinearLayout>

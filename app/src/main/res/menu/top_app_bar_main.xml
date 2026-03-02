@@ -29,5 +29,4 @@
         android:icon="@drawable/ic_action_import"
         app:contentDescription="@string/title_import"
         app:showAsAction="ifRoom" />
-
 </menu>

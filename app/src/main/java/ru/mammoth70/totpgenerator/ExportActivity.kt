@@ -145,18 +145,30 @@ class ExportActivity : AppActivity() {
     private fun startDialogExportQR() {
         // Вызов диалогового окна, показывающего QR-код с экспортируемыми секретами.
 
-        val secrets = secretsAdapter.getSelectedItems()
+        val allSelectedSecrets = secretsAdapter.getSelectedItems()
+        val standardSecrets = allSelectedSecrets.filter { it.digits != 7 && it.period == 30 }
+        val nonStandardCount = allSelectedSecrets.size - standardSecrets.size
 
-        if (secrets.isEmpty()) {
+        if (allSelectedSecrets.isEmpty()) {
             showSnackbar(R.string.select_item_error)
             return
         }
-        if (secrets.size > 10) {
-            showSnackbar(R.string.select_items_error)
+
+        if (standardSecrets.isEmpty()) {
+            showSnackbar(R.string.select_all_non_standard_items_error)
             return
         }
 
-        val migrationUri = generateMigrationUri(secrets)
+        if (standardSecrets.size > 10) {
+            showSnackbar(R.string.select_standart_items_error)
+            return
+        }
+
+        if (nonStandardCount > 0) {
+            showSnackbar(getString(R.string.mixed_standard_items_warning, standardSecrets.size, nonStandardCount))
+        }
+
+        val migrationUri = generateMigrationUri(standardSecrets)
         QrExportDialog(migrationUri).show(supportFragmentManager, "QR_EXPORT_DIALOG")
         secretsAdapter.deselectAll()
     }

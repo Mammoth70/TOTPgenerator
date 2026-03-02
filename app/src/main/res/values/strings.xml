@@ -41,8 +41,11 @@
     <string name="error_password_required">Password required</string>
     <string name="no_encrypting">No Encryption</string>
     <string name="encrypting">Encrypting…</string>
-    <string name="select_item_error">Select at least one item to continue</string>
-    <string name="select_items_error">There should not be more than ten elements for export</string>
+    <string name="select_item_error">Select at least one secret to continue</string>
+    <string name="select_items_error">There should not be more than ten secrets for export</string>
+    <string name="select_standart_items_error">There should not be more than ten standart secrets for export</string>
+    <string name="select_all_non_standard_items_error">All selected secrets are non-standard and cannot be exported to QR using the otpauth-migration scheme</string>
+    <string name="mixed_standard_items_warning">Standard secrets to be processed: %1$d, non-standard secrets: %2$d ignored</string>
     <string name="export_success">Export successful</string>
     <string name="error_io_stream">Could not open file for writing</string>
     <string name="select_all">Select all</string>

@@ -99,7 +99,6 @@ class OTPauthTest {
 
 
 class GoogleMigrationTest {
-    // Для прохождения 10-го варианта теста нужно временно закомментировать вызов LogSmart в функции parseGoogleMigration.
 
     @ParameterizedTest(name = "{index} => {0}")
     @DisplayName("Тестирование парсера схемы otpauth-migration://")

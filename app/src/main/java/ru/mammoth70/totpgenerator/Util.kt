@@ -1,6 +1,9 @@
 package ru.mammoth70.totpgenerator
 
+import android.content.Context
 import android.util.Log
+import android.util.TypedValue
+import androidx.annotation.AttrRes
 
 const val SHA1 = "SHA1"
 const val SHA256 = "SHA256"
@@ -31,6 +34,15 @@ fun isValidBase32(secret: String): Boolean {
     val lengthMod = secret.filter { it != '=' }.length % 8
     val invalidMods = listOf(1, 3, 6)
     return lengthMod !in invalidMods
+}
+
+
+fun Context.getThemeColor(@AttrRes attr: Int): Int {
+    // Функция-расширение класса Context. Возвращает числовое значение цвета по ID-атрибута темы.
+
+    val typedValue = TypedValue()
+    theme.resolveAttribute(attr, typedValue, true)
+    return typedValue.data
 }
 
 

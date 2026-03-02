@@ -15,5 +15,4 @@
         android:icon="@drawable/ic_action_deselect_all"
         app:contentDescription="@string/deselect_all"
         app:showAsAction="ifRoom" />
-
 </menu>

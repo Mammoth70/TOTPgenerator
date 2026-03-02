@@ -1,5 +1,7 @@
 package ru.mammoth70.totpgenerator
 
+import android.content.res.ColorStateList
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,14 +19,19 @@ class OTPauthAdapter(
 
 
     private val selectedPositions = mutableSetOf<Int>()  // Для хранения выбранных секретов.
+    private var colorError:  ColorStateList? = null
 
 
     private fun notifyCallbacks() {
         // Функция настройки коллбеков для включения/выключения кнопок.
 
         val count = selectedPositions.size
+        val standardCount = selectedPositions.count { pos ->
+            val item = secrets[pos]
+            item.digits != 7 && item.period == 30
+        }
         onSelectionJSONChanged(count > 0)
-        onSelectionQRChanged(count in 1..10)
+        onSelectionQRChanged(standardCount in 1..10)
     }
 
 
@@ -36,6 +43,12 @@ class OTPauthAdapter(
 
         fun bind(secret: OTPauth) {
             nameView.text = if (secret.issuer.isBlank()) secret.label else "${secret.issuer}:${secret.label}"
+
+            checkBox.buttonTintList = if (secret.digits == 7 || secret.period != 30) {
+                colorError
+            } else {
+                null
+            }
 
             itemView.setOnClickListener {
                 onItemClick(secret)
@@ -81,6 +94,9 @@ class OTPauthAdapter(
 
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_otpauth,
             parent, false)
+        if (colorError == null) {
+            colorError = ColorStateList.valueOf(parent.context.getThemeColor(R.attr.colorError))
+        }
         return OTPauthViewHolder(view)
     }
 
