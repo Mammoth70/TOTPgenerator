@@ -1,22 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">TOTP generator</string>
-    <string name="totp">TOTP</string>
     <string name="description">Time-Based One-Time\nPassword generator</string>
     <string name="version">Версия:</string>
     <string name="for_about">Andrey Yakovlev © 2025–2026\nhttps://github.com/mammoth70</string>
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
     <string name="next">Continue</string>
-    <string name="done">Done</string>
     <string name="backspace">Backspace</string>
-    <string name="yes">Yes</string>
-    <string name="no">No</string>
     <string name="qr">Read QR</string>
     <string name="add">Add</string>
     <string name="delete">Delete</string>
     <string name="view">View</string>
-    <string name="save">Save</string>
     <string name="menu">Menu</string>
     <string name="back">Back</string>
     <string name="exit">Exit</string>
@@ -43,7 +38,6 @@
     <string name="no_encrypting">No Encryption</string>
     <string name="encrypting">Encrypting…</string>
     <string name="select_item_error">Select at least one secret to continue</string>
-    <string name="select_items_error">There should not be more than ten secrets for export</string>
     <string name="select_standart_items_error">There should not be more than ten standart secrets for export</string>
     <string name="select_all_non_standard_items_error">All selected secrets are non-standard and cannot be exported to QR using the otpauth-migration scheme</string>
     <string name="mixed_standard_items_warning">Standard secrets to be processed: %1$d, non-standard secrets ignored: %2$d</string>
@@ -52,7 +46,6 @@
     <string name="select_all">Select all</string>
     <string name="deselect_all">Deselect all</string>
     <string name="about">about</string>
-    <string name="title_about">About</string>
     <string name="add_secret">Add secret</string>
     <string name="delete_secret">Delete secret</string>
     <string name="secret_added">The secret has been added successfully</string>

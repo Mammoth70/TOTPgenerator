@@ -348,6 +348,7 @@ class MainActivity : AppActivity(),
     }
 
 
+    @Suppress("SameReturnValue")
     private fun itemLongClick(totp: String) : Boolean {
         // Обработчик двойного клика по токену.
         // Вызывает функцию копирования токена в clipboard.

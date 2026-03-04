@@ -1,22 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Генератор TOTP</string>
-    <string name="totp">TOTP</string>
     <string name="description">Генератор одноразовых паролей\nна основе времени</string>
     <string name="version">Версия:</string>
     <string name="for_about">Андрей Яковлев © 2025–2026\nhttps://github.com/mammoth70</string>
     <string name="ok">OK</string>
     <string name="cancel">Отмена</string>
     <string name="next">Далее</string>
-    <string name="done">Готово</string>
     <string name="backspace">Забой</string>
-    <string name="yes">Да</string>
-    <string name="no">Нет</string>
     <string name="qr">Считать QR</string>
     <string name="add">Добавить</string>
     <string name="delete">Удалить</string>
     <string name="view">Просмотр</string>
-    <string name="save">Сохранить</string>
     <string name="menu">Меню</string>
     <string name="back">Назад</string>
     <string name="exit">Выход</string>
@@ -43,7 +38,6 @@
     <string name="no_encrypting">Без шифрования</string>
     <string name="encrypting">Шифрование…</string>
     <string name="select_item_error">Сначала выберите хотя бы один секрет для экспорта</string>
-    <string name="select_items_error">Секретов для экспорта не должно быть больше десяти</string>
     <string name="select_standart_items_error">Стандартных секретов для экспорта не должно быть больше десяти</string>
     <string name="select_all_non_standard_items_error">Все выбранные секреты нестандартные и не могут быть экспортированы в QR со схемой otpauth-migration</string>
     <string name="mixed_standard_items_warning">Будут обработаны стандартные секреты: %1$d, нестандартные секреты проигнорированы: %2$d</string>
@@ -52,7 +46,6 @@
     <string name="select_all">Выбрать всё</string>
     <string name="deselect_all">Снять всё</string>
     <string name="about">инфо</string>
-    <string name="title_about">О программе</string>
     <string name="add_secret">Добавить секрет</string>
     <string name="delete_secret">Удалить секрет</string>
     <string name="secret_added">Секрет успешно добавлен</string>
