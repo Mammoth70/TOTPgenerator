@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">TOTP generator</string>
+    <string name="totp">TOTP</string>
     <string name="description">Time-Based One-Time\nPassword generator</string>
     <string name="version">Версия:</string>
     <string name="for_about">Andrey Yakovlev © 2025–2026\nhttps://github.com/mammoth70</string>
@@ -45,7 +46,7 @@
     <string name="select_items_error">There should not be more than ten secrets for export</string>
     <string name="select_standart_items_error">There should not be more than ten standart secrets for export</string>
     <string name="select_all_non_standard_items_error">All selected secrets are non-standard and cannot be exported to QR using the otpauth-migration scheme</string>
-    <string name="mixed_standard_items_warning">Standard secrets to be processed: %1$d, non-standard secrets: %2$d ignored</string>
+    <string name="mixed_standard_items_warning">Standard secrets to be processed: %1$d, non-standard secrets ignored: %2$d</string>
     <string name="export_success">Export successful</string>
     <string name="error_io_stream">Could not open file for writing</string>
     <string name="select_all">Select all</string>

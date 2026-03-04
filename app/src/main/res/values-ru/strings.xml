@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Генератор TOTP</string>
+    <string name="totp">TOTP</string>
     <string name="description">Генератор одноразовых паролей\nна основе времени</string>
     <string name="version">Версия:</string>
     <string name="for_about">Андрей Яковлев © 2025–2026\nhttps://github.com/mammoth70</string>
@@ -8,7 +9,7 @@
     <string name="cancel">Отмена</string>
     <string name="next">Далее</string>
     <string name="done">Готово</string>
-    <string name="backspace">Backspace</string>
+    <string name="backspace">Забой</string>
     <string name="yes">Да</string>
     <string name="no">Нет</string>
     <string name="qr">Считать QR</string>
@@ -45,7 +46,7 @@
     <string name="select_items_error">Секретов для экспорта не должно быть больше десяти</string>
     <string name="select_standart_items_error">Стандартных секретов для экспорта не должно быть больше десяти</string>
     <string name="select_all_non_standard_items_error">Все выбранные секреты нестандартные и не могут быть экспортированы в QR со схемой otpauth-migration</string>
-    <string name="mixed_standard_items_warning">Будут обработаны стандартные секреты: %1$d, нестандартные секреты: %2$d проигнорированы</string>
+    <string name="mixed_standard_items_warning">Будут обработаны стандартные секреты: %1$d, нестандартные секреты проигнорированы: %2$d</string>
     <string name="export_success">Экспорт успешно выполнен</string>
     <string name="error_io_stream">Не удалось открыть файл для записи</string>
     <string name="select_all">Выбрать всё</string>
