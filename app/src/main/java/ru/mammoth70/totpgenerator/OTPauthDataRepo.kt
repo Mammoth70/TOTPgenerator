@@ -30,6 +30,7 @@ object OTPauthDataRepo {
 
         ProcessLifecycleOwner.get().lifecycleScope.launch(Dispatchers.IO) {
             readAllSecrets()
+            TokensTrigger.sendCommandUpdate()
         }
     }
 
