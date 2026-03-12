@@ -7,7 +7,7 @@ import androidx.room.RoomDatabase
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 
-@Database(entities = [OTPauthEntity::class], version = 2, exportSchema = false)
+@Database(entities = [OTPauthEntity::class], version = 3, exportSchema = false)
 
 abstract class OTPauthDataBase : RoomDatabase() {
     // Класс, описывающий базу данных приложения.
@@ -52,6 +52,16 @@ abstract class OTPauthDataBase : RoomDatabase() {
             }
         }
 
+        val MIGRATION_2_3 = object : Migration(2, 3) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                // Функция миграции с предыдущей версии БД на версию БД, описываемую Room.
+
+                db.execSQL("DROP INDEX IF EXISTS `index_otpauth_label`")
+		        db.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS `index_otpauth_issuer_label` ON `otpauth` (`issuer`, `label`)")
+
+            }
+        }
+
 
         @Volatile
         private var INSTANCE: OTPauthDataBase? = null
@@ -67,6 +77,7 @@ abstract class OTPauthDataBase : RoomDatabase() {
                     DB_NAME
                 )
                     .addMigrations(MIGRATION_1_2)
+                    .addMigrations(MIGRATION_2_3)
                     .build()
                 INSTANCE = instance
                 instance

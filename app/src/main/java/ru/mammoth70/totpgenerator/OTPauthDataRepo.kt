@@ -70,8 +70,8 @@ object OTPauthDataRepo {
         // Возвращает true, если успешно и false, если нет.
 
         synchronized(_secrets) {
-            if (_secrets.any { it.label == otpauth.label }) return@withContext false
-        }
+		if (_secrets.any { it.label == otpauth.label && it.issuer == otpauth.issuer } ) return@withContext false
+	}
 
         val pair = encryptString(otpauth.secret)
         if (pair.encodedText.isEmpty() || pair.iv.isEmpty()) return@withContext false
@@ -91,7 +91,7 @@ object OTPauthDataRepo {
             if (newId > 0) {
                 val newSecret = otpauth.copy(id = newId)
 
-                if (_secrets.none { it.label == otpauth.label }) {
+                if (_secrets.none { it.label == otpauth.label && it.issuer == otpauth.issuer } ) {
                     _secrets.add(newSecret)
                     return@withContext true
                 } else {

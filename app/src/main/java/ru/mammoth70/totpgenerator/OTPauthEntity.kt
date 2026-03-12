@@ -11,8 +11,8 @@ import androidx.room.PrimaryKey
 
     tableName = "otpauth",
     indices = [
-        Index(value = ["label"], unique = true),
-        Index(value = ["secret"], unique = true)
+        Index(value = ["issuer", "label"], unique = true),
+        Index(value = ["secret"], unique = true),
     ]
 )
 
@@ -32,5 +32,5 @@ data class OTPauthEntity(
 data class StringPair(
     // Класс данных, описывающий пару для хранения зашифрованной строки и иницализационного вектора.
     @ColumnInfo(name = "secret") val encodedText: String = "",
-    @ColumnInfo(name = "iv") val iv: String = ""
+    @ColumnInfo(name = "iv") val iv: String = "",
 )
