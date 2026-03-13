@@ -3,6 +3,7 @@ package ru.mammoth70.totpgenerator
 import android.annotation.SuppressLint
 import android.app.Dialog
 import android.os.Bundle
+import android.text.InputFilter
 import android.view.WindowManager
 import android.widget.RadioButton
 import android.widget.RadioGroup
@@ -55,11 +56,9 @@ class OTPauthDialog: DialogFragment() {
     private val ilPeriod: TextInputLayout by lazy { dlg.findViewById(R.id.ilPeriod)!! }
     private val edPeriod: TextInputEditText by lazy { dlg.findViewById(R.id.edPeriod)!! }
     private val radioHash: RadioGroup by lazy { dlg.findViewById(R.id.radioHash)!! }
-    private val radioSHA1: RadioButton by lazy { dlg.findViewById(R.id.SHA1)!! }
     private val radioSHA256: RadioButton by lazy { dlg.findViewById(R.id.SHA256)!! }
     private val radioSHA512: RadioButton by lazy { dlg.findViewById(R.id.SHA512)!! }
     private val radioDigits: RadioGroup by lazy { dlg.findViewById(R.id.radioDigits)!! }
-    private val radioDigits6: RadioButton by lazy { dlg.findViewById(R.id.digits6)!! }
     private val radioDigits7: RadioButton by lazy { dlg.findViewById(R.id.digits7)!! }
     private val radioDigits8: RadioButton by lazy { dlg.findViewById(R.id.digits8)!! }
 
@@ -116,6 +115,33 @@ class OTPauthDialog: DialogFragment() {
         }
 
         if (action == ACTION_TOTP_ADD) {
+
+            val filter = InputFilter { source, start, end, _, _, _ ->
+                // Фильтр двоеточия для поля edLabel.
+                for (i in start until end) {
+                    if (source[i] == ':') {
+                        return@InputFilter ""
+                    }
+                }
+                null
+            }
+            edLabel.filters = arrayOf(filter)
+
+            edLabel.doOnTextChanged { _, _, _, _ -> ilLabel.error = null }
+            edLabel.setOnFocusChangeListener { _, hasFocus ->
+                if (hasFocus) ilLabel.error = null
+            }
+
+            edKey.doOnTextChanged { _, _, _, _ -> ilKey.error = null }
+            edKey.setOnFocusChangeListener { _, hasFocus ->
+                if (hasFocus) ilKey.error = null
+            }
+
+            edPeriod.doOnTextChanged { _, _, _, _ -> ilPeriod.error = null }
+            edPeriod.setOnFocusChangeListener { _, hasFocus ->
+                if (hasFocus) ilPeriod.error = null
+            }
+
             dlg.getButton(Dialog.BUTTON_POSITIVE)?.setOnClickListener {
                 addSecret()
             }
@@ -166,41 +192,17 @@ class OTPauthDialog: DialogFragment() {
         // и если всё в порядке вызывает addListener и закрывает окно.
 
         var isChecked = true
-        var selectedHash = SHA1
-        var selectedDigits = DEFAULT_DIGITS
 
-        if (radioSHA1.isChecked) {
-            selectedHash = SHA1
-        }
-        if (radioSHA256.isChecked) {
-            selectedHash = SHA256
-        }
-        if (radioSHA512.isChecked) {
-            selectedHash = SHA512
-        }
-        if (radioDigits6.isChecked) {
-            selectedDigits = 6
-        }
-        if (radioDigits7.isChecked) {
-            selectedDigits = 7
-        }
-        if (radioDigits8.isChecked) {
-            selectedDigits = 8
+        val selectedHash = when {
+            radioSHA256.isChecked -> SHA256
+            radioSHA512.isChecked -> SHA512
+            else -> SHA1
         }
 
-        edLabel.doOnTextChanged { _, _, _, _ -> ilLabel.error = null }
-        edLabel.setOnFocusChangeListener { _, hasFocus ->
-            if (hasFocus) ilLabel.error = null
-        }
-
-        edKey.doOnTextChanged { _, _, _, _ -> ilKey.error = null }
-        edKey.setOnFocusChangeListener { _, hasFocus ->
-            if (hasFocus) ilKey.error = null
-        }
-
-        edPeriod.doOnTextChanged { _, _, _, _ -> ilPeriod.error = null }
-        edPeriod.setOnFocusChangeListener { _, hasFocus ->
-            if (hasFocus) ilPeriod.error = null
+        val selectedDigits = when {
+            radioDigits7.isChecked -> 7
+            radioDigits8.isChecked -> 8
+            else -> 6
         }
 
         if (edLabel.text.toString().isEmpty()) {
@@ -225,6 +227,7 @@ class OTPauthDialog: DialogFragment() {
             ilLabel.error = getString(R.string.not_unique_label_error)
             isChecked = false
         }
+
         if (isChecked) {
             val secretNew = OTPauth(
                 label = edLabel.text.toString(),

@@ -22,7 +22,7 @@ abstract class OTPauthDataBase : RoomDatabase() {
 
         val MIGRATION_1_2 = object : Migration(1, 2) {
             override fun migrate(db: SupportSQLiteDatabase) {
-                // Функция миграции с предыдущей версии БД на версию БД, описываемую Room.
+                // Функция миграции с предыдущей версии БД на версию БД v2, описываемую Room.
 
                 db.execSQL("""
                     CREATE TABLE IF NOT EXISTS `otpauth_new` (
@@ -54,10 +54,10 @@ abstract class OTPauthDataBase : RoomDatabase() {
 
         val MIGRATION_2_3 = object : Migration(2, 3) {
             override fun migrate(db: SupportSQLiteDatabase) {
-                // Функция миграции с предыдущей версии БД на версию БД, описываемую Room.
+                // Функция миграции с версии БД-Room v2 на версию БД-Room v3.
 
                 db.execSQL("DROP INDEX IF EXISTS `index_otpauth_label`")
-		        db.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS `index_otpauth_issuer_label` ON `otpauth` (`issuer`, `label`)")
+                db.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS `index_otpauth_issuer_label` ON `otpauth` (`issuer`, `label`)")
 
             }
         }
