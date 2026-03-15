@@ -1,0 +1,95 @@
+﻿### MainActivity
+
+LinearLayout
+└── CoordinatorLayout
+    └── AppBarLayout
+        └── MaterialToolbar
+    └── RecyclerView
+        └── FrameLayout
+        └── ...
+        └── ...
+        └── FrameLayout
+            └── ConstraintLayout
+                └── TextView
+                └── TextView
+                └── TextView
+                └── CircularProgressIndicator
+                └── Button
+    └── FloatingActionButton
+└── FrameLayout
+    └── BottomNavigationView
+
+
+
+### SettingsActivity
+
+CoordinatorLayout
+└── AppBarLayout
+    └── MaterialToolbar
+└── NestedScrollView
+    └── LinearLayout
+        └── MaterialCardView
+            └── LinearLayout
+                └── TextView
+                └── Button
+                └── Button
+                └── MaterialSwitch
+        └── MaterialCardView
+            └── LinearLayout
+                └── TextView
+                └── LinearLayout
+                    └── Slider
+                    └── TextView
+                └── MaterialSwitch
+        └── MaterialCardView
+            └── LinearLayout
+                └── TextView
+                └── MaterialButtonToggleGroup
+                    └── Button
+                    └── Button
+        └── MaterialCardView
+            └── LinearLayout
+                └── TextView
+                └── MaterialButtonToggleGroup
+                    └── Button
+                    └── Button
+                    └── Button
+
+
+
+### Dialog OTP
+
+ScrollView
+└── LinearLayout
+    └── TextInputLayout
+        └── TextInputEditText
+    └── TextInputLayout
+        └── TextInputEditText
+    └── TextInputLayout
+        └── TextInputEditText
+    └── TextView
+    └── RadioGroup
+        └── RadioButton
+        └── RadioButton
+        └── RadioButton
+    └── TextView
+    └── RadioGroup
+        └── RadioButton
+        └── RadioButton
+        └── RadioButton
+
+
+
+### Dialog PIN
+
+LinearLayout
+└── LinearLayout
+    └── ImageView
+    └── ...
+    └── ImageView
+└── TextView
+└── ConstraintLayout
+    └── Button
+    └── ...
+    └── Button
+└── Button
