@@ -27,7 +27,7 @@ android {
     defaultConfig {
         val versionMajor = 2
         val versionMinor = 10
-        val versionPatch = 5
+        val versionPatch = 6
         applicationId = "ru.mammoth70.totpgenerator"
         minSdk = 28
         targetSdk = 36

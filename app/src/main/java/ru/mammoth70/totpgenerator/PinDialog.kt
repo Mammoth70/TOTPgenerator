@@ -411,11 +411,25 @@ class PinDialog : DialogFragment() {
                 }
 
                 override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
-                    if (errorCode == BiometricPrompt.ERROR_NEGATIVE_BUTTON || errorCode == BiometricPrompt.ERROR_USER_CANCELED) {
-                        // Пользователь сам нажал "Отмена".
-                    } else {
-                        // Какая-то системная ошибка (например, датчик занят).
-                        errorMessage.text = errString
+
+                    when (errorCode) {
+                        BiometricPrompt.ERROR_NEGATIVE_BUTTON,
+                        BiometricPrompt.ERROR_USER_CANCELED -> {
+                            // Пользователь сам нажал "Отмена".
+                        }
+
+                        BiometricPrompt.ERROR_HW_NOT_PRESENT -> {
+                            // Датчика строгой биометрии нет совсем.
+                            isHaveBiometric = false
+                            SettingsManager.enableBiometric = false
+                            errorMessage.text = errString
+                            btnBiomeric.visibility = View.GONE
+                        }
+
+                        else -> {
+                            // Какая-то системная ошибка (например, датчик занят, грязный и т.п.).
+                            errorMessage.text = errString
+                        }
                     }
                 }
 

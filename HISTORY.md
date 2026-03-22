@@ -412,6 +412,11 @@ PIN-код теперь хранится в виде криптографиче�
 
 ### 2.10.5
 Изменения в файле Biometric и классе PinDialog.
-- функция checkBiometricInDevice в случае отсутствия строгой биометрии выставляет в false флаг checkBiometricInDevice;
+- функция checkBiometricInDevice в случае отсутствия датчика строгой биометрии выставляет в false флаг enableBiometric;
 - в функции onCreateDialog исправлена ошибка, теперь поверяется isHaveBiometric вместо isHaveHashPin;
-- переименованы константы.
+- переименована константа.
+
+### 2.10.6
+Изменения в классе PinDialog.  
+Функция onAuthenticationError в случае отсутствия датчика строгой биометрии выставляет в false флаги enableBiometric и isHaveBiometric, 
+а также сразу скрывает кнопку вызова биометрии.
