@@ -33,7 +33,7 @@ class PinDialog : DialogFragment() {
         private var pinIndex = 0
 
         private const val CHECK_PIN = 0
-        private const val CHECK_PIN_AND_BIO = 1
+        private const val CHECK_PIN_AND_BIO_WHILE_FALSE = 1
         private const val CHECK_PIN_WHILE_FALSE = 2
         private const val ENTER_NEW_PIN = 3
         private const val CHECK_PIN_ENTER_NEW_PIN = 4
@@ -96,8 +96,8 @@ class PinDialog : DialogFragment() {
             ACTION_ENTER_PIN -> {
                 // Проверить PIN и вернуть результат проверки.
                 builder.setTitle(getString(R.string.enter_pin))
-                variant = if (isHaveHashPin && SettingsManager.enableBiometric) {
-                    CHECK_PIN_AND_BIO
+                variant = if (isHaveBiometric && SettingsManager.enableBiometric) {
+                    CHECK_PIN_AND_BIO_WHILE_FALSE
                 } else {
                     CHECK_PIN_WHILE_FALSE
                 }
@@ -185,7 +185,7 @@ class PinDialog : DialogFragment() {
                 getString(R.string.pin_cancel))
             dismiss()
         }
-        if (variant == CHECK_PIN_AND_BIO) {
+        if (variant == CHECK_PIN_AND_BIO_WHILE_FALSE) {
             errorMessage.visibility = View.VISIBLE
             btnBiomeric.visibility = View.VISIBLE
             btnBiomeric.setOnClickListener {
@@ -302,7 +302,7 @@ class PinDialog : DialogFragment() {
                 dismiss()
             }
 
-            CHECK_PIN_WHILE_FALSE, CHECK_PIN_AND_BIO -> {
+            CHECK_PIN_WHILE_FALSE, CHECK_PIN_AND_BIO_WHILE_FALSE -> {
                 // Вариант. Проверять PIN, пока не введётся правильный и вернуть результат проверки.
                 if (checkPin()) {
                     clearAllPins()

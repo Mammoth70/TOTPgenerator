@@ -17,6 +17,7 @@ fun checkBiometricInDevice(): Boolean {
         }
 
         else -> {
+            SettingsManager.enableBiometric = false
             false
         }
     }
