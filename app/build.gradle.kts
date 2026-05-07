@@ -7,7 +7,7 @@ plugins {
 android {
     namespace = "ru.mammoth70.totpgenerator"
     compileSdk {
-        version = release(36)
+        version = release(37)
     }
 
     testOptions {
@@ -27,11 +27,10 @@ android {
     defaultConfig {
         val versionMajor = 2
         val versionMinor = 10
-        val versionPatch = 8
+        val versionPatch = 9
         applicationId = "ru.mammoth70.totpgenerator"
         minSdk = 28
-        //noinspection OldTargetApi
-        targetSdk = 36
+        targetSdk = 37
         versionName = "${versionMajor}.${versionMinor}.${versionPatch}"
         versionCode = versionMajor * 10000 + versionMinor * 100 + versionPatch
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
