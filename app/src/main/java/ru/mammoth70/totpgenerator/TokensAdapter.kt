@@ -113,15 +113,32 @@ internal class TokensAdapter : ListAdapter<Token, RecyclerView.ViewHolder>(Token
     }
 
 
+    // Функция-расширение для форматирования строки токена в зависимости от его длины
+    private fun String.formatTotpToken(): String {
+        return when (this.length) {
+            6 -> {
+                "${this.substring(0, 3)}-${this.substring(3, 6)}"
+            }
+            7 -> {
+                "${this.substring(0, 4)}-${this.substring(4, 7)}"
+            }
+            8 -> {
+                "${this.substring(0, 4)}-${this.substring(4, 8)}"
+            }
+            else -> this
+        }
+    }
+
+
     private fun updateTOTP(holder: ViewHolder, token: Token) {
-        // Вывод текста с токеном.
-        holder.totpView.text = token.totp
+        // Вывод текста с отформатированным токеном.
+        holder.totpView.text = token.totp.formatTotpToken()
     }
 
 
     private fun updateTOTPnext(holder: ViewHolder, token: Token) {
-        // Вывод текста со следующим токеном.
-        holder.totpNextView.text = token.totpNext
+        // Вывод текста со следующим отформатированным токеном.
+        holder.totpNextView.text = token.totpNext.formatTotpToken()
     }
 
 

@@ -29,6 +29,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlin.lazy
+import kotlin.time.Duration.Companion.milliseconds
 
 class MainActivity : AppActivity(),
     OTPauthDialog.OnAddResultListener, OTPauthDialog.OnDeleteResultListener, PinDialog.OnPinResultListener {
@@ -418,7 +419,7 @@ class MainActivity : AppActivity(),
 
         // Автоматическая очистка через 30 секунд.
         lifecycleScope.launch {
-            delay(30000)
+            delay(30000.milliseconds)
             val currentClip = clipboard.primaryClip
             if (currentClip != null && currentClip.itemCount > 0) {
                 val currentText = currentClip.getItemAt(0).text?.toString()

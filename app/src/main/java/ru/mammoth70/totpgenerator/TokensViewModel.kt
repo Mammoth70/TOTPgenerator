@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.delay
 import java.util.Date
 import java.time.Duration
+import kotlin.time.Duration.Companion.milliseconds
 
 class TokensViewModel : ViewModel() {
     // Класс в бесконечном цикле каждую секунду вычисляет токены и выдаёт их список в поток.
@@ -87,7 +88,7 @@ class TokensViewModel : ViewModel() {
                 emit(tokenList) // Эмитим весь список один раз в секунду.
 
                 // Ждем начала следующей секунды (с высокой точностью).
-                delay(1000L - (System.currentTimeMillis() % 1000L))
+                delay((1000L - (System.currentTimeMillis() % 1000L)).milliseconds)
             }
         }
     }.flowOn(Dispatchers.Default).asLiveData()
