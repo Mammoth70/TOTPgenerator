@@ -4,9 +4,11 @@
     android:viewportWidth="960"
     android:viewportHeight="960"
     android:tint="#C8C8FF">
-  <group android:scaleX="0.58"
+  <group
+      android:scaleX="-0.58"
+      android:pivotX="480"
       android:scaleY="0.58"
-      android:translateX="201.6"
+      android:translateX="0"
       android:translateY="201.6">
     <path
         android:fillColor="@android:color/white"
